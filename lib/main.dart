@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:latihan_flutterd7/day_7/scaffold.dart';
+import 'package:latihan_flutterd7/day_7/tugas1Flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,9 +30,11 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: .fromSeed(
+          seedColor: const Color.fromARGB(255, 213, 233, 30),
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: Tugas1flutter(),
     );
   }
 }
