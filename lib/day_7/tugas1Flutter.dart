@@ -24,7 +24,7 @@ class Tugas1flutter extends StatelessWidget {
           children: [
             Text(
               "Nama: Alyssa Wulan Sari",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 10),
@@ -39,7 +39,7 @@ class Tugas1flutter extends StatelessWidget {
                 Icon(Icons.location_on, color: Colors.red),
                 Text(
                   "Jakarta Timur",
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -49,9 +49,9 @@ class Tugas1flutter extends StatelessWidget {
             //penggunaan const untuk nilai yang permanen (tidak berubah2)
             // (misal: nama yang (bukan) diambil dari database/input user)
 
-            //Membuat Deskripsi Infomarsi
+            //Membuat Deskripsi Informasi
             Text(
-              "Seorang peserta pelatihan yang sedang mendalami Flutter di PPKD,semoga bisa selesai dan mengikuti sampai akhir dan membuat suatu aplikasi",
+              "Seorang peserta pelatihan yang sedang mendalami Flutter di PPKD, semoga bisa selesai dan mengikuti sampai akhir dan membuat suatu aplikasi kualitas udara.",
               style: TextStyle(
                 fontSize: 15,
                 color: const Color.fromARGB(255, 244, 139, 54),

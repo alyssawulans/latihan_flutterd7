@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:latihan_flutterd7/day_7/scaffold.dart';
-import 'package:latihan_flutterd7/day_7/tugas1Flutter.dart';
+import 'package:latihan_flutterd7/day_9/tugas2flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,7 +33,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 213, 233, 30),
         ),
       ),
-      home: Tugas1flutter(),
+      home: Latihan1(),
     );
   }
 }
