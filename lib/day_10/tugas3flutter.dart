@@ -8,21 +8,23 @@ class Tugas3flutter extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xFFF4F8FB),
       appBar: AppBar(
-        title: Text("Registrasi & Katalog"),
-        centerTitle: true,
+        title: Text(
+          "Registrasi & Edukasi",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.teal,
-        titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        centerTitle: true,
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
@@ -31,132 +33,156 @@ class Tugas3flutter extends StatelessWidget {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 10,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 12,
                   children: [
-                    // Input Nama Pengguna
                     Text(
-                      "Pengisian Form",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      "Form Registrasi",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                       textAlign: TextAlign.center,
                     ),
+
+                    // Nama Pengguna
                     TextField(
                       decoration: InputDecoration(
                         labelText: "Nama Pengguna",
                         hintText: "Masukkan Nama Pengguna",
-                        hintStyle: TextStyle(fontSize: 14),
                         filled: true,
-                        fillColor: const Color.fromARGB(36, 0, 150, 135),
-                        border: OutlineInputBorder(),
+                        fillColor: const Color.fromARGB(14, 0, 150, 135),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: Icon(Icons.person),
                       ),
                     ),
 
-                    // Input alamat Pengguna
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: "Alamat Pengguna",
-                        hintText: "Masukkan Alamat Pengguna",
-                        hintStyle: TextStyle(fontSize: 14),
-                        filled: true,
-                        fillColor: const Color.fromARGB(36, 0, 150, 135),
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-
-                    // Input No Handphone
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: "No.Handphone",
-                        hintText: "Masukkan No.Handphone Pengguna",
-                        hintStyle: TextStyle(fontSize: 14),
-                        filled: true,
-                        fillColor: const Color.fromARGB(36, 0, 150, 135),
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-
-                    // Input Email
+                    // Email Pengguna
                     TextField(
                       decoration: InputDecoration(
                         labelText: "Email Pengguna",
                         hintText: "Masukkan Email Pengguna",
-                        hintStyle: TextStyle(fontSize: 14),
                         filled: true,
-                        fillColor: const Color.fromARGB(36, 0, 150, 135),
-                        border: OutlineInputBorder(),
+                        fillColor: const Color.fromARGB(14, 0, 150, 135),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: Icon(Icons.email),
                       ),
                     ),
 
-                    // Input Konfirmasi Password
+                    // No.Telephone Pengguna
                     TextField(
                       decoration: InputDecoration(
-                        labelText: "Konfirmasi Email",
-                        hintText: "Masukkan Konfirmasi Email Pengguna",
-                        hintStyle: TextStyle(fontSize: 14),
+                        labelText: "Telephone Pengguna",
+                        hintText: "Masukkan No. Telephone Pengguna",
                         filled: true,
-                        fillColor: const Color.fromARGB(36, 0, 150, 135),
-                        border: OutlineInputBorder(),
+                        fillColor: const Color.fromARGB(14, 0, 150, 135),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: Icon(Icons.phone),
+                      ),
+                    ),
+
+                    // Password Input
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: "Input Password",
+                        hintText: "Masukkan Password",
+                        filled: true,
+                        fillColor: const Color.fromARGB(14, 0, 150, 135),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: Icon(Icons.key),
+                      ),
+                    ),
+
+                    // Konfirm Password Pengguna
+                    TextField(
+                      obscureText: true,
+                      obscuringCharacter: "*",
+                      decoration: InputDecoration(
+                        labelText: "Konfirmasi Password",
+                        hintText: "Masukkan Konfirmasi Password",
+                        filled: true,
+                        fillColor: const Color.fromARGB(14, 0, 150, 135),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        suffixIcon: Icon(Icons.visibility),
                       ),
                     ),
                   ],
                 ),
               ),
-              Column(
-                children: [
-                  SizedBox(height: 12.4),
-                  Text("LINGKUNGAN BERBAHAYA"),
-                  SizedBox(height: 12.4),
-                  GridView.count(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 5,
-                    shrinkWrap: true,
-                    crossAxisSpacing: 5,
-                    children: [
-                      buildStack("assets/images/polutan_1.webp", "AIR"),
-                      buildStack("assets/images/polutan_2.png", "Bisa"),
-                      buildStack("assets/images/polutan_3.jpg", "BERBAHAYA"),
-                      buildStack("assets/images/polutan_4.jpg", "BERBAHAYA"),
-                      buildStack("assets/images/polutan_5.png", "BERBAHAYA"),
-                      buildStack("assets/images/polutan_6.webp", "BERBAHAYA"),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+
+            SizedBox(height: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Wilayah Pemantauan Kualitas Udara Terdekat",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                SizedBox(height: 12),
+                GridView.count(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 5,
+                  mainAxisSpacing: 5,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    eduRuas("assets/images/kota_1.jpg", "Jakarta"),
+                    eduRuas("assets/images/kota_2.jpg", "Bandung"),
+                    eduRuas("assets/images/kota_3.jpg", "Yogyakarta"),
+                    eduRuas("assets/images/kota_4.jpeg", "Semarang"),
+                    eduRuas("assets/images/kota_5.jpeg", "Lampung"),
+                    eduRuas("assets/images/kota_6.webp", "Padang"),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Stack buildStack(String imagename, String ket) {
+  Stack eduRuas(String gambar, String info) {
     return Stack(
       alignment: AlignmentGeometry.bottomCenter,
       clipBehavior: Clip.none,
       children: [
         Container(
+          padding: EdgeInsets.all(3),
           height: double.infinity,
           width: double.infinity,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.asset(imagename, fit: BoxFit.cover),
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(gambar, fit: BoxFit.cover),
           ),
         ),
-
         Positioned(
-          bottom: -10,
+          bottom: -5,
           child: Container(
             padding: EdgeInsets.all(4.0),
             width: 80,
-
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.red,
+              borderRadius: BorderRadius.circular(8.0),
+              color: Colors.blueGrey,
             ),
-
             child: Text(
-              ket,
-              style: TextStyle(fontSize: 12),
+              info,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
