@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:latihan_flutterd7/day_12/tugas5flutter.dart';
+import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +33,12 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 213, 233, 30),
         ),
       ),
-      home: Tugas5flutter(),
+      // initialRoute: "/",
+      // routes: {
+      //   '/': (context) => Tugas4flutter(),
+      //   '/login': (context) => Tugas5flutter(),
+      // },
+      home: Tugas6flutter(),
     );
   }
 }

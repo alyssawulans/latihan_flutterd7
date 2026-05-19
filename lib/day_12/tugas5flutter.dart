@@ -72,7 +72,7 @@ class _Tugas5flutterState extends State<Tugas5flutter> {
                   ],
                 ),
               ),
-              SizedBox(height: 24),
+              SizedBox(height: 15),
 
               // ELEVATED BUTTON (ID User)
               ElevatedButton(
@@ -95,7 +95,7 @@ class _Tugas5flutterState extends State<Tugas5flutter> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                padding: EdgeInsets.symmetric(vertical: 15),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -110,8 +110,8 @@ class _Tugas5flutterState extends State<Tugas5flutter> {
                 ),
               ),
 
-              const Divider(height: 40),
-
+              const Divider(height: 10),
+              SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
@@ -141,12 +141,13 @@ class _Tugas5flutterState extends State<Tugas5flutter> {
                   ),
                 ],
               ),
-              const Divider(height: 40),
+              SizedBox(height: 10),
 
+              const Divider(height: 10),
               Padding(
-                padding: const EdgeInsets.all(3.0),
+                padding: const EdgeInsets.all(5),
                 child: Container(
-                  padding: EdgeInsets.all(3),
+                  padding: EdgeInsets.all(5),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -184,7 +185,7 @@ class _Tugas5flutterState extends State<Tugas5flutter> {
                   ),
                 ),
               ),
-              const Divider(height: 40),
+              const Divider(height: 30),
 
               // Membuat Badge Komunitas (INKWELL)
               Material(
