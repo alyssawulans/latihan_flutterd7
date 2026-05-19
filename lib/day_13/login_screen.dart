@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:latihan_flutterd7/day_12/tugas5flutter.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
+import 'register_screen.dart';
 
 class Tugas6flutter extends StatefulWidget {
   const Tugas6flutter({super.key});
@@ -11,16 +11,12 @@ class Tugas6flutter extends StatefulWidget {
 }
 
 class _Tugas6flutterState extends State<Tugas6flutter> {
-  // Deklarasi FormKey agar fungsi validator pada TextFormField bisa bekerja
   final _formKey = GlobalKey<FormState>();
-
-  bool back = false;
-  bool masuk = false;
+  bool obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Menggunakan background soft light gray kebiruan
       backgroundColor: const Color(0xFFF4F8FB),
       appBar: AppBar(
         centerTitle: true,
@@ -32,31 +28,24 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
             color: Color(0xFF1A2E44),
           ),
         ),
-        backgroundColor: const Color(0xFFF4F8FB),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF1A2E44)),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Form(
-            key: _formKey, // Membungkus kolom input dengan Form widget
+            key: _formKey,
             child: Column(
               children: [
-                // --- AREA LOGO ASSET LOKAL & GREETINGS ---
                 Center(
                   child: Column(
                     children: [
-                      // Memanggil aset gambar lokal RUAS milikmu
                       Container(
                         width: 85,
                         height: 85,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage(
-                              'assets/images/logo_ruas.png',
-                            ), // Sesuaikan dengan folder asetmu
+                            image: AssetImage('assets/images/logo_ruas.png'),
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -67,7 +56,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1A2E44), // Deep Navy RUAS
+                          color: Color(0xFF1A2E44),
                         ),
                       ),
                       const Text(
@@ -82,14 +71,11 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                       const Text(
                         "Masuk untuk melanjutkan ke aplikasi RUAS",
                         style: TextStyle(fontSize: 14, color: Colors.grey),
-                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 32),
-
-                // --- AREA INPUT CONTAINER ---
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -116,39 +102,15 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
-                        decoration: InputDecoration(
-                          hintText: "Masukkan Email atau Nomor Telepon",
-                          hintStyle: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFFF8FAF9),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 16,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              width: 1.5,
-                              color: Colors.teal,
-                            ),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.email_outlined,
-                            color: Color(0xFF1A2E44),
-                          ),
+                        decoration: _buildInputDecoration(
+                          "Masukkan Email atau Nomor Telepon",
+                          Icons.email_outlined,
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty)
                             return "Email Tidak Boleh Kosong";
-                          } else if (!value.contains("@")) {
-                            return "Format tidak lengkap (kurang '@')";
-                          }
+                          if (!value.contains("@"))
+                            return "Format Tidak Lengkap (Kurang '@')";
                           return null;
                         },
                       ),
@@ -163,53 +125,36 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
-                        obscureText: true,
+                        obscureText: obscurePassword,
                         obscuringCharacter: "*",
-                        decoration: InputDecoration(
-                          hintText: "Masukkan Password",
-                          hintStyle: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFFF8FAF9),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 16,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              width: 1.5,
-                              color: Colors.teal,
+                        decoration:
+                            _buildInputDecoration(
+                              "Masukkan Password",
+                              Icons.lock_outline_rounded,
+                            ).copyWith(
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () => setState(
+                                  () => obscurePassword = !obscurePassword,
+                                ),
+                              ),
                             ),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          suffixIcon: const Icon(
-                            Icons.visibility_outlined,
-                            color: Colors.grey,
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.lock_outline_rounded,
-                            color: Color(0xFF1A2E44),
-                          ),
-                        ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty)
                             return "Kata Sandi Tidak Boleh Kosong";
-                          }
                           return null;
                         },
                       ),
                       const SizedBox(height: 12),
-
-                      // Link Lupa Sandi rata kanan
                       Align(
                         alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                          onTap: () {},
+                        child: TextButton(
+                          onPressed: () {},
                           child: const Text(
                             "Lupa Kata Sandi?",
                             style: TextStyle(
@@ -221,27 +166,21 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                         ),
                       ),
                       const SizedBox(height: 24),
-
-                      // --- TOMBOL MASUK UTAMA ---
                       SizedBox(
                         width: double.infinity,
                         height: 54,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(
-                              0xFF1A2E44,
-                            ), // Menyesuaikan tombol warna Navy Utama RUAS
+                            backgroundColor: const Color(0xFF1A2E44),
                             foregroundColor: Colors.white,
-                            elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
+                            elevation: 0,
                           ),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              print(
-                                "Sudah memenuhi syarat, melakukan proses login...",
-                              );
+                              print("Melakukan proses login...");
                             }
                           },
                           child: const Text(
@@ -254,8 +193,6 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                         ),
                       ),
                       const SizedBox(height: 20),
-
-                      // --- SEPARATOR (ATAU) ---
                       Row(
                         children: [
                           Expanded(
@@ -283,8 +220,6 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                         ],
                       ),
                       const SizedBox(height: 20),
-
-                      // --- SOCIAL BUTTONS (Menggunakan Outlined agar Terlihat Bersih) ---
                       _buildSocialButton(
                         label: "Masuk dengan Google",
                         icon: Icons.g_mobiledata_rounded,
@@ -300,8 +235,6 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                   ),
                 ),
                 const SizedBox(height: 35),
-
-                // --- FOOTER DAFTAR ---
                 Text.rich(
                   TextSpan(
                     text: "Belum Punya Akun?",
@@ -309,7 +242,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                     children: [
                       TextSpan(
                         recognizer: TapGestureRecognizer()
-                          ..onTap = () => context.push(const Tugas5flutter()),
+                          ..onTap = () => context.push(const RegisterScreen()),
                         text: " Daftar Sekarang",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -328,7 +261,25 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
     );
   }
 
-  // Fungsi pembantu membuat tombol sosial media yang seragam
+  InputDecoration _buildInputDecoration(String hint, IconData icon) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+      filled: true,
+      fillColor: const Color(0xFFF8FAF9),
+      contentPadding: const EdgeInsets.symmetric(vertical: 16),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(width: 1.5, color: Colors.teal),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      prefixIcon: Icon(icon, color: const Color(0xFF1A2E44)),
+    );
+  }
+
   Widget _buildSocialButton({
     required String label,
     required IconData icon,
