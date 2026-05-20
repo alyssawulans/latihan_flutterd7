@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:latihan_flutterd7/day_12/tugas5flutter.dart';
 import 'package:latihan_flutterd7/day_13/register_screen.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
@@ -20,6 +21,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
   void _showBerhasil(BuildContext context) {
     showDialog(
       context: context,
+      barrierDismissible: false, // User wajib klik OK
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -27,7 +29,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
               16,
             ), // Sudut melengkung biar estetik
           ),
-          title: Row(
+          title: const Row(
             children: [
               Icon(Icons.check_circle_outline, color: Colors.teal, size: 28),
               SizedBox(width: 10),
@@ -40,21 +42,25 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
               ),
             ],
           ),
-          content: Text(
+          content: const Text(
             "Selamat! Anda berhasil masuk ke aplikasi RUAS. Mari jaga udara bersih bersama.",
             style: TextStyle(fontSize: 14, color: Colors.black87),
             textAlign: TextAlign.center,
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                context.pushReplacement(const Tugas5flutter());
+              },
               child: Container(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.teal,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
+                child: const Text(
                   "OK",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -72,13 +78,12 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
   void _showAllert(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("Silakan periksa kembali!"),
-        backgroundColor: Color(0xFF1A2E44),
-        duration: Duration(seconds: 3),
+        content: const Text("Silakan periksa kembali form login Anda!"),
+        backgroundColor: const Color(0xFF1A2E44),
+        duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: "Kembali",
           textColor: Colors.teal[100],
-          backgroundColor: Color(0xFF1A2E44),
           onPressed: () {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
           },
@@ -215,8 +220,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                           } else if (!value.contains("@")) {
                             return "Format tidak lengkap (kurang '@')";
                           }
-                          _showAllert(context);
-                          return null;
+                          return null; // Mengembalikan null jika input valid
                         },
                       ),
                       const SizedBox(height: 20),
@@ -267,20 +271,19 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                           if (value == null || value.isEmpty) {
                             return "Kata Sandi Tidak Boleh Kosong";
                           } else if (value.length < 6 || value.length > 10) {
-                            return "Kata Sandi Tidak Valid";
+                            return "Kata Sandi Tidak Valid (6-10 Karakter)";
                           }
-                          _showAllert(context);
-                          return null;
+                          return null; // Mengembalikan null jika input valid
                         },
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
 
                       // Link Lupa Sandi rata kanan
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
                           onTap: () {},
-                          child: Text(
+                          child: const Text(
                             "Lupa Kata Sandi?",
                             style: TextStyle(
                               color: Colors.teal,
@@ -290,7 +293,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
                       // --- TOMBOL MASUK UTAMA ---
                       SizedBox(
@@ -298,9 +301,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                         height: 54,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(
-                              0xFF1A2E44,
-                            ), // Menyesuaikan tombol warna Navy Utama RUAS
+                            backgroundColor: const Color(0xFF1A2E44),
                             foregroundColor: Colors.white,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
@@ -309,10 +310,11 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                           ),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              print(
-                                "Sudah memenuhi syarat, melakukan proses login...",
-                              );
+                              print("Syarat terpenuhi, memproses login...");
                               _showBerhasil(context);
+                            } else {
+                              // Jika gagal validasi, baru tampilkan Alert SnackBar
+                              _showAllert(context);
                             }
                           },
                           child: const Text(
@@ -355,7 +357,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                       ),
                       const SizedBox(height: 20),
 
-                      // --- SOCIAL BUTTONS (Menggunakan Outlined agar Terlihat Bersih) ---
+                      // --- SOCIAL BUTTONS ---
                       _buildMasuk(
                         label: "Masuk dengan Google",
                         icon: Icons.g_mobiledata_rounded,
@@ -398,8 +400,6 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
       ),
     );
   }
-
-  //AlertDialog
 
   // Fungsi pembantu membuat tombol sosial media yang seragam
   OutlinedButton _buildMasuk({
