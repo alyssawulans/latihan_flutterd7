@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:latihan_flutterd7/day_12/tugas5flutter.dart';
+import 'package:latihan_flutterd7/day_13/register_screen.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
 class Tugas6flutter extends StatefulWidget {
@@ -17,10 +17,79 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
   bool back = false;
   bool masuk = false;
 
+  void _showBerhasil(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              16,
+            ), // Sudut melengkung biar estetik
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.check_circle_outline, color: Colors.teal, size: 28),
+              SizedBox(width: 10),
+              Text(
+                "Berhasil",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A2E44), // Deep Navy RUAS
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            "Selamat! Anda berhasil masuk ke aplikasi RUAS. Mari jaga udara bersih bersama.",
+            style: TextStyle(fontSize: 14, color: Colors.black87),
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.teal,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  "OK",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showAllert(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Silakan periksa kembali!"),
+        backgroundColor: Color(0xFF1A2E44),
+        duration: Duration(seconds: 3),
+        action: SnackBarAction(
+          label: "Kembali",
+          textColor: Colors.teal[100],
+          backgroundColor: Color(0xFF1A2E44),
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Menggunakan background soft light gray kebiruan
       backgroundColor: const Color(0xFFF4F8FB),
       appBar: AppBar(
         centerTitle: true,
@@ -41,22 +110,19 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Form(
-            key: _formKey, // Membungkus kolom input dengan Form widget
+            key: _formKey,
             child: Column(
               children: [
-                // --- AREA LOGO ASSET LOKAL & GREETINGS ---
+                // --- Input LOGO ---
                 Center(
                   child: Column(
                     children: [
-                      // Memanggil aset gambar lokal RUAS milikmu
                       Container(
-                        width: 85,
-                        height: 85,
+                        width: 100,
+                        height: 100,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage(
-                              'assets/images/logo_ruas.png',
-                            ), // Sesuaikan dengan folder asetmu
+                            image: AssetImage('assets/images/logo_ruas.png'),
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -149,6 +215,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                           } else if (!value.contains("@")) {
                             return "Format tidak lengkap (kurang '@')";
                           }
+                          _showAllert(context);
                           return null;
                         },
                       ),
@@ -199,18 +266,21 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Kata Sandi Tidak Boleh Kosong";
+                          } else if (value.length < 6 || value.length > 10) {
+                            return "Kata Sandi Tidak Valid";
                           }
+                          _showAllert(context);
                           return null;
                         },
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
 
                       // Link Lupa Sandi rata kanan
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
                           onTap: () {},
-                          child: const Text(
+                          child: Text(
                             "Lupa Kata Sandi?",
                             style: TextStyle(
                               color: Colors.teal,
@@ -220,7 +290,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
 
                       // --- TOMBOL MASUK UTAMA ---
                       SizedBox(
@@ -242,6 +312,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                               print(
                                 "Sudah memenuhi syarat, melakukan proses login...",
                               );
+                              _showBerhasil(context);
                             }
                           },
                           child: const Text(
@@ -285,13 +356,13 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                       const SizedBox(height: 20),
 
                       // --- SOCIAL BUTTONS (Menggunakan Outlined agar Terlihat Bersih) ---
-                      _buildSocialButton(
+                      _buildMasuk(
                         label: "Masuk dengan Google",
                         icon: Icons.g_mobiledata_rounded,
                         iconColor: Colors.red,
                       ),
                       const SizedBox(height: 12),
-                      _buildSocialButton(
+                      _buildMasuk(
                         label: "Masuk dengan Apple",
                         icon: Icons.apple,
                         iconColor: Colors.black,
@@ -309,7 +380,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
                     children: [
                       TextSpan(
                         recognizer: TapGestureRecognizer()
-                          ..onTap = () => context.push(const Tugas5flutter()),
+                          ..onTap = () => context.push(const RegisterScreen()),
                         text: " Daftar Sekarang",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -328,8 +399,10 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
     );
   }
 
+  //AlertDialog
+
   // Fungsi pembantu membuat tombol sosial media yang seragam
-  Widget _buildSocialButton({
+  OutlinedButton _buildMasuk({
     required String label,
     required IconData icon,
     required Color iconColor,
