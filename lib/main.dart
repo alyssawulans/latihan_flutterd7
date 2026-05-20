@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
+
+import 'package:latihan_flutterd7/day_14/tugas7flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
       //   '/': (context) => Tugas4flutter(),
       //   '/login': (context) => Tugas5flutter(),
       // },
-      home: Tugas6flutter(),
+      home: Tugas7flutter(),
     );
   }
 }
