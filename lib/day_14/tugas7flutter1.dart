@@ -57,10 +57,11 @@ class _Tugas7flutterState extends State<Tugas7flutter> {
       body: IndexedStack(index: _selectedIndex, children: _pages),
       // Navigasi Bawah Melayang & Melengkung Persis Seperti Mockup Figma
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+        margin: const EdgeInsets.fromLTRB(25, 0, 25, 25),
+        height: 10,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -119,7 +120,7 @@ class _Tugas7flutterState extends State<Tugas7flutter> {
     bool isActive = _selectedIndex == index;
     if (isActive) {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
           color: const Color(0xFF008080),
           borderRadius: BorderRadius.circular(20),
@@ -131,7 +132,6 @@ class _Tugas7flutterState extends State<Tugas7flutter> {
             const SizedBox(width: 8),
             Expanded(
               child: FittedBox(
-                fit: BoxFit.scaleDown,
                 child: Text(
                   label,
                   style: const TextStyle(
