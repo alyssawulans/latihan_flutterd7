@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+// Import file constant kamu untuk membaca path gambar lokal
 
-class Tugas7flutter1 extends StatefulWidget {
-  const Tugas7flutter1({super.key});
+class PendaftaranRuasScreen extends StatefulWidget {
+  const PendaftaranRuasScreen({super.key});
 
   @override
-  State<Tugas7flutter1> createState() => _Tugas7flutter1State();
+  State<PendaftaranRuasScreen> createState() => _PendaftaranRuasScreenState();
 }
 
 class AppImage {
@@ -13,14 +14,17 @@ class AppImage {
   static const String avatar = 'assets/images/profile.webp';
 }
 
-class _Tugas7flutter1State extends State<Tugas7flutter1> {
-  bool isCheck = false;
+class _PendaftaranRuasScreenState extends State<PendaftaranRuasScreen> {
+  // ===========================================================================
+  // STATE VARIABLES (Diambil dari Day 15 & Disesuaikan untuk RUAS)
+  // ===========================================================================
+  bool isCheck = false; // Logika Syarat & Ketentuan (Tugas 1)
+  bool isSwitch = false; // Logika Mode Tampilan Gelap/Terang (Tugas 2)
+  String? selectedDropdown; // Logika Kategori (Tugas 3)
+  DateTime? selectedDate; // Logika DatePicker (Tugas 4)
+  TimeOfDay? selectedTime; // Logika TimePicker (Tugas 5)
 
-  bool isSwitch = false;
-  String? selectedDropdown;
-  DateTime? selectedDate;
-  TimeOfDay? selectedTime;
-
+  // Daftar pilihan kategori stasiun pemantauan udara RUAS
   final List<String> _daftarKategori = [
     "Pemukiman",
     "Kawasan Industri",
@@ -30,7 +34,10 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor = isSwitch ? Color(0xFF15191C) : Color(0xFFF5F8F7);
+    // LOGIKA WARNA: Berubah dinamis mengikuti status switch (Tugas 2)
+    Color backgroundColor = isSwitch
+        ? const Color(0xFF15191C)
+        : const Color(0xFFF5F8F7);
     Color cardColor = isSwitch ? const Color(0xFF21282C) : Colors.white;
     Color primaryText = isSwitch ? Colors.white : const Color(0xFF0F4C43);
     Color secondaryText = isSwitch ? Colors.white70 : Colors.black87;
@@ -38,7 +45,9 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
     return Scaffold(
       backgroundColor: backgroundColor,
 
-      // ======== APPBAR MENU ===========
+      // ===========================================================================
+      // 1. APP BAR (Menggunakan Asset Gambar Lokal)
+      // ===========================================================================
       appBar: AppBar(
         backgroundColor: isSwitch ? const Color(0xFF1D2428) : Colors.white,
         elevation: 0,
@@ -59,7 +68,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                 );
               },
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
               "RUAS",
               style: TextStyle(
@@ -84,21 +93,23 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
         ],
       ),
 
-      // ---- Membuat Drawer --
+      // ===========================================================================
+      // 2. NAVIGASI DRAWER (Tugas Standar Arsitektur Menu Samping)
+      // ===========================================================================
       drawer: Drawer(
         child: Container(
           color: backgroundColor,
           child: Column(
             children: [
               DrawerHeader(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Color(0xFF0F4C43), Color(0xFF1F786B)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(Icons.blur_on_rounded, color: Colors.white, size: 36),
                     SizedBox(width: 12),
@@ -134,22 +145,25 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
           ),
         ),
       ),
+
+      // ===========================================================================
+      // 3. BODY UTAMA (Dibungkus ScrollView biar ga OVERFLOW)
+      // ===========================================================================
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(24, 16, 24, 24),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Pendaftaran Akun RUAS",
+              "Pendaftaran Akun",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: primaryText,
               ),
             ),
-            SizedBox(height: 6),
-
+            const SizedBox(height: 6),
             Text(
               "Lengkapi data di bawah untuk memantau kualitas udara di sekitar Anda.",
               style: TextStyle(
@@ -158,21 +172,22 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                 height: 1.3,
               ),
             ),
+            const SizedBox(height: 24),
 
-            SizedBox(height: 24),
-
-            //SYARAT KETENTUAN
+            // -----------------------------------------------------------------------
+            // SEKSI 1: SYARAT & KETENTUAN (Tugas 1)
+            // -----------------------------------------------------------------------
             _buatKartuContainer(
               cardColor: cardColor,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buatJudul(
+                  _buatJudulSeksi(
                     Icons.description_outlined,
-                    "Syarat dan Ketentuan",
+                    "Syarat & Ketentuan",
                     isSwitch,
                   ),
-                  SizedBox(height: 12),
-
+                  const SizedBox(height: 12),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
@@ -216,19 +231,18 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Theme(
                     data: ThemeData(unselectedWidgetColor: Colors.grey),
                     child: CheckboxListTile(
                       title: Text(
-                        "Saya menyetujui Persyaratan",
+                        "Saya menyetujui persyaratan",
                         style: TextStyle(fontSize: 13, color: secondaryText),
                       ),
                       value: isCheck,
-                      activeColor: Color(0xFF0F4C43),
+                      activeColor: const Color(0xFF0F4C43),
                       contentPadding: EdgeInsets.zero,
                       controlAffinity: ListTileControlAffinity.leading,
-
                       onChanged: (bool? value) {
                         setState(() {
                           isCheck = value ?? false;
@@ -236,12 +250,17 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                       },
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
-                      color: isCheck ? Color(0xFFE8F5E9) : Color(0xFFFFEBEE),
+                      color: isCheck
+                          ? const Color(0xFFE8F5E9)
+                          : const Color(0xFFFFEBEE),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -253,7 +272,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                           size: 16,
                           color: isCheck ? Colors.green[700] : Colors.red[700],
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
                           isCheck
                               ? "Pendaftaran diperbolehkan"
@@ -272,9 +291,11 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                 ],
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-            // Membuat Tampilan Mode Terang dan Gelap
+            // -----------------------------------------------------------------------
+            // SEKSI 2: MODE TAMPILAN (Tugas 2)
+            // -----------------------------------------------------------------------
             _buatKartuContainer(
               cardColor: cardColor,
               child: SwitchListTile(
@@ -295,9 +316,8 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                   style: TextStyle(fontSize: 12, color: secondaryText),
                 ),
                 value: isSwitch,
-                activeColor: Color(0xFF0F4C43),
+                activeColor: const Color(0xFF0F4C43),
                 contentPadding: EdgeInsets.zero,
-
                 onChanged: (bool value) {
                   setState(() {
                     isSwitch = value;
@@ -305,16 +325,22 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                 },
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-            // Membuat Dropdown Kategori
+            // -----------------------------------------------------------------------
+            // SEKSI 3: KATEGORI PRODUK/WILAYAH (Dropdown)
+            // -----------------------------------------------------------------------
             _buatKartuContainer(
               cardColor: cardColor,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buatJudul(Icons.category_outlined, "Kategori", isSwitch),
-
-                  SizedBox(height: 12),
+                  _buatJudulSeksi(
+                    Icons.category_outlined,
+                    "Kategori Produk",
+                    isSwitch,
+                  ),
+                  const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
@@ -357,12 +383,12 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(width: 3, height: 32, color: Colors.green[300]),
-                      SizedBox(width: 8),
+                      Container(width: 3, height: 32, color: Colors.grey[300]),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           selectedDropdown == null
@@ -380,21 +406,22 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                 ],
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-            // Membuat Jadwal (Date dan Time picker)
+            // -----------------------------------------------------------------------
+            // SEKSI 4 & 5: PENJADWALAN (Date & Time Picker)
+            // -----------------------------------------------------------------------
             _buatKartuContainer(
               cardColor: cardColor,
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buatJudul(
+                  _buatJudulSeksi(
                     Icons.calendar_today_outlined,
-                    "PenJadwalan",
+                    "Penjadwalan",
                     isSwitch,
                   ),
-                  SizedBox(height: 14),
+                  const SizedBox(height: 14),
                   _buatTombolPicker(
                     isDark: isSwitch,
                     label: "Pilih Tanggal",
@@ -450,28 +477,34 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
             ),
             const SizedBox(height: 20),
 
-            //Membuat Hasil Konfigurasi
+            // ===========================================================================
+            //  SUMMARY / HASIL KONFIGURASI
+            // ===========================================================================
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(18),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: isSwitch ? Color(0xFF1E2F2C) : Color(0xFFE3F2F0),
+                color: isSwitch
+                    ? const Color(0xFF1E2F2C)
+                    : const Color(0xFFE3F2F0),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Color(0xFFB2DFDB).withOpacity(0.5)),
+                border: Border.all(
+                  color: const Color(0xFFB2DFDB).withOpacity(0.5),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.assignment_turned_in,
                         color: Color(0xFF00594C),
                         size: 20,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(
-                        "Summary/Hasil Konfigurasi",
+                        "Summary / Hasil Konfigurasi",
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -482,12 +515,11 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                       ),
                     ],
                   ),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Divider(color: Color(0xFFB2DFDB), height: 1),
                   ),
-
-                  //Membuat Baris Rangkuman
+                  // Baris data rangkuman dinamis
                   _buatBarisSummary(
                     "Izin Laporan",
                     isCheck ? "Diperbolehkan" : "Belum Tersedia",
@@ -520,9 +552,11 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                 ],
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-            // Simpan Konfigurasi
+            // ===========================================================================
+            // 4. TOMBOL SIMPAN KONFIGURASI
+            // ===========================================================================
             Container(
               width: double.infinity,
               height: 50,
@@ -565,7 +599,10 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
           ],
         ),
       ),
-      // Membuat Bottom Navigation Bar
+
+      // ===========================================================================
+      // 5. BOTTOM NAVIGATION BAR
+      // ===========================================================================
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           border: Border(
@@ -606,6 +643,9 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
     );
   }
 
+  // ===========================================================================
+  // WIDGET HELPER METHODS
+  // ===========================================================================
   Widget _buatKartuContainer({
     required Widget child,
     required Color cardColor,
@@ -628,7 +668,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
     );
   }
 
-  Widget _buatJudul(IconData icon, String title, bool isDark) {
+  Widget _buatJudulSeksi(IconData icon, String title, bool isDark) {
     return Row(
       children: [
         Icon(
@@ -659,7 +699,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
       width: double.infinity,
       height: 44,
       decoration: BoxDecoration(
-        color: isDark ? Color(0xFF2B343A) : const Color(0xFFF0F7F6),
+        color: isDark ? const Color(0xFF2B343A) : const Color(0xFFF0F7F6),
         border: Border.all(
           color: isDark
               ? Colors.teal.withOpacity(0.3)
@@ -667,7 +707,6 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
         ),
         borderRadius: BorderRadius.circular(8),
       ),
-
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(8),
@@ -692,6 +731,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
     );
   }
 
+  // Helper Khusus untuk menyusun baris teks Summary kiri-kanan secara rapi
   Widget _buatBarisSummary(String label, String value, bool isDark) {
     // Memberikan warna gelap/hijau tebal pada value jika data sudah diisi/valid
     bool isDefault =
