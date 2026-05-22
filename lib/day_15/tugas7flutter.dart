@@ -15,7 +15,6 @@ class AppImage {
 
 class _Tugas7flutter1State extends State<Tugas7flutter1> {
   bool isCheck = false;
-
   bool isSwitch = false;
   String? selectedDropdown;
   DateTime? selectedDate;
@@ -295,7 +294,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                   style: TextStyle(fontSize: 12, color: secondaryText),
                 ),
                 value: isSwitch,
-                activeColor: Color(0xFF0F4C43),
+                activeThumbColor: Color(0xFF0F4C43),
                 contentPadding: EdgeInsets.zero,
 
                 onChanged: (bool value) {
@@ -576,7 +575,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
           ),
         ),
         child: BottomNavigationBar(
-          currentIndex: 3,
+          currentIndex: 0,
           selectedItemColor: const Color(0xFF00594C),
           unselectedItemColor: Colors.grey[500],
           selectedFontSize: 11,
@@ -587,6 +586,10 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined, size: 22),
               label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.info_outline, size: 22),
+              label: "Info Aplikasi",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.map_outlined, size: 22),

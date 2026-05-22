@@ -23,15 +23,44 @@ class TentangTab extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.blur_on_rounded, size: 64, color: primaryText),
+              Image.asset(
+                'assets/images/logo_ruas.png',
+                height: 120,
+                width: 120,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.blur_on_rounded,
+                    color: isSwitch
+                        ? Colors.teal[300]
+                        : const Color(0xFF0F4C43),
+                    size: 26,
+                  );
+                },
+              ),
+              // Icon(Icons.blur_on_rounded, size: 64, color: primaryText),
               const SizedBox(height: 12),
-              Text(
-                "RUAS (Ruang Napas)",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: primaryText,
-                ),
+              Column(
+                children: [
+                  Text(
+                    "RUAS",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: primaryText,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    "Ruang Napas",
+                    style: TextStyle(
+                      fontSize: 20,
+                      // fontWeight: FontWeight.bold,
+                      color: primaryText,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
               Text(
@@ -49,7 +78,7 @@ class TentangTab extends StatelessWidget {
                 children: [
                   const Text("Nama Pembuat"),
                   Text(
-                    "Siswa PPKD B6",
+                    "Alyssa Wulan Sari",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: primaryText,
@@ -63,7 +92,7 @@ class TentangTab extends StatelessWidget {
                 children: [
                   const Text("Versi"),
                   Text(
-                    "v1.0.0 (Tugas 8)",
+                    "v1.0.0",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: primaryText,

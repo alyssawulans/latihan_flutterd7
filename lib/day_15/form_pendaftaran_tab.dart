@@ -18,6 +18,7 @@ class FormPendaftaranTab extends StatefulWidget {
 class _FormPendaftaranTabState extends State<FormPendaftaranTab> {
   // STATE VARIABLES INTERNAL FORM
   bool isCheck = false;
+  bool isSwitch = false;
   String? selectedDropdown;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
@@ -38,8 +39,8 @@ class _FormPendaftaranTabState extends State<FormPendaftaranTab> {
     Color secondaryText = widget.isSwitch ? Colors.white70 : Colors.black87;
 
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      physics: BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(24, 16, 24, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -51,39 +52,87 @@ class _FormPendaftaranTabState extends State<FormPendaftaranTab> {
               color: primaryText,
             ),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
+
           Text(
             "Lengkapi data di bawah untuk memantau kualitas udara di sekitar Anda.",
             style: TextStyle(
               fontSize: 14,
-              color: widget.isSwitch ? Colors.white60 : Colors.black54,
+              color: isSwitch ? Colors.white60 : Colors.black54,
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 24),
 
-          // SEKSI 1: SYARAT & KETENTUAN
+          SizedBox(height: 24),
+
+          //SYARAT KETENTUAN
           _buatKartuContainer(
             cardColor: cardColor,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buatJudulSeksi(
+                _buatJudul(
                   Icons.description_outlined,
-                  "Syarat & Ketentuan",
-                  widget.isSwitch,
+                  "Syarat dan Ketentuan",
+                  isSwitch,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
+
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: isSwitch
+                        ? const Color(0xFF2B343A)
+                        : const Color(0xFFF2F6F5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Detail Syarat & Ketentuan:",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: isSwitch
+                              ? Colors.teal[300]
+                              : const Color(0xFF0F4C43),
+                          fontSize: 13,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        "Penggunaan Data: Data kualitas udara yang dikumpulkan akan digunakan untuk analisis lingkungan global dan lokal secara anonim.",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: secondaryText,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Privasi Pengguna: Kami berkomitmen melindungi data pribadi Anda dan tidak akan membagikannya kepada pihak ketiga tanpa izin.",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: secondaryText,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 8),
                 Theme(
                   data: ThemeData(unselectedWidgetColor: Colors.grey),
                   child: CheckboxListTile(
                     title: Text(
-                      "Saya menyetujui persyaratan penggunaan data.",
+                      "Saya menyetujui Persyaratan",
                       style: TextStyle(fontSize: 13, color: secondaryText),
                     ),
                     value: isCheck,
-                    activeColor: const Color(0xFF0F4C43),
+                    activeColor: Color(0xFF0F4C43),
                     contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+
                     onChanged: (bool? value) {
                       setState(() {
                         isCheck = value ?? false;
@@ -91,20 +140,49 @@ class _FormPendaftaranTabState extends State<FormPendaftaranTab> {
                     },
                   ),
                 ),
+                SizedBox(height: 4),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isCheck ? Color(0xFFE8F5E9) : Color(0xFFFFEBEE),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isCheck
+                            ? Icons.check_circle_outline
+                            : Icons.error_outline,
+                        size: 16,
+                        color: isCheck ? Colors.green[700] : Colors.red[700],
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        isCheck
+                            ? "Pendaftaran diperbolehkan"
+                            : "Pendaftaran belum tersedia",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: isCheck ? Colors.green[700] : Colors.red[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
-          // SEKSI 2: MODE TAMPILAN
+          // Membuat Tampilan Mode Terang dan Gelap
           _buatKartuContainer(
             cardColor: cardColor,
             child: SwitchListTile(
               secondary: Icon(
                 Icons.dark_mode_outlined,
-                color: widget.isSwitch
-                    ? Colors.teal[300]
-                    : const Color(0xFF0F4C43),
+                color: isSwitch ? Colors.teal[300] : const Color(0xFF0F4C43),
               ),
               title: Text(
                 "Mode Tampilan",
@@ -118,39 +196,36 @@ class _FormPendaftaranTabState extends State<FormPendaftaranTab> {
                 "Aktifkan Mode Gelap",
                 style: TextStyle(fontSize: 12, color: secondaryText),
               ),
-              value: widget.isSwitch,
-              activeColor: const Color(0xFF0F4C43),
+              value: isSwitch,
+              activeThumbColor: Color(0xFF0F4C43),
               contentPadding: EdgeInsets.zero,
-              onChanged: widget.onModeChanged, // Lempar ke parent (main.dart)
+
+              onChanged: (bool value) {
+                setState(() {
+                  isSwitch = value;
+                });
+              },
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
-          // SEKSI 3: KATEGORI WILAYAH (DROPDOWN)
+          // Membuat Dropdown Kategori
           _buatKartuContainer(
             cardColor: cardColor,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buatJudulSeksi(
-                  Icons.category_outlined,
-                  "Kategori Produk",
-                  widget.isSwitch,
-                ),
-                const SizedBox(height: 12),
+                _buatJudul(Icons.category_outlined, "Kategori", isSwitch),
+
+                SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: widget.isSwitch
-                        ? const Color(0xFF2B343A)
-                        : Colors.white,
+                    color: isSwitch ? const Color(0xFF2B343A) : Colors.white,
                     border: Border.all(
-                      color: widget.isSwitch
-                          ? Colors.grey[700]!
-                          : Colors.grey[300]!,
+                      color: isSwitch ? Colors.grey[700]! : Colors.grey[300]!,
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -162,42 +237,67 @@ class _FormPendaftaranTabState extends State<FormPendaftaranTab> {
                         style: TextStyle(color: Colors.grey[500], fontSize: 14),
                       ),
                       isExpanded: true,
-                      dropdownColor: widget.isSwitch
+                      dropdownColor: isSwitch
                           ? const Color(0xFF21282C)
                           : Colors.white,
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: Colors.grey,
+                      ),
                       style: TextStyle(color: secondaryText, fontSize: 14),
-                      items: _daftarKategori
-                          .map(
-                            (String val) =>
-                                DropdownMenuItem(value: val, child: Text(val)),
-                          )
-                          .toList(),
-                      onChanged: (value) =>
-                          setState(() => selectedDropdown = value),
+                      items: _daftarKategori.map((String val) {
+                        return DropdownMenuItem(value: val, child: Text(val));
+                      }).toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedDropdown = value;
+                        });
+                      },
                     ),
                   ),
+                ),
+                SizedBox(height: 12),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(width: 3, height: 32, color: Colors.green[300]),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        selectedDropdown == null
+                            ? "Anda belum memilih kategori"
+                            : "Analisis kualitas udara untuk kategori $selectedDropdown.",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isSwitch ? Colors.white60 : Colors.black54,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
-          // SEKSI 4 & 5: PENJADWALAN
+          // Membuat Jadwal (Date dan Time picker)
           _buatKartuContainer(
             cardColor: cardColor,
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buatJudulSeksi(
+                _buatJudul(
                   Icons.calendar_today_outlined,
-                  "Penjadwalan",
-                  widget.isSwitch,
+                  "PenJadwalan",
+                  isSwitch,
                 ),
-                const SizedBox(height: 14),
+                SizedBox(height: 14),
                 _buatTombolPicker(
+                  isDark: isSwitch,
                   label: "Pilih Tanggal",
                   icon: Icons.calendar_month_outlined,
-                  isDark: widget.isSwitch,
                   onPressed: () async {
                     final DateTime? picked = await showDatePicker(
                       context: context,
@@ -205,70 +305,160 @@ class _FormPendaftaranTabState extends State<FormPendaftaranTab> {
                       firstDate: DateTime(1945),
                       lastDate: DateTime(2100),
                     );
-                    if (picked != null) setState(() => selectedDate = picked);
+                    if (picked != null) {
+                      setState(() {
+                        selectedDate = picked;
+                      });
+                    }
                   },
                 ),
-                Text(
-                  "Tanggal Lahir: ${selectedDate == null ? '--/--/----' : DateFormat('dd-MM-yyyy').format(selectedDate!)}",
-                  style: TextStyle(fontSize: 13, color: secondaryText),
+                const SizedBox(height: 6),
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, bottom: 12),
+                  child: Text(
+                    "Tanggal Lahir: ${selectedDate == null ? '-- / -- / ----' : DateFormat('dd-MM-yyyy').format(selectedDate!)}",
+                    style: TextStyle(fontSize: 13, color: secondaryText),
+                  ),
                 ),
-                const SizedBox(height: 12),
                 _buatTombolPicker(
+                  isDark: isSwitch,
                   label: "Atur Pengingat",
                   icon: Icons.alarm_on_rounded,
-                  isDark: widget.isSwitch,
                   onPressed: () async {
                     final TimeOfDay? picked = await showTimePicker(
                       context: context,
                       initialTime: TimeOfDay.now(),
                     );
-                    if (picked != null) setState(() => selectedTime = picked);
+                    if (picked != null) {
+                      setState(() {
+                        selectedTime = picked;
+                      });
+                    }
                   },
                 ),
-                Text(
-                  "Pengingat: ${selectedTime == null ? '--:--' : '${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}'}",
-                  style: TextStyle(fontSize: 13, color: secondaryText),
+                const SizedBox(height: 6),
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: Text(
+                    "Pengingat diatur pukul: ${selectedTime == null ? '-- : --' : '${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}'}",
+                    style: TextStyle(fontSize: 13, color: secondaryText),
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
 
-          // SEKSI RANGKUMAN (SUMMARY)
+          //Membuat Hasil Konfigurasi
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(18),
+            padding: EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: widget.isSwitch
-                  ? const Color(0xFF1E2F2C)
-                  : const Color(0xFFE3F2F0),
+              color: isSwitch ? Color(0xFF1E2F2C) : Color(0xFFE3F2F0),
               borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Color(0xFFB2DFDB).withOpacity(0.5)),
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.assignment_turned_in,
+                      color: Color(0xFF00594C),
+                      size: 20,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      "Summary/Hasil Konfigurasi",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: isSwitch
+                            ? Colors.teal[200]
+                            : const Color(0xFF00594C),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Divider(color: Color(0xFFB2DFDB), height: 1),
+                ),
+
+                //Membuat Baris Rangkuman
                 _buatBarisSummary(
                   "Izin Laporan",
                   isCheck ? "Diperbolehkan" : "Belum Tersedia",
-                  widget.isSwitch,
+                  isSwitch,
                 ),
                 _buatBarisSummary(
                   "Mode Layar",
-                  widget.isSwitch ? "Dark Mode" : "Light Mode",
-                  widget.isSwitch,
+                  isSwitch ? "Dark Mode" : "Light Mode",
+                  isSwitch,
                 ),
                 _buatBarisSummary(
                   "Kategori Wilayah",
                   selectedDropdown ?? "Belum Dipilih",
-                  widget.isSwitch,
+                  isSwitch,
                 ),
                 _buatBarisSummary(
                   "Tanggal Lahir",
                   selectedDate == null
                       ? "Belum Diatur"
                       : DateFormat('dd-MM-yyyy').format(selectedDate!),
-                  widget.isSwitch,
+                  isSwitch,
+                ),
+                _buatBarisSummary(
+                  "Waktu Pengingat",
+                  selectedTime == null
+                      ? "Belum Diatur"
+                      : '${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}',
+                  isSwitch,
                 ),
               ],
+            ),
+          ),
+          SizedBox(height: 24),
+
+          // Simpan Konfigurasi
+          Container(
+            width: double.infinity,
+            height: 50,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00594C).withOpacity(0.25),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00594C),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+              onPressed: () {},
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Simpan Konfigurasi",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(Icons.arrow_forward, color: Colors.white, size: 18),
+                ],
+              ),
             ),
           ),
         ],
@@ -276,7 +466,6 @@ class _FormPendaftaranTabState extends State<FormPendaftaranTab> {
     );
   }
 
-  // WIDGET HELPERS
   Widget _buatKartuContainer({
     required Widget child,
     required Color cardColor,
@@ -287,12 +476,19 @@ class _FormPendaftaranTabState extends State<FormPendaftaranTab> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.025),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: child,
     );
   }
 
-  Widget _buatJudulSeksi(IconData icon, String title, bool isDark) {
+  Widget _buatJudul(IconData icon, String title, bool isDark) {
     return Row(
       children: [
         Icon(
@@ -320,33 +516,74 @@ class _FormPendaftaranTabState extends State<FormPendaftaranTab> {
     required bool isDark,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
       width: double.infinity,
-      height: 40,
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 16),
-        label: Text(label),
+      height: 44,
+      decoration: BoxDecoration(
+        color: isDark ? Color(0xFF2B343A) : const Color(0xFFF0F7F6),
+        border: Border.all(
+          color: isDark
+              ? Colors.teal.withOpacity(0.3)
+              : const Color(0xFFE2EFEF),
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF1F786B),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Icon(icon, color: const Color(0xFF1F786B), size: 18),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buatBarisSummary(String label, String value, bool isDark) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            color: isDark ? Colors.white70 : Colors.black54,
+    // Memberikan warna gelap/hijau tebal pada value jika data sudah diisi/valid
+    bool isDefault =
+        value == "Belum Tersedia" ||
+        value == "Belum Diatur" ||
+        value == "Belum Dipilih";
+    Color valueColor = isDefault
+        ? (isDark ? Colors.grey[400]! : Colors.grey[600]!)
+        : (isDark ? Colors.teal[200]! : const Color(0xFF0F4C43));
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              color: isDark ? Colors.white70 : Colors.black54,
+            ),
           ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-        ),
-      ],
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: valueColor,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
