@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/day_13/register_screen.dart';
-import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
+import 'package:latihan_flutterd7/day_17/halaman_konfirmasi.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
 class Tugas10flutter extends StatefulWidget {
@@ -14,6 +14,13 @@ class Tugas10flutter extends StatefulWidget {
 class _Tugas10flutterState extends State<Tugas10flutter> {
   final _registerFormKey = GlobalKey<FormState>();
   bool obscureNewPassword = true;
+
+  // controller
+  final TextEditingController namaController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController alamatController = TextEditingController();
 
   void _showSuccessDialog(BuildContext context) {
     showDialog(
@@ -29,10 +36,14 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
           ),
           title: const Row(
             children: [
-              Icon(Icons.check_circle_outline, color: Colors.teal, size: 28),
+              Icon(
+                Icons.assignment_turned_in_outlined,
+                color: Colors.teal,
+                size: 28,
+              ),
               SizedBox(width: 10),
               Text(
-                "Berhasil",
+                "Konfirmasi Data",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF1A2E44), // Deep Navy RUAS
@@ -40,25 +51,63 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
               ),
             ],
           ),
-          content: const Text(
-            "Selamat! Anda berhasil masuk ke aplikasi RUAS. Mari jaga udara bersih bersama.",
-            style: TextStyle(fontSize: 14, color: Colors.black87),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Apakah data verikut sudah benar?",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey,
+                ),
+              ),
+              const Divider(height: 20),
+              Text(
+                "Nama: ${namaController.text}",
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "Email: ${emailController.text}",
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "No. HP: ${phoneController.text.isEmpty ? '-' : phoneController.text}",
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "Alamat: ${alamatController.text}",
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
           ),
+
           actions: [
             TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Batal", style: TextStyle(color: Colors.red)),
+            ),
+            ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.pushAndRemoveAll(
-                  Tugas6flutter1(),
-                ); // Menutup dialog pop-up
-                // Kamu bisa tambahkan navigasi pindah ke halaman utama/dashboard di sini jika ada
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HalamanKonfirmasi(
+                      namaLengkap: namaController.text,
+                      alamat: alamatController.text,
+                    ),
+                  ),
+                );
               },
-              child: const Text(
-                "OK",
+              child: Text(
+                "Lanjut",
                 style: TextStyle(
-                  color: Colors.teal,
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
                 ),
               ),
             ),
@@ -158,6 +207,7 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
+                        controller: namaController,
                         decoration: _buildInputDecoration(
                           "Masukkan Nama Lengkap Anda",
                           Icons.person_outline,
@@ -179,6 +229,7 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
+                        controller: emailController,
                         decoration: _buildInputDecoration(
                           "Masukkan Email Aktif",
                           Icons.email_outlined,
@@ -203,6 +254,7 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
 
                       const SizedBox(height: 8),
                       TextFormField(
+                        controller: phoneController,
                         decoration: _buildInputDecoration(
                           "Masukkan Nomor Telepon",
                           Icons.call,
@@ -219,6 +271,7 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
+                        controller: passwordController,
                         obscureText: obscureNewPassword,
                         obscuringCharacter: "*",
                         decoration:
@@ -258,6 +311,7 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
+                        controller: alamatController,
                         decoration: _buildInputDecoration(
                           "Masukkan Alamat",
                           Icons.location_city_outlined,
@@ -286,11 +340,11 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
                           onPressed: () {
                             // 1. Validasi input form pendaftaran
                             if (_registerFormKey.currentState!.validate()) {
-                              print("Pendaftaran akun berhasil...");
+                              // print("Pendaftaran akun berhasil...");
 
                               // 2. DI SINI TEMPAT MEMANGGIL POP-UP NYA!
                               _showSuccessDialog(context);
-                              context.pushAndRemoveAll(Tugas6flutter1());
+                              // context.pushAndRemoveAll(Tugas6flutter1());
                             }
                           },
 
@@ -348,6 +402,14 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
+      // errorBorder: OutlineInputBorder(
+      //   borderRadius: BorderRadius.circular(12),
+      //   borderSide: const BorderSide(color: Colors.red, width: 1),
+      // ),
+      // focusedErrorBorder: OutlineInputBorder(
+      //   borderRadius: BorderRadius.circular(12),
+      //   borderSide: const BorderSide(color: Colors.red, width: 1.5),
+      // ),
       prefixIcon: Icon(prefixIcon, color: const Color(0xFF1A2E44)),
     );
   }
