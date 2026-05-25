@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
       //   '/': (context) => Tugas4flutter(),
       //   '/login': (context) => Tugas5flutter(),
       // },
+      // home: WelcomeScreen(),
       home: WelcomeScreen(),
     );
   }
