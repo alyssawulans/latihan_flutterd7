@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/day_15/form_pendaftaran_tab.dart';
 import 'package:latihan_flutterd7/day_15/tentang_tab.dart';
 // MENYESUAIKAN IMPORT: Mengarah ke day_16 sesuai struktur direktori VS Code kamu
-import 'package:latihan_flutterd7/day_16/main_screen_drawer.dart';
 
 void main() {
   runApp(const MyApp());

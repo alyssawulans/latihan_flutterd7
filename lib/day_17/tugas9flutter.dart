@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:latihan_flutterd7/day_15/tugas7flutter.dart';
 import 'package:latihan_flutterd7/day_17/ruas_data.dart'; // Import file data kita tadi
 
-class Tugas9flutter1 extends StatelessWidget {
+class Tugas9flutter1 extends StatefulWidget {
   const Tugas9flutter1({super.key});
 
+  @override
+  State<Tugas9flutter1> createState() => _Tugas9flutter1State();
+}
+
+class _Tugas9flutter1State extends State<Tugas9flutter1> {
   @override
   Widget build(BuildContext context) {
     const Color primaryTeal = Color(0xFF0F4C43);
@@ -15,14 +21,29 @@ class Tugas9flutter1 extends StatelessWidget {
         elevation: 0,
         // Tombol burger menu otomatis muncul di sini untuk membuka Drawer internal Katalog
         iconTheme: const IconThemeData(color: primaryTeal),
-        title: const Text(
-          "RUAS",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: primaryTeal,
-            fontSize: 19,
-            letterSpacing: 0.5,
-          ),
+        title: Row(
+          children: [
+            Image.asset(
+              AppImage.logo,
+              height: 26,
+              width: 26,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(Icons.blur_on_rounded, size: 26);
+              },
+            ),
+            SizedBox(width: 8),
+
+            Text(
+              "RUAS",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: primaryTeal,
+                fontSize: 19,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
         ),
         actions: const [
           Padding(
@@ -37,16 +58,18 @@ class Tugas9flutter1 extends StatelessWidget {
           ),
         ],
       ),
+
       body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ==========================================
-            // LEVEL 1: PARAMETER UDARA (Horizontal Chips)
+            // PARAMETER UDARA (Horizontal Chips)
             // ==========================================
             const Text(
-              "Level 1: Parameter Udara",
+              "Parameter Udara",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -65,11 +88,16 @@ class Tugas9flutter1 extends StatelessWidget {
                 itemCount: RuasData.listSederhana.length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Chip(
-                      backgroundColor: Colors.white,
-                      side: const BorderSide(color: Colors.teal, width: 0.8),
-                      label: Text(
+                    padding: const EdgeInsets.all(5),
+
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
                         RuasData.listSederhana[index],
                         style: const TextStyle(
                           color: primaryTeal,
@@ -85,10 +113,10 @@ class Tugas9flutter1 extends StatelessWidget {
             const SizedBox(height: 24),
 
             // ==========================================
-            // LEVEL 2: STASIUN REGIONAL (Grid 2 Kolom)
+            // STASIUN REGIONAL
             // ==========================================
             const Text(
-              "Level 2: Stasiun Regional",
+              "Stasiun Regional",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -96,7 +124,7 @@ class Tugas9flutter1 extends StatelessWidget {
               ),
             ),
             const Text(
-              "Stasiun regional pemantauan wilayah pemukiman.",
+              "Stasiun regional pemantauan wilayah pemukiman. Sistem pemantau mikroklimat regional yang mengintegrasikan berbagai sensor IoT untuk mendeteksi polutan di wilayah domestik.",
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 12),
@@ -144,20 +172,24 @@ class Tugas9flutter1 extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 2),
-                            const Row(
+                            SizedBox(height: 2),
+                            Row(
                               children: [
                                 Icon(
                                   Icons.circle,
-                                  color: Colors.green,
+                                  color: stasiun['status'] == "Inactive"
+                                      ? Colors.amber[900]
+                                      : Colors.green[600],
                                   size: 8,
                                 ),
                                 SizedBox(width: 4),
                                 Text(
-                                  "Active",
+                                  stasiun['status'],
                                   style: TextStyle(
                                     fontSize: 10,
-                                    color: Colors.green,
+                                    color: stasiun['status'] == "Inactive"
+                                        ? Colors.amber[900]
+                                        : Colors.green[600],
                                   ),
                                 ),
                               ],
@@ -174,10 +206,10 @@ class Tugas9flutter1 extends StatelessWidget {
             const SizedBox(height: 24),
 
             // ==========================================
-            // LEVEL 3: ALAT IoT RUAS (Vertical List Card)
+            // ALAT IoT RUAS
             // ==========================================
             const Text(
-              "Level 3: Alat IoT RUAS",
+              "RUAS Smart Devices",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -185,7 +217,7 @@ class Tugas9flutter1 extends StatelessWidget {
               ),
             ),
             const Text(
-              "Alat IoT RUAS - Katalog perangkat bisnis profesional.",
+              "Katalog solusi IoT modular yang dirancang untuk kebutuhan bisnis modern RUAS menghadirkan infrastruktur pemantauan udara cerdas yang membantu perusahaan Anda memenuhi standar kesehatan lingkungan (ESG) secara presisi.",
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 12),
@@ -195,6 +227,7 @@ class Tugas9flutter1 extends StatelessWidget {
               itemCount: RuasData.listModel.length,
               itemBuilder: (context, index) {
                 final alat = RuasData.listModel[index];
+
                 return Card(
                   color: Colors.white,
                   elevation: 0,
@@ -208,7 +241,6 @@ class Tugas9flutter1 extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Placeholder Gambar / Gambar Asli jika disiapkan
                         Container(
                           width: 70,
                           height: 70,
@@ -216,19 +248,12 @@ class Tugas9flutter1 extends StatelessWidget {
                             color: Colors.grey.shade100,
                             borderRadius: BorderRadius.circular(8),
                           ),
+
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadiusGeometry.circular(8),
                             child: Image.asset(
                               alat.pathGambar,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                // Fallback jika aset gambar belum ditaruh di pubspec.yaml
-                                return const Icon(
-                                  Icons.developer_board,
-                                  color: Colors.grey,
-                                  size: 30,
-                                );
-                              },
                             ),
                           ),
                         ),
@@ -264,9 +289,6 @@ class Tugas9flutter1 extends StatelessWidget {
               },
             ),
 
-            const SizedBox(height: 16),
-
-            // Banner Info MVC bawah sesuai contoh gambar kamu
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -281,7 +303,7 @@ class Tugas9flutter1 extends StatelessWidget {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      "Model-View Separation (MVC)\nLayar ini mengimplementasikan pemisahan logic AlatPantau sebagai model data dan visualisasi katalog sebagai View.",
+                      "Ekosistem RUAS\nSetiap perangkat di atas dirancang khusus untuk mendeteksi berbagai parameter polusi. Ketuk salah satu alat untuk melihat detail sensor dan mulai menjaga kesegaran udara di sekitarmu.",
                       style: TextStyle(
                         fontSize: 10,
                         color: primaryTeal,

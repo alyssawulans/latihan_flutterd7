@@ -1,17 +1,17 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:latihan_flutterd7/day_12/tugas5flutter.dart';
+import 'package:latihan_flutterd7/button_navi.dart';
 import 'package:latihan_flutterd7/day_13/register_screen.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
-class Tugas6flutter extends StatefulWidget {
-  const Tugas6flutter({super.key});
+class Tugas6flutter1 extends StatefulWidget {
+  const Tugas6flutter1({super.key});
 
   @override
-  State<Tugas6flutter> createState() => _Tugas6flutterState();
+  State<Tugas6flutter1> createState() => _Tugas6flutter1State();
 }
 
-class _Tugas6flutterState extends State<Tugas6flutter> {
+class _Tugas6flutter1State extends State<Tugas6flutter1> {
   // Deklarasi FormKey agar fungsi validator pada TextFormField bisa bekerja
   final _formKey = GlobalKey<FormState>();
 
@@ -52,7 +52,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
               onPressed: () {
                 Navigator.of(context).pop();
 
-                context.pushReplacement(const Tugas5flutter());
+                context.pushReplacement(const Bottomnavi());
               },
               child: Container(
                 padding: const EdgeInsets.all(12),

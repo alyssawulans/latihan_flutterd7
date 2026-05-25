@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
+
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -46,7 +48,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Menutup dialog pop-up
+                Navigator.of(context).pop();
+                context.pushAndRemoveAll(
+                  Tugas6flutter1(),
+                ); // Menutup dialog pop-up
                 // Kamu bisa tambahkan navigasi pindah ke halaman utama/dashboard di sini jika ada
               },
               child: const Text(
@@ -246,9 +251,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                               // 2. DI SINI TEMPAT MEMANGGIL POP-UP NYA!
                               _showSuccessDialog(context);
+                              context.pushAndRemoveAll(const Tugas6flutter1());
                             }
                           },
-                          child: const Text(
+
+                          child: Text(
                             "Daftar Sekarang",
                             style: TextStyle(
                               fontSize: 16,

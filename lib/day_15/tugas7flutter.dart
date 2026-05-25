@@ -565,47 +565,47 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
         ),
       ),
       // Membuat Bottom Navigation Bar
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: isSwitch ? Colors.transparent : Colors.grey[200]!,
-              width: 1,
-            ),
-          ),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: 0,
-          selectedItemColor: const Color(0xFF00594C),
-          unselectedItemColor: Colors.grey[500],
-          selectedFontSize: 11,
-          unselectedFontSize: 11,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: isSwitch ? const Color(0xFF1D2428) : Colors.white,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined, size: 22),
-              label: "Home",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.info_outline, size: 22),
-              label: "Info Aplikasi",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map_outlined, size: 22),
-              label: "Map",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.history_toggle_off, size: 22),
-              label: "History",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person, size: 22),
-              label: "Profile",
-            ),
-          ],
-        ),
-      ),
+      // bottomNavigationBar: Container(
+      //   decoration: BoxDecoration(
+      //     border: Border(
+      //       top: BorderSide(
+      //         color: isSwitch ? Colors.transparent : Colors.grey[200]!,
+      //         width: 1,
+      //       ),
+      //     ),
+      //   ),
+      //   child: BottomNavigationBar(
+      //     currentIndex: 0,
+      //     selectedItemColor: const Color(0xFF00594C),
+      //     unselectedItemColor: Colors.grey[500],
+      //     selectedFontSize: 11,
+      //     unselectedFontSize: 11,
+      //     type: BottomNavigationBarType.fixed,
+      //     backgroundColor: isSwitch ? const Color(0xFF1D2428) : Colors.white,
+      //     items: const [
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.home_outlined, size: 22),
+      //         label: "Home",
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.info_outline, size: 22),
+      //         label: "Info Aplikasi",
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.map_outlined, size: 22),
+      //         label: "Map",
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.history_toggle_off, size: 22),
+      //         label: "History",
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.person, size: 22),
+      //         label: "Profile",
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:latihan_flutterd7/day_13/register_screen.dart';
+import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
-import 'login_screen.dart';
-import 'register_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -65,7 +65,8 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                     elevation: 0,
                   ),
-                  onPressed: () => context.push(const Tugas6flutter()),
+                  onPressed: () =>
+                      context.pushAndRemoveAll(const Tugas6flutter1()),
                   child: const Text(
                     "Masuk",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

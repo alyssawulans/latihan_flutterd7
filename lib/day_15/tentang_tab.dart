@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
 
-class TentangTab extends StatelessWidget {
-  final bool isSwitch;
+class TentangTab extends StatefulWidget {
+  final isSwitch;
 
   const TentangTab({super.key, required this.isSwitch});
 
   @override
+  State<TentangTab> createState() => _TentangTabState();
+}
+
+class _TentangTabState extends State<TentangTab> {
+  @override
   Widget build(BuildContext context) {
-    Color cardColor = isSwitch ? const Color(0xFF21282C) : Colors.white;
-    Color primaryText = isSwitch ? Colors.teal[200]! : const Color(0xFF0F4C43);
-    Color secondaryText = isSwitch ? Colors.white70 : Colors.black87;
+    // Color backgroundColor = isSwitch ? Color(0xFF15191C) : Color(0xFFF5F8F7);
+    Color cardColor = widget.isSwitch ? const Color(0xFF21282C) : Colors.white;
+    Color primaryText = widget.isSwitch
+        ? Colors.teal[200]!
+        : const Color(0xFF0F4C43);
+    Color secondaryText = widget.isSwitch ? Colors.white70 : Colors.black87;
 
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
+
         child: Container(
           padding: const EdgeInsets.all(24),
+
           decoration: BoxDecoration(
             color: cardColor,
             borderRadius: BorderRadius.circular(16),
@@ -31,7 +41,7 @@ class TentangTab extends StatelessWidget {
                 errorBuilder: (context, error, stackTrace) {
                   return Icon(
                     Icons.blur_on_rounded,
-                    color: isSwitch
+                    color: widget.isSwitch
                         ? Colors.teal[300]
                         : const Color(0xFF0F4C43),
                     size: 26,

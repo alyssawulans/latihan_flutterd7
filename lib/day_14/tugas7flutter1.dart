@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Nama kelas sudah diubah menjadi Tugas7flutter sesuai permintaanmu
 class Tugas7flutter extends StatefulWidget {
   const Tugas7flutter({super.key});
 
