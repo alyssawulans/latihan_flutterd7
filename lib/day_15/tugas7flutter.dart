@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:latihan_flutterd7/day_13/welcome_screen.dart';
+import 'package:latihan_flutterd7/extension/navigator.dart';
 
 class Tugas7flutter1 extends StatefulWidget {
   const Tugas7flutter1({super.key});
@@ -85,54 +87,95 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
 
       // ---- Membuat Drawer --
       drawer: Drawer(
-        child: Container(
-          color: backgroundColor,
-          child: Column(
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF0F4C43), Color(0xFF1F786B)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+        // child: Container(
+        //   color: backgroundColor,
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF0F4C43), Color(0xFF1F786B)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          AppImage.logo,
+                          height: 80,
+                          width: 80,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              Icons.blur_on_rounded,
+                              color: isSwitch
+                                  ? Colors.teal[300]
+                                  : const Color(0xFF0F4C43),
+                              size: 80,
+                            );
+                          },
+                        ),
+
+                        SizedBox(width: 12),
+                        Text(
+                          "Ruang\nNapas",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.blur_on_rounded, color: Colors.white, size: 36),
-                    SizedBox(width: 12),
-                    Text(
-                      "Ruang Napas",
+                  ListTile(
+                    leading: const Icon(
+                      Icons.assignment_ind_outlined,
+                      color: Color(0xFF0F4C43),
+                    ),
+                    title: Text(
+                      "Pendaftaran Akun",
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
+                        color: primaryText,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.assignment_ind_outlined,
-                  color: Color(0xFF0F4C43),
-                ),
-                title: Text(
-                  "Pendaftaran Akun",
-                  style: TextStyle(
-                    color: primaryText,
-                    fontWeight: FontWeight.bold,
+                    tileColor: isSwitch
+                        ? Colors.teal.withOpacity(0.1)
+                        : const Color(0xFFE0F2F1),
+                    onTap: () => Navigator.pop(context),
                   ),
-                ),
-                tileColor: isSwitch
-                    ? Colors.teal.withOpacity(0.1)
-                    : const Color(0xFFE0F2F1),
-                onTap: () => Navigator.pop(context),
+                ],
               ),
-            ],
-          ),
+            ),
+
+            ListTile(
+              leading: const Icon(
+                Icons.assignment_ind_outlined,
+                color: Color(0xFF0F4C43),
+              ),
+              title: Text(
+                "Log Out",
+                style: TextStyle(
+                  color: primaryText,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              tileColor: isSwitch
+                  ? Colors.teal.withOpacity(0.1)
+                  : const Color(0xFFE0F2F1),
+              onTap: () => context.pushReplacement(const WelcomeScreen()),
+            ),
+          ],
         ),
       ),
+
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         padding: EdgeInsets.fromLTRB(24, 16, 24, 24),
