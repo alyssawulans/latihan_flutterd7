@@ -106,7 +106,7 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
               child: Text(
                 "Lanjut",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color(0xFF1A2E44),
                   fontWeight: FontWeight.bold,
                 ),
               ),

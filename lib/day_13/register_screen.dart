@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:latihan_flutterd7/button_navi.dart';
 import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
@@ -49,9 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.pushAndRemoveAll(
-                  Tugas6flutter1(),
-                ); // Menutup dialog pop-up
+                context.pushAndRemoveAll(Bottomnavi()); // Menutup dialog pop-up
                 // Kamu bisa tambahkan navigasi pindah ke halaman utama/dashboard di sini jika ada
               },
               child: const Text(
