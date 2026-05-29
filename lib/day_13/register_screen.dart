@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/button_navi.dart';
-import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
+import 'package:latihan_flutterd7/day_17/tugas10flutter.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
 import 'login_screen.dart';
@@ -20,8 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible:
-          false, // Pengguna wajib klik tombol di pop-up untuk menutupnya
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -50,8 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.pushAndRemoveAll(Bottomnavi()); // Menutup dialog pop-up
-                // Kamu bisa tambahkan navigasi pindah ke halaman utama/dashboard di sini jika ada
+                context.pushAndRemoveAll(Bottomnavi());
               },
               child: const Text(
                 "OK",
@@ -73,6 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F8FB),
       appBar: AppBar(
+        backgroundColor: Color(0xFFF4F8FB),
         centerTitle: true,
         title: const Text(
           "Daftar Akun",
@@ -250,7 +249,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                               // 2. DI SINI TEMPAT MEMANGGIL POP-UP NYA!
                               _showSuccessDialog(context);
-                              context.pushAndRemoveAll(const Tugas6flutter1());
+                              context.pushAndRemoveAll(const Tugas10flutter());
                             }
                           },
 

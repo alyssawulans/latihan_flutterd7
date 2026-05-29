@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:latihan_flutterd7/day_13/welcome_screen.dart';
+import 'package:latihan_flutterd7/day_19/database/preference_handler.dart';
+import 'package:latihan_flutterd7/day_19/views/splash_screen.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
 class Tugas7flutter1 extends StatefulWidget {
@@ -16,6 +17,7 @@ class AppImage {
 }
 
 class _Tugas7flutter1State extends State<Tugas7flutter1> {
+  final _formKey = GlobalKey<FormState>();
   bool isCheck = false;
   bool isSwitch = false;
   String? selectedDropdown;
@@ -29,11 +31,21 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
     "Lainnya",
   ];
 
+  // void _showAllert(BuildContext context) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: const Text("Berhasil Logout!"),
+  //       backgroundColor: const Color(0xFF1A2E44),
+  //       duration: const Duration(seconds: 3),
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     Color backgroundColor = isSwitch ? Color(0xFF15191C) : Color(0xFFF5F8F7);
     Color cardColor = isSwitch ? const Color(0xFF21282C) : Colors.white;
-    Color primaryText = isSwitch ? Colors.white : const Color(0xFF0F4C43);
+    Color primaryText = isSwitch ? Colors.teal : const Color(0xFF0F4C43);
     Color secondaryText = isSwitch ? Colors.white70 : Colors.black87;
 
     return Scaffold(
@@ -148,7 +160,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                     ),
                     tileColor: isSwitch
                         ? Colors.teal.withOpacity(0.1)
-                        : const Color(0xFFE0F2F1),
+                        : Color(0xFFf6f4e7),
                     onTap: () => Navigator.pop(context),
                   ),
                 ],
@@ -167,10 +179,23 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
               tileColor: isSwitch
                   ? Colors.teal.withOpacity(0.1)
-                  : const Color(0xFFE0F2F1),
-              onTap: () => context.pushReplacement(const WelcomeScreen()),
+                  : Color(0xFFf6f4e7),
+
+              onTap: () {
+                PreferenceHandler.logOut();
+
+                context.pushReplacement(const SplashScreenDay19());
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text("Berhasil Logout!"),
+                    backgroundColor: const Color(0xFF1A2E44),
+                    duration: const Duration(seconds: 3),
+                  ),
+                );
+              },
             ),
           ],
         ),

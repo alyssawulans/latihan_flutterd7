@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:latihan_flutterd7/day_13/register_screen.dart';
+import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
 import 'package:latihan_flutterd7/day_17/halaman_konfirmasi.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
@@ -338,13 +338,8 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
                             elevation: 0,
                           ),
                           onPressed: () {
-                            // 1. Validasi input form pendaftaran
                             if (_registerFormKey.currentState!.validate()) {
-                              // print("Pendaftaran akun berhasil...");
-
-                              // 2. DI SINI TEMPAT MEMANGGIL POP-UP NYA!
                               _showSuccessDialog(context);
-                              // context.pushAndRemoveAll(Tugas6flutter1());
                             }
                           },
 
@@ -368,7 +363,8 @@ class _Tugas10flutterState extends State<Tugas10flutter> {
                     children: [
                       TextSpan(
                         recognizer: TapGestureRecognizer()
-                          ..onTap = () => context.push(const RegisterScreen()),
+                          ..onTap = () =>
+                              context.pushAndRemoveAll(const Tugas6flutter1()),
                         text: " Masuk Sekarang",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,

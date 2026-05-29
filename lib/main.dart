@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:latihan_flutterd7/day_13/welcome_screen.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:latihan_flutterd7/day_19/database/preference_handler.dart';
+import 'package:latihan_flutterd7/day_19/views/splash_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initializeDateFormatting('id_ID', null);
+  await PreferenceHandler.init();
   runApp(const MyApp());
 }
 
@@ -39,7 +45,7 @@ class MyApp extends StatelessWidget {
       //   '/login': (context) => Tugas5flutter(),
       // },
       // home: WelcomeScreen(),
-      home: WelcomeScreen(),
+      home: SplashScreenDay19(),
     );
   }
 }

@@ -38,15 +38,15 @@ class HalamanKonfirmasi extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(24),
           child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Color(0xFFF4F8FB),
-              borderRadius: BorderRadius.circular(8),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check_circle, color: Colors.teal, size: 90),
+                Icon(Icons.check_box, color: Colors.teal, size: 90),
                 SizedBox(height: 24),
 
                 Text(

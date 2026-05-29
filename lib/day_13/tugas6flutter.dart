@@ -1,7 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/button_navi.dart';
-import 'package:latihan_flutterd7/day_13/register_screen.dart';
+import 'package:latihan_flutterd7/day_17/tugas10flutter.dart';
+import 'package:latihan_flutterd7/day_19/database/preference_handler.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
 class Tugas6flutter1 extends StatefulWidget {
@@ -49,7 +50,8 @@ class _Tugas6flutter1State extends State<Tugas6flutter1> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () {
+              onPressed: () async {
+                await PreferenceHandler.setLogin(true);
                 Navigator.of(context).pop();
 
                 context.pushReplacement(const Bottomnavi());
@@ -57,14 +59,13 @@ class _Tugas6flutter1State extends State<Tugas6flutter1> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.teal,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
                   "OK",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.teal,
                   ),
                 ),
               ),
@@ -308,7 +309,8 @@ class _Tugas6flutter1State extends State<Tugas6flutter1> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
+                            await PreferenceHandler.setLogin(true);
                             if (_formKey.currentState!.validate()) {
                               print("Syarat terpenuhi, memproses login...");
                               _showBerhasil(context);
@@ -382,7 +384,7 @@ class _Tugas6flutter1State extends State<Tugas6flutter1> {
                     children: [
                       TextSpan(
                         recognizer: TapGestureRecognizer()
-                          ..onTap = () => context.push(const RegisterScreen()),
+                          ..onTap = () => context.push(const Tugas10flutter()),
                         text: " Daftar Sekarang",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
