@@ -309,8 +309,7 @@ class _Tugas6flutter1State extends State<Tugas6flutter1> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () async {
-                            await PreferenceHandler.setLogin(true);
+                          onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               print("Syarat terpenuhi, memproses login...");
                               _showBerhasil(context);

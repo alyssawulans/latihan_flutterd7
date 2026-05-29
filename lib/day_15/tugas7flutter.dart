@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
 import 'package:latihan_flutterd7/day_19/database/preference_handler.dart';
-import 'package:latihan_flutterd7/day_19/views/splash_screen.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
 class Tugas7flutter1 extends StatefulWidget {
@@ -30,16 +30,6 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
     "Hutan & Taman",
     "Lainnya",
   ];
-
-  // void _showAllert(BuildContext context) {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: const Text("Berhasil Logout!"),
-  //       backgroundColor: const Color(0xFF1A2E44),
-  //       duration: const Duration(seconds: 3),
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +177,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
               onTap: () {
                 PreferenceHandler.logOut();
 
-                context.pushReplacement(const SplashScreenDay19());
+                context.pushReplacement(const Tugas6flutter1());
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text("Berhasil Logout!"),
