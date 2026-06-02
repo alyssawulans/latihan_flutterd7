@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:latihan_flutterd7/day_19/database/preference_handler.dart';
-import 'package:latihan_flutterd7/day_19/views/splash.dart';
+import 'package:latihan_flutterd7/day_20/views/register_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
       //   '/login': (context) => Tugas5flutter(),
       // },
       // home: WelcomeScreen(),
-      home: SplashScreen1(),
+      home: RegisterScreen20(),
     );
   }
 }

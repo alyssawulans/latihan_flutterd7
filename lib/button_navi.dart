@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/day_15/tentang_tab.dart';
 import 'package:latihan_flutterd7/day_15/tugas7flutter.dart';
 import 'package:latihan_flutterd7/day_17/tugas9flutter.dart';
+import 'package:latihan_flutterd7/day_20/views/home_screen.dart';
 
 // 1. Pastikan nama class State-nya terhubung dengan StatefulWidget-nya
 class Bottomnavi extends StatefulWidget {
@@ -26,7 +27,9 @@ class _BottomnaviState extends State<Bottomnavi> {
     final List<Widget> button = <Widget>[
       const Tugas7flutter1(), // Index 0
       const Tugas9flutter1(), // Index 1
-      TentangTab(isSwitch: isSwitch), // Index 2
+      TentangTab(isSwitch: isSwitch),
+      HomeScreenDay20(),
+      // Index 2
     ];
     return Scaffold(
       // 2. Tampilkan halaman yang aktif saat ini di dalam body
@@ -48,6 +51,10 @@ class _BottomnaviState extends State<Bottomnavi> {
           BottomNavigationBarItem(
             icon: Icon(Icons.info_outline, size: 22),
             label: "Info Aplikasi",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.data_object_outlined, size: 22),
+            label: "Database",
           ),
           // BottomNavigationBarItem(
           //   icon: Icon(Icons.history_toggle_off, size: 22),
