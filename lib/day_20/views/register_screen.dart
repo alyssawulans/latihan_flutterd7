@@ -17,7 +17,7 @@ class _RegisterScreen20State extends State<RegisterScreen20> {
   bool obscureNewPassword = true;
 
   // Controller
-  final TextEditingController namaidController = TextEditingController();
+  final TextEditingController namaController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -26,7 +26,7 @@ class _RegisterScreen20State extends State<RegisterScreen20> {
   // Bersihkan controller saat screen ditutup untuk menghemat RAM
   @override
   void dispose() {
-    namaidController.dispose();
+    namaController.dispose();
     emailController.dispose();
     phoneController.dispose();
     passwordController.dispose();
@@ -35,18 +35,18 @@ class _RegisterScreen20State extends State<RegisterScreen20> {
   }
 
   void register() async {
-    
     if (_registerFormKey.currentState == null ||
         !_registerFormKey.currentState!.validate()) {
-      return; 
+      return;
     }
-
+    final nama = namaController.text.trim();
     final email = emailController.text.trim();
     final phone = phoneController.text.trim();
     final pass = passwordController.text;
     final alamat = alamatController.text.trim();
 
     final user = UserModelSql(
+      nama: nama,
       email: email,
       phone: phone,
       password: pass,
@@ -66,7 +66,7 @@ class _RegisterScreen20State extends State<RegisterScreen20> {
       // Tampilkan SnackBar baru
       scaffoldMessenger.showSnackBar(
         const SnackBar(
-          content: Text("Akun Berhasil Dibuat!"),
+          content: Text("Pendaftaran Berhasil! Silakan Login."),
           duration: Duration(seconds: 2),
         ),
       );
@@ -75,9 +75,11 @@ class _RegisterScreen20State extends State<RegisterScreen20> {
       context.pushAndRemoveAll(const LoginScreen20());
     } else {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Email sudah Terdaftar")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Email sudah terdaftar! Gunakan email lain."),
+        ),
+      );
     }
   }
 
@@ -171,7 +173,7 @@ class _RegisterScreen20State extends State<RegisterScreen20> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
-                        controller: namaidController,
+                        controller: namaController,
                         decoration: _buildInputDecoration(
                           "Masukkan Nama Lengkap Anda",
                           Icons.person_outline,

@@ -19,8 +19,7 @@ class DBHelper {
 
   Future<Database> _initDB() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'ppkd.db');
-
+    final path = join(dbPath, 'ppkd_v2.db');
     return await openDatabase(
       path,
       version: 1,
@@ -28,6 +27,7 @@ class DBHelper {
         await db.execute('''
           CREATE TABLE users(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nama TEXT,
             email TEXT UNIQUE,
             phone TEXT,
             password TEXT,
@@ -45,26 +45,21 @@ class DBHelper {
       await db.insert('users', pengguna.toMap());
       return true;
     } catch (e) {
-      log("Error Register: ${e.toString()}");
+      log(e.toString());
       return false;
     }
   }
 
   // Fungsi Login GET
-  Future<UserModelSql?> loginUser(UserModelSql user) async {
-    final db = await database; // Pastikan getter database aman
-
-    // Menggunakan query untuk mencari email dan password yang cocok
-    final List<Map<String, dynamic>> maps = await db.query(
-      'users', // Pastikan nama tabel sesuai dengan yang kamu buat saat onCreate
+  Future<UserModelSql?> loginUser(UserModelSql pengguna) async {
+    final db = await database;
+    final List<Map<String, dynamic>> results = await db.query(
+      'users',
       where: 'email = ? AND password = ?',
-      whereArgs: [user.email, user.password],
+      whereArgs: [pengguna.email, pengguna.password],
     );
-
-    if (maps.isNotEmpty) {
-      return UserModelSql.fromMap(
-        maps.first,
-      ); // Atau sesuaikan dengan factory modelmu
+    if (results.isNotEmpty) {
+      return UserModelSql.fromMap(results.first);
     }
     return null;
   }
@@ -73,7 +68,6 @@ class DBHelper {
   Future<List<UserModelSql>> getAllUsers() async {
     final db = await database;
     final List<Map<String, dynamic>> results = await db.query('users');
-
     return results.map((map) => UserModelSql.fromMap(map)).toList();
   }
 
@@ -86,13 +80,6 @@ class DBHelper {
   // Fungsi untuk memperbarui data user
   Future<bool> updateUser(UserModelSql pengguna) async {
     final db = await database;
-
-    // PENTING: Pastikan id pengguna tidak null sebelum melakukan update
-    if (pengguna.id == null) {
-      log("Error Update: ID pengguna null, tidak bisa update data.");
-      return false;
-    }
-
     try {
       int count = await db.update(
         'users',
@@ -102,7 +89,6 @@ class DBHelper {
       );
       return count > 0;
     } catch (e) {
-      log("Error Update: ${e.toString()}");
       return false;
     }
   }

@@ -11,10 +11,15 @@ class HomeScreenDay20 extends StatefulWidget {
   State<HomeScreenDay20> createState() => _HomeScreenDay20State();
 }
 
+class AppImage {
+  static const String logo = 'assets/images/logo_ruas.png';
+  static const String avatar = 'assets/images/profile.webp';
+}
+
 class _HomeScreenDay20State extends State<HomeScreenDay20> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controller Utama
+  final TextEditingController namaController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -32,60 +37,83 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
   }
 
   void register() async {
-    final email = emailController.text.trim();
-    final phone = phoneController.text.trim();
-    final pass = passwordController.text;
-    final alamat = alamatController.text.trim();
+    if (!_formKey.currentState!.validate()) return;
 
     final user = UserModelSql(
-      email: email,
-      phone: phone.isEmpty ? null : phone,
-      password: pass,
-      alamat: alamat.isEmpty ? null : alamat,
+      nama: namaController.text.trim(),
+      email: emailController.text.trim(),
+      phone: phoneController.text.trim(),
+      password: passwordController.text,
+      alamat: alamatController.text.trim(),
     );
 
     bool success = await DBHelper().registerUser(user);
-
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Akun berhasil ditambahkan')),
-      );
-
-      // Reset form utama setelah berhasil input
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Akun berhasil dibuat')));
+      // Bersihkan form setelah input sukses
+      namaController.clear();
       emailController.clear();
       phoneController.clear();
       passwordController.clear();
       alamatController.clear();
       setState(() {});
     } else {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email sudah terdaftar atau terjadi kesalahan!'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Email sudah terdaftar!')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryTeal = Color(0xFF0F4C43);
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F8FB),
+      backgroundColor: const Color(0xFFF5F8F7),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF4F8FB),
+        backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          "Kelola Data RUAS",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1A2E44),
-          ),
+        // Tombol burger menu otomatis muncul di sini untuk membuka Drawer internal Katalog
+        iconTheme: const IconThemeData(color: primaryTeal),
+        title: Row(
+          children: [
+            Image.asset(
+              AppImage.logo,
+              height: 26,
+              width: 26,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(Icons.blur_on_rounded, size: 26);
+              },
+            ),
+            SizedBox(width: 8),
+
+            Text(
+              "RUAS",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: primaryTeal,
+                fontSize: 19,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
         ),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 16.0),
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.transparent,
+              backgroundImage: AssetImage(
+                'assets/images/profile.webp',
+              ), // Menggunakan avatar lokal
+            ),
+          ),
+        ],
       ),
       body: Form(
         key: _formKey,
@@ -115,21 +143,25 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // const SizedBox(height: 6),
-                      // textFormConst(
-                      //   controller: namaController,
-                      //   hintText: "Masukkan Email",
-                      //   prefixIcon: Icons.email_outlined,
-                      //   validator: (value) {
-                      //     if (value == null || value.trim().isEmpty) {
-                      //       return "Email tidak boleh kosong";
-                      //     } else if (!value.contains('@')) {
-                      //       return "Format email tidak valid";
-                      //     }
-                      //     return null;
-                      //   },
-                      // ),
-                      // textTitleForm("Email *"),
+                      const Center(
+                        child: Text(
+                          'Kelola Pengguna',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+                      textFormConst(
+                        controller: namaController,
+                        hintText: "Masukkan Nama",
+                        prefixIcon: Icons.person_outlined,
+                        validator: (v) =>
+                            v!.isEmpty ? "Nama wajib diisi" : null,
+                      ),
+
                       const SizedBox(height: 6),
                       textFormConst(
                         controller: emailController,
@@ -144,17 +176,24 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 12),
-                      // textTitleForm("No. Telepon"),
+
                       const SizedBox(height: 6),
                       textFormConst(
                         controller: phoneController,
-                        hintText: "Masukkan Nomor Telepon (Opsional)",
+                        hintText: "Masukkan Nomor Telepon",
                         prefixIcon: Icons.phone_android_outlined,
-                        validator: (v) => null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "No Telp tidak boleh kosong";
+                          } else if (value.length < 10) {
+                            return "No Telp minimal 10 digit";
+                          } else if (value.length > 14) {
+                            return "No Telp maksimal 14 digit";
+                          }
+                          return null;
+                        },
                       ),
-                      const SizedBox(height: 12),
-                      // textTitleForm("Password *"),
+
                       const SizedBox(height: 6),
                       textFormConst(
                         controller: passwordController,
@@ -181,15 +220,16 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 12),
-                      // textTitleForm("Alamat"),
+
                       const SizedBox(height: 6),
                       textFormConst(
                         controller: alamatController,
-                        hintText: "Masukkan Alamat (Opsional)",
+                        hintText: "Masukkan Alamat",
                         prefixIcon: Icons.location_on_outlined,
-                        validator: (v) => null,
+                        validator: (v) =>
+                            v!.isEmpty ? "Alamat wajib diisi" : null,
                       ),
+
                       const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
@@ -208,10 +248,13 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
               ),
             ),
 
+            const Divider(height: 1, thickness: 2, color: Color(0xFF7A8B9E)),
+            SizedBox(height: 12),
+
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
               child: Align(
-                alignment: Alignment.centerLeft,
+                alignment: Alignment.center,
                 child: Text(
                   "Daftar Pengguna Terdaftar",
                   style: TextStyle(
@@ -279,11 +322,12 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
                             user.email,
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
+                              fontSize: 14,
                               color: Color(0xFF1A2E44),
                             ),
                           ),
                           subtitle: Text(
-                            'Telp: ${user.phone ?? "-"} | Alamat: ${user.alamat ?? "-"}',
+                            'Telp: ${user.phone} | Alamat: ${user.alamat}',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -346,14 +390,12 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
   }
 
   void _showBottomSheet(BuildContext context, UserModelSql user) {
-    // Inisialisasi pengontrol edit dengan data pengguna terpilih
-    final editIdController = TextEditingController(
-      text: user.id != null ? "ID: ${user.id}" : "",
-    );
+    final editIdController = TextEditingController(text: "ID Unik: ${user.id}");
+    final editNamaController = TextEditingController(text: user.nama);
     final editEmailController = TextEditingController(text: user.email);
-    final editPhoneController = TextEditingController(text: user.phone ?? "");
+    final editPhoneController = TextEditingController(text: user.phone);
     final editPasswordController = TextEditingController(text: user.password);
-    final editAlamatController = TextEditingController(text: user.alamat ?? "");
+    final editAlamatController = TextEditingController(text: user.alamat);
 
     showModalBottomSheet(
       context: context,
@@ -395,12 +437,23 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
               ),
               const SizedBox(height: 16),
 
-              textTitleForm("ID Pengguna"),
+              textTitleForm("ID Pengguna (Read only)"),
               const SizedBox(height: 6),
               textFormConst(
                 controller: editIdController,
                 hintText: "ID",
                 prefixIcon: Icons.fingerprint_rounded,
+
+                validator: (v) => null,
+              ),
+              const SizedBox(height: 12),
+
+              textTitleForm("Nama"),
+              const SizedBox(height: 6),
+              textFormConst(
+                controller: editNamaController,
+                hintText: "Nama",
+                prefixIcon: Icons.person_2_outlined,
 
                 validator: (v) => null,
               ),
@@ -466,17 +519,15 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
                       ),
                       onPressed: () async {
                         if (user.id != null) {
-                          // Bersih dari int.parse yang redundan karena user.id sudah int?
                           await DBHelper().deleteUser(user.id!);
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                            setState(() {});
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Data berhasil dihapus'),
-                              ),
-                            );
-                          }
+                          if (!context.mounted) return;
+                          Navigator.pop(context);
+                          setState(() {});
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Data berhasil dihapus'),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -502,20 +553,18 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
                         if (user.id != null) {
                           final updatedUser = UserModelSql(
                             id: user.id,
+                            nama: editNamaController.text.trim(),
                             email: editEmailController.text.trim(),
-                            phone: editPhoneController.text.trim().isEmpty
-                                ? null
-                                : editPhoneController.text.trim(),
+                            phone: editPhoneController.text.trim(),
                             password: editPasswordController.text,
-                            alamat: editAlamatController.text.trim().isEmpty
-                                ? null
-                                : editAlamatController.text.trim(),
+                            alamat: editAlamatController.text.trim(),
                           );
 
                           bool success = await DBHelper().updateUser(
                             updatedUser,
                           );
-                          if (success && context.mounted) {
+                          if (!context.mounted) return;
+                          if (success) {
                             Navigator.pop(context);
                             setState(() {});
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -536,11 +585,12 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
         );
       },
     ).then((_) {
-      // Membersihkan controller lokal setelah bottom sheet ditutup
-      editEmailController.dispose();
-      editPhoneController.dispose();
-      editPasswordController.dispose();
-      editAlamatController.dispose();
+      // editIdController.dispose();
+      // editNamaController.dispose();
+      // editEmailController.dispose();
+      // editPhoneController.dispose();
+      // editPasswordController.dispose();
+      // editAlamatController.dispose();
     });
   }
 
@@ -551,26 +601,38 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
     required IconData prefixIcon,
     Widget? suffixIcon,
     bool obscureText = false,
+    bool enabled = true, // Sudah ada
   }) {
     return TextFormField(
       validator: validator,
       controller: controller,
       obscureText: obscureText,
+      enabled: enabled, // <-- 1. WAJIB TAMBAHKAN BARIS INI!
+      // 2. Buat warna teks sedikit memudar jika field-nya di-disable (seperti field ID)
+      style: TextStyle(
+        color: enabled ? const Color(0xFF1A2E44) : Colors.black45,
+      ),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
         filled: true,
-        fillColor: const Color(0xFFF8FAF9),
+        // 3. Ubah background jadi abu-abu tipis kalau disabled biar estetik
+        fillColor: enabled ? const Color(0xFFF8FAF9) : const Color(0xFFEEEEEE),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 16,
           horizontal: 12,
         ),
-        prefixIcon: Icon(prefixIcon, color: const Color(0xFF1A2E44)),
+        prefixIcon: Icon(
+          prefixIcon,
+          color: enabled ? const Color(0xFF1A2E44) : Colors.grey,
+        ),
         suffixIcon: suffixIcon,
         enabledBorder: borderConst(),
         focusedBorder: borderConst(color: Colors.teal, width: 1.5),
         errorBorder: borderConst(color: Colors.red, width: 1),
         focusedErrorBorder: borderConst(color: Colors.red, width: 1.5),
+        // 4. Tambahkan border khusus saat field dalam posisi terkunci
+        disabledBorder: borderConst(),
         border: borderConst(),
       ),
     );

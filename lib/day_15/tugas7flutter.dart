@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
 import 'package:latihan_flutterd7/day_19/database/preference_handler.dart';
+import 'package:latihan_flutterd7/day_20/views/register_screen.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
 class Tugas7flutter1 extends StatefulWidget {
@@ -89,6 +89,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
 
       // ---- Membuat Drawer --
       drawer: Drawer(
+        backgroundColor: Color(0xFFF5F8F7),
         // child: Container(
         //   color: backgroundColor,
         child: Column(
@@ -150,7 +151,7 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
                     ),
                     tileColor: isSwitch
                         ? Colors.teal.withOpacity(0.1)
-                        : Color(0xFFf6f4e7),
+                        : Color(0xFFF5F8F7),
                     onTap: () => Navigator.pop(context),
                   ),
                 ],
@@ -172,12 +173,12 @@ class _Tugas7flutter1State extends State<Tugas7flutter1> {
 
               tileColor: isSwitch
                   ? Colors.teal.withOpacity(0.1)
-                  : Color(0xFFf6f4e7),
+                  : Color(0xFFF5F8F7),
 
               onTap: () {
                 PreferenceHandler.logOut();
 
-                context.pushReplacement(const Tugas6flutter1());
+                context.pushReplacement(const RegisterScreen20());
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text("Berhasil Logout!"),

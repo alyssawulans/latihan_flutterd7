@@ -1,47 +1,45 @@
+import 'dart:convert';
+
 class UserModelSql {
   final int? id;
+  final String nama;
   final String email;
-  final String? phone;
+  final String phone;
   final String password;
-  final String? alamat;
+  final String alamat;
 
   UserModelSql({
     this.id,
+    required this.nama,
     required this.email,
-    this.phone,
+    required this.phone,
     required this.password,
-    this.alamat,
+    required this.alamat,
   });
 
   Map<String, dynamic> toMap() {
-    final map = <String, dynamic>{
+    return <String, dynamic>{
+      'id': id,
+      'nama': nama,
       'email': email,
       'phone': phone,
       'password': password,
       'alamat': alamat,
     };
-
-    if (id != null) {
-      map['id'] = id;
-    }
-
-    return map;
   }
 
   factory UserModelSql.fromMap(Map<String, dynamic> map) {
     return UserModelSql(
-      // Aman untuk id: jika di SQLite bertipe int, casting ini sudah benar
-      id: map['id'] as int?,
-
-      // Menggunakan .toString() untuk menghindari crash jika tipenya tercampur di DB
-      email: map['email']?.toString() ?? '',
-
-      // Jika data null, biarkan null. Jika ada isinya (int/String), ubah ke String
-      phone: map['phone']?.toString(),
-
-      password: map['password']?.toString() ?? '',
-
-      alamat: map['alamat']?.toString(),
+      id: map['id'] != null ? map['id'] as int : null,
+      nama: map['nama'] as String,
+      email: map['email'] as String,
+      phone: map['phone'] as String,
+      password: map['password'] as String,
+      alamat: map['alamat'] as String,
     );
   }
+
+  String toJson() => json.encode(toMap());
+  factory UserModelSql.fromJson(String source) =>
+      UserModelSql.fromMap(json.decode(source) as Map<String, dynamic>);
 }

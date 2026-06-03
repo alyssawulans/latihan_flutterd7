@@ -14,15 +14,12 @@ class LoginScreen20 extends StatefulWidget {
 }
 
 class _LoginScreen20State extends State<LoginScreen20> {
-  // 1. Mengubah nama key agar sesuai peruntukan halaman login
   final _loginFormKey = GlobalKey<FormState>();
   bool obscurePassword = true;
 
-  // Controller
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  // 2. Tambahkan dispose untuk menghemat RAM perangkat
   @override
   void dispose() {
     emailController.dispose();
@@ -34,41 +31,28 @@ class _LoginScreen20State extends State<LoginScreen20> {
     final email = emailController.text.trim();
     final pass = passwordController.text.trim();
 
-    if (email.isEmpty || pass.isEmpty) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Isi Semua Kategori!")));
-      return;
-    }
+    final loginUserObj = UserModelSql(
+      nama: "",
+      email: email,
+      phone: "",
+      password: pass,
+      alamat: "",
+    );
 
-    // Bungkus dengan try-catch untuk menangkap error specifik dari SQLite
-    try {
-      final pengguna = await DBHelper().loginUser(
-        UserModelSql(email: email, password: pass),
+    final pengguna = await DBHelper().loginUser(loginUserObj);
+    if (!mounted) return;
+
+    if (pengguna != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Selamat datang kembali, ${pengguna.nama}!')),
       );
-
-      if (!mounted) return;
-
-      if (pengguna != null) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        context.pushAndRemoveAll(const Bottomnavi());
-      } else {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Login Gagal! Email atau Password salah"),
-          ),
-        );
-      }
-    } catch (e) {
-      // Ini akan memunculkan pesan error asli jika database-mu bermasalah
-      print("Error SQLite: $e");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Terjadi kesalahan database: $e")),
-        );
-      }
+      context.pushAndRemoveAll(const Bottomnavi());
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login gagal! Email atau Password salah.'),
+        ),
+      );
     }
   }
 
@@ -80,7 +64,7 @@ class _LoginScreen20State extends State<LoginScreen20> {
         backgroundColor: const Color(0xFFF4F8FB),
         centerTitle: true,
         title: const Text(
-          "Masuk Akun", // 3. Diubah dari "Daftar Akun"
+          "Masuk Akun",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -93,7 +77,7 @@ class _LoginScreen20State extends State<LoginScreen20> {
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Form(
-            key: _loginFormKey, // Menggunakan key yang baru
+            key: _loginFormKey,
             child: Column(
               children: [
                 Center(

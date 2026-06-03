@@ -32,11 +32,9 @@ class _BottomnaviState extends State<Bottomnavi> {
       // Index 2
     ];
     return Scaffold(
-      // 2. Tampilkan halaman yang aktif saat ini di dalam body
       body: button[_selectedIndex],
       backgroundColor: const Color(0xFFF5F8F7),
 
-      // 3. Taruh BottomNavigationBar di dalam properti bottomNavigationBar milik Scaffold
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFFF5F8F7),
         items: const <BottomNavigationBarItem>[
