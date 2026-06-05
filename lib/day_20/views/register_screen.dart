@@ -15,6 +15,7 @@ class RegisterScreen20 extends StatefulWidget {
 class _RegisterScreen20State extends State<RegisterScreen20> {
   final _registerFormKey = GlobalKey<FormState>();
   bool obscureNewPassword = true;
+  bool isCheck = true;
 
   // Controller
   final TextEditingController namaController = TextEditingController();
@@ -87,18 +88,18 @@ class _RegisterScreen20State extends State<RegisterScreen20> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F8FB),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF4F8FB),
-        centerTitle: true,
-        title: const Text(
-          "Daftar Akun",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1A2E44),
-          ),
-        ),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: const Color(0xFFF4F8FB),
+      //   centerTitle: true,
+      //   title: const Text(
+      //     "Daftar Akun",
+      //     style: TextStyle(
+      //       fontSize: 18,
+      //       fontWeight: FontWeight.bold,
+      //       color: Color(0xFF1A2E44),
+      //     ),
+      //   ),
+      // ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -107,6 +108,7 @@ class _RegisterScreen20State extends State<RegisterScreen20> {
             key: _registerFormKey,
             child: Column(
               children: [
+                SizedBox(height: 30),
                 Center(
                   child: Column(
                     children: [
@@ -300,8 +302,68 @@ class _RegisterScreen20State extends State<RegisterScreen20> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 30),
-                      // --- PERBAIKAN TOMBOL DAFTAR SEKARANG ---
+                      SizedBox(height: 6),
+
+                      Theme(
+                        data: ThemeData(unselectedWidgetColor: Colors.grey),
+                        child: CheckboxListTile(
+                          title: Text.rich(
+                            TextSpan(
+                              text: "Saya setuju dengan",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              children: [
+                                TextSpan(
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => context.pushAndRemoveAll(
+                                      const RegisterScreen20(),
+                                    ),
+                                  text: " Syarat & Ketentuan",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.teal,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: " dan",
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                TextSpan(
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => context.pushAndRemoveAll(
+                                      const RegisterScreen20(),
+                                    ),
+                                  text: " Kebijakan Privasi",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.teal,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          value: isCheck,
+                          activeColor: Color(0xFF0F4C43),
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+
+                          onChanged: (bool? value) {
+                            setState(() {
+                              isCheck = value ?? false;
+                            });
+                          },
+                        ),
+                      ),
+
+                      const SizedBox(height: 25),
+
                       SizedBox(
                         width: double.infinity,
                         height: 54,
@@ -324,6 +386,7 @@ class _RegisterScreen20State extends State<RegisterScreen20> {
                           ),
                         ),
                       ),
+                      SizedBox(height: 10),
                     ],
                   ),
                 ),

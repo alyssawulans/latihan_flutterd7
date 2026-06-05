@@ -271,7 +271,7 @@ class _Tugas6flutterState extends State<Tugas6flutter> {
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(width: 1.5, color: Colors.teal),
+        borderSide: const BorderSide(width: 1, color: Colors.teal),
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

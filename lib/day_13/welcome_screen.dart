@@ -1,6 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:latihan_flutterd7/day_13/register_screen.dart';
 import 'package:latihan_flutterd7/day_13/tugas6flutter.dart';
 import 'package:latihan_flutterd7/day_17/tugas10flutter.dart';
+import 'package:latihan_flutterd7/day_20/views/register_screen.dart';
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -48,7 +51,7 @@ class WelcomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               const Text(
-                "Pantau kualitas udara real-time dan mari jaga kesehatan pernapasan bersama RUAS.",
+                "Pantau kualitas udara, laporkan masalah lingkungan. Mari jaga kesehatan pernapasan bersama RUAS.",
                 style: TextStyle(fontSize: 14, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -95,6 +98,41 @@ class WelcomeScreen extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
+                ),
+              ),
+              SizedBox(height: 30),
+              Text.rich(
+                TextSpan(
+                  text: "Dengan masuk atau daftar, Anda menyetujui",
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  children: [
+                    TextSpan(
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () =>
+                            context.pushAndRemoveAll(const RegisterScreen20()),
+                      text: " Syarat & Ketentuan",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                        fontSize: 12,
+                      ),
+                    ),
+                    TextSpan(
+                      text: " dan",
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                    TextSpan(
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () =>
+                            context.pushAndRemoveAll(const RegisterScreen()),
+                      text: " Kebijakan Privasi",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

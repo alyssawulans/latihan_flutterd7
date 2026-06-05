@@ -1,9 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/button_navi.dart';
+import 'package:latihan_flutterd7/day_13/welcome_screen.dart';
 import 'package:latihan_flutterd7/day_20/database/db_helper.dart';
 import 'package:latihan_flutterd7/day_20/models/user_model_sql.dart';
-import 'package:latihan_flutterd7/day_20/views/register_screen.dart'; // Pastikan path ini benar
 import 'package:latihan_flutterd7/extension/navigator.dart';
 
 class LoginScreen20 extends StatefulWidget {
@@ -16,6 +16,7 @@ class LoginScreen20 extends StatefulWidget {
 class _LoginScreen20State extends State<LoginScreen20> {
   final _loginFormKey = GlobalKey<FormState>();
   bool obscurePassword = true;
+  bool isCheck = true;
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -60,18 +61,18 @@ class _LoginScreen20State extends State<LoginScreen20> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F8FB),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF4F8FB),
-        centerTitle: true,
-        title: const Text(
-          "Masuk Akun",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1A2E44),
-          ),
-        ),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: const Color(0xFFF4F8FB),
+      //   centerTitle: true,
+      //   title: const Text(
+      //     "Masuk Akun",
+      //     style: TextStyle(
+      //       fontSize: 18,
+      //       fontWeight: FontWeight.bold,
+      //       color: Color(0xFF1A2E44),
+      //     ),
+      //   ),
+      // ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -83,6 +84,7 @@ class _LoginScreen20State extends State<LoginScreen20> {
                 Center(
                   child: Column(
                     children: [
+                      SizedBox(height: 30),
                       Container(
                         width: 85,
                         height: 85,
@@ -200,7 +202,22 @@ class _LoginScreen20State extends State<LoginScreen20> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 30),
+
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {},
+                          child: const Text(
+                            "Lupa Kata Sandi?",
+                            style: TextStyle(
+                              color: Colors.teal,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+
                       SizedBox(
                         width: double.infinity,
                         height: 54,
@@ -227,11 +244,51 @@ class _LoginScreen20State extends State<LoginScreen20> {
                           ),
                         ),
                       ),
+
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              color: Colors.grey[300],
+                              thickness: 1,
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: Text(
+                              "atau",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: Colors.grey[300],
+                              thickness: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      _buildSocialButton(
+                        label: "Masuk dengan Google",
+                        icon: Icons.g_mobiledata_rounded,
+                        iconColor: Colors.red,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildSocialButton(
+                        label: "Masuk dengan Apple",
+                        icon: Icons.apple,
+                        iconColor: Colors.black,
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 35),
-                // 4. Mengaktifkan kembali navigasi ke RegisterScreen jika user belum punya akun
+                SizedBox(height: 30),
+
                 Text.rich(
                   TextSpan(
                     text: "Belum Punya Akun?",
@@ -239,9 +296,8 @@ class _LoginScreen20State extends State<LoginScreen20> {
                     children: [
                       TextSpan(
                         recognizer: TapGestureRecognizer()
-                          ..onTap = () => context.pushAndRemoveAll(
-                            const RegisterScreen20(),
-                          ),
+                          ..onTap = () =>
+                              context.pushAndRemoveAll(const WelcomeScreen()),
                         text: " Daftar Sekarang",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -287,4 +343,28 @@ class _LoginScreen20State extends State<LoginScreen20> {
       prefixIcon: Icon(prefixIcon, color: const Color(0xFF1A2E44)),
     );
   }
+}
+
+Widget _buildSocialButton({
+  required String label,
+  required IconData icon,
+  required Color iconColor,
+}) {
+  return OutlinedButton.icon(
+    style: OutlinedButton.styleFrom(
+      minimumSize: const Size.fromHeight(54),
+      side: BorderSide(color: Colors.grey[300]!),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+    onPressed: () {},
+    icon: Icon(icon, color: iconColor, size: 24),
+    label: Text(
+      label,
+      style: const TextStyle(
+        color: Colors.black87,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+  );
 }
