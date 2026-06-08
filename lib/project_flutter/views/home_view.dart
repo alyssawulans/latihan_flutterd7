@@ -93,7 +93,7 @@ class _HomeViewState extends State<HomeView> {
               onRefresh: _loadData,
               color: activeTeal,
               child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -122,31 +122,42 @@ class _HomeViewState extends State<HomeView> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Hai, $_userName 👋',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${_getGreeting()}, \n$_userName 👋',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Mari jaga lingkungan kita tetap bersih & asri!',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.8),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _getDynamicQuote(),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.8,
+                                        ),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
+                              const SizedBox(width: 12),
                               CircleAvatar(
                                 radius: 22,
-                                backgroundColor: Colors.white.withOpacity(0.2),
+                                backgroundColor: Colors.white.withValues(
+                                  alpha: 0.2,
+                                ),
                                 child: IconButton(
                                   icon: const Icon(
                                     Icons.notifications_none_outlined,
@@ -164,7 +175,7 @@ class _HomeViewState extends State<HomeView> {
                             children: [
                               Icon(
                                 Icons.location_on,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 size: 14,
                               ),
                               const SizedBox(width: 6),
@@ -172,7 +183,7 @@ class _HomeViewState extends State<HomeView> {
                                 'Cibadak, Sukabumi • 24 Sep 2023',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -182,7 +193,7 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     ),
 
-                    // 2. Floating AQI Panel Card
+                    // 2. Floating AQI Panel Card (Beautified like mockup)
                     Transform.translate(
                       offset: const Offset(0, -28),
                       child: Container(
@@ -194,7 +205,7 @@ class _HomeViewState extends State<HomeView> {
                           border: Border.all(color: const Color(0xFFF1F5F9)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
+                              color: Colors.black.withValues(alpha: 0.04),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -203,68 +214,52 @@ class _HomeViewState extends State<HomeView> {
                         child: Column(
                           children: [
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Circular Progress Gauge
-                                Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 68,
-                                      height: 68,
-                                      child: CircularProgressIndicator(
-                                        value: 32 / 100,
-                                        strokeWidth: 6.5,
-                                        backgroundColor: Colors.grey[100],
-                                        color: const Color(0xFF10B981),
-                                      ),
-                                    ),
-                                    const Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          '32',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xFF1A2E44),
-                                          ),
-                                        ),
-                                        Text(
-                                          'AQI',
-                                          style: TextStyle(
-                                            fontSize: 9,
-                                            color: Colors.grey,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(width: 20),
-                                // Text stats
+                                // Left details column
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      const Text(
+                                        'AQI Saat Ini',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF64748B),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
                                       Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.baseline,
+                                        textBaseline: TextBaseline.alphabetic,
                                         children: [
+                                          const Text(
+                                            '32',
+                                            style: TextStyle(
+                                              fontSize: 44,
+                                              fontWeight: FontWeight.w900,
+                                              color: Color(0xFF10B981),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
                                           Container(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 8,
-                                              vertical: 2,
+                                              vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: const Color(0xFFECFDF5),
+                                              color: const Color(0xFF10B981),
                                               borderRadius:
-                                                  BorderRadius.circular(20),
+                                                  BorderRadius.circular(12),
                                             ),
                                             child: const Text(
-                                              'Kualitas Baik',
+                                              'Baik',
                                               style: TextStyle(
-                                                color: Color(0xFF10B981),
-                                                fontSize: 10,
+                                                color: Colors.white,
+                                                fontSize: 12,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -273,19 +268,43 @@ class _HomeViewState extends State<HomeView> {
                                       ),
                                       const SizedBox(height: 6),
                                       const Text(
-                                        'Udara sangat sehat untuk dinikmati di luar ruangan.',
+                                        'Kualitas udara baik untuk aktivitas luar ruangan.',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Color(0xFF475569),
-                                          height: 1.3,
+                                          height: 1.4,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
+                                const SizedBox(width: 16),
+                                // Right Side Illustration/Photo
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.asset(
+                                    'assets/images/project_akhir/bag_2.png',
+                                    width: 150,
+                                    height: 150,
+                                    fit: BoxFit.fitWidth,
+                                    alignment: AlignmentGeometry.bottomCenter,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              width: 110,
+                                              height: 90,
+                                              color: const Color(0xFFE2F1ED),
+                                              child: const Icon(
+                                                Icons.apartment_rounded,
+                                                color: Color(0xFF0D9488),
+                                                size: 36,
+                                              ),
+                                            ),
+                                  ),
+                                ),
                               ],
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                             const Divider(height: 1, color: Color(0xFFF1F5F9)),
                             const SizedBox(height: 16),
                             // Metrics details row grid
@@ -314,30 +333,35 @@ class _HomeViewState extends State<HomeView> {
                                 ),
                               ],
                             ),
+                            const SizedBox(height: 16),
+                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                            const SizedBox(height: 16),
+                            _buildHealthRecommendations(),
                           ],
                         ),
                       ),
                     ),
 
-                    // 3. Quick Stats Cards Grid
+                    // 3. Quick Stats Cards Grid ("Ringkasan")
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Menu Layanan',
+                            'Ringkasan',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: textDark,
                             ),
                           ),
-
+                          const SizedBox(height: 6),
                           GridView.count(
                             crossAxisCount: 2,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.zero,
                             mainAxisSpacing: 12,
                             crossAxisSpacing: 12,
                             childAspectRatio: 1.45,
@@ -416,9 +440,20 @@ class _HomeViewState extends State<HomeView> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 20),
 
-                    // 4. Recent Laporan Feed
+                    // 4. Grafik AQI 7 Hari Terakhir
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: const AqiLineChart(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // 5. Aktivitas & Tips
+                    _buildAktivitasDanTips(),
+                    const SizedBox(height: 20),
+
+                    // 6. Recent Laporan Feed
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: Row(
@@ -455,7 +490,7 @@ class _HomeViewState extends State<HomeView> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
 
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -488,6 +523,7 @@ class _HomeViewState extends State<HomeView> {
                           : ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
+                              padding: EdgeInsets.zero,
                               itemCount: _recentLaporan.length,
                               itemBuilder: (context, index) {
                                 final report = _recentLaporan[index];
@@ -500,6 +536,123 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
             ),
+    );
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 11) {
+      return 'Selamat Pagi';
+    } else if (hour < 15) {
+      return 'Selamat Siang';
+    } else if (hour < 18) {
+      return 'Selamat Sore';
+    } else {
+      return 'Selamat Malam';
+    }
+  }
+
+  String _getDynamicQuote() {
+    final quotes = [
+      'Mari jaga lingkungan kita tetap bersih & asri!',
+      'Udara bersih adalah hak bersama, yuk kurangi emisi!',
+      'Udara hari ini sangat baik untuk bersepeda atau berjalan kaki.',
+      'Gunakan transportasi umum demi langit biru Sukabumi.',
+      'Matikan mesin kendaraan saat sedang berhenti lama.',
+      'Menanam satu pohon hari ini memberikan napas untuk masa depan.',
+    ];
+    final day = DateTime.now().day;
+    return quotes[day % quotes.length];
+  }
+
+  Widget _buildHealthRecommendations() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Rekomendasi Aktivitas & Kesehatan',
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF64748B),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildHealthItem(
+              Icons.child_care_rounded,
+              'Anak-anak',
+              'Aman',
+              const Color(0xFF10B981),
+            ),
+            _buildHealthItem(
+              Icons.elderly_rounded,
+              'Lansia',
+              'Aman',
+              const Color(0xFF10B981),
+            ),
+            _buildHealthItem(
+              Icons.masks_rounded,
+              'Sensitif',
+              'Aman',
+              const Color(0xFF10B981),
+            ),
+            _buildHealthItem(
+              Icons.directions_run_rounded,
+              'Olahraga',
+              'Aman',
+              const Color(0xFF10B981),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHealthItem(
+    IconData icon,
+    String label,
+    String status,
+    Color color,
+  ) {
+    return Expanded(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF475569),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            status,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -541,95 +694,108 @@ class _HomeViewState extends State<HomeView> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: iconColor.withOpacity(0.18), width: 1.5),
+          border: Border.all(color: const Color(0xFFF1F5F9)),
           gradient: LinearGradient(
-            colors: [
-              Colors.white,
-              color.withOpacity(0.35),
-            ],
+            colors: [Colors.white, color.withValues(alpha: 0.15)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: iconColor.withOpacity(0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, size: 18, color: iconColor),
+            // Background Watermark Icon
+            Positioned(
+              bottom: -12,
+              right: -12,
+              child: Transform.rotate(
+                angle: -0.2,
+                child: Icon(
+                  icon,
+                  size: 72,
+                  color: iconColor.withValues(alpha: 0.08),
                 ),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: textDark,
-                  ),
-                ),
-              ],
+              ),
             ),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: Column(
+            // Card Content
+            Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Top Row: Icon Badge & Value with Arrow Chevron
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: iconColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(icon, size: 18, color: iconColor),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            value,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.chevron_right_rounded,
+                            color: Color(0xFFCBD5E1),
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  // Bottom Column: Title & Description
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: const TextStyle(
+                          fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: textDark,
+                          color: Color(0xFF1E293B),
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
                       Text(
                         desc,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: textDark.withOpacity(0.5),
+                        style: const TextStyle(
+                          fontSize: 9,
+                          color: Color(0xFF64748B),
+                          fontWeight: FontWeight.w500,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 12,
-                    color: iconColor,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -638,17 +804,41 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildRedesignedReportItem(LaporanModel report) {
+    Color statusColor;
+    Color gradientEndColor;
+    switch (report.status.toLowerCase()) {
+      case 'selesai':
+      case 'selesay':
+        statusColor = const Color(0xFF10B981);
+        gradientEndColor = const Color(0xFFECFDF5);
+        break;
+      case 'ditolak':
+        statusColor = const Color(0xFFEF4444);
+        gradientEndColor = const Color(0xFFFEF2F2);
+        break;
+      case 'diproses':
+      default:
+        statusColor = const Color(0xFFF97316);
+        gradientEndColor = const Color(0xFFFFF7ED);
+        break;
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFF1F5F9)),
+        gradient: LinearGradient(
+          colors: [Colors.white, gradientEndColor],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.015),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -664,112 +854,549 @@ class _HomeViewState extends State<HomeView> {
               ),
             ).then((_) => _loadData());
           },
-          child: Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: report.foto.startsWith('assets/')
-                      ? Image.asset(
-                          report.foto,
-                          width: 76,
-                          height: 76,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                                width: 76,
-                                height: 76,
-                                color: Colors.teal.shade50,
-                                child: Icon(Icons.image, color: activeTeal),
-                              ),
-                        )
-                      : Container(
-                          width: 76,
-                          height: 76,
-                          color: Colors.teal.shade50,
-                          child: Icon(
-                            Icons.photo_library_outlined,
-                            color: activeTeal,
-                          ),
-                        ),
+          child: Stack(
+            children: [
+              // Left Accent Color Stripe
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  width: 5,
+                  decoration: BoxDecoration(
+                    color: statusColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        report.judul,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: textDark,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on_outlined,
-                            color: Colors.grey,
-                            size: 12,
+              ),
+              // Main content Row
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 12.0,
+                ),
+                child: Row(
+                  children: [
+                    // Styled Image Container with border and shadow
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.white, width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              report.lokasi,
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: report.foto.startsWith('assets/')
+                            ? Image.asset(
+                                report.foto,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      color: const Color(0xFFE6F4F1),
+                                      child: const Icon(
+                                        Icons.image,
+                                        color: Color(0xFF0D9488),
+                                      ),
+                                    ),
+                              )
+                            : Container(
+                                color: const Color(0xFFE6F4F1),
+                                child: const Icon(
+                                  Icons.photo_library_outlined,
+                                  color: Color(0xFF0D9488),
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    // Details column
+                    Expanded(
+                      child: SizedBox(
+                        height: 80,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Title
+                            Text(
+                              report.judul,
                               style: const TextStyle(
-                                fontSize: 11,
-                                color: Color(0xFF64748B),
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1E293B),
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            report.tanggal,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: Color(0xFF94A3B8),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: getBadgeBgColor(report.status),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              report.status,
-                              style: TextStyle(
-                                color: getBadgeTextColor(report.status),
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                            // Location Chip/Tag
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.location_on_outlined,
+                                    color: Color(0xFF64748B),
+                                    size: 11,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      report.lokasi,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        color: Color(0xFF64748B),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+                            // Date and Status Pill Row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  report.tanggal,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Color(0xFF94A3B8),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: statusColor.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 5,
+                                        height: 5,
+                                        decoration: BoxDecoration(
+                                          color: statusColor,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        report.status,
+                                        style: TextStyle(
+                                          color: statusColor,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 6),
+                    // Far-right Arrow Chevron Icon
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      size: 18,
+                      color: Color(0xFFCBD5E1),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+
+  Widget _buildAktivitasDanTips() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Aktivitas & Tips',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              // Left Card: Aktivitas Disarankan (Bersepeda)
+              Expanded(
+                child: Container(
+                  height: 195,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFDCFCE7)),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    image: const DecorationImage(
+                      image: AssetImage(
+                        'assets/images/project_akhir/aktivitas_1.png',
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(14.0),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Aktivitas Disarankan',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF166534),
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        'Bersepeda',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E293B),
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Aktivitas luar ruangan baik untuk AQI hari ini.',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Color(0xFF475569),
+                          fontWeight: FontWeight.w600,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Right Card: Tips Hari Ini (Gunakan transportasi umum)
+              Expanded(
+                child: Container(
+                  height: 195,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFCCFBF1)),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFF0FDFA), Color(0xFFCCFBF1)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    image: const DecorationImage(
+                      image: AssetImage(
+                        'assets/images/project_akhir/aktivitas_2.png',
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(14.0),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Tips Hari Ini',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0F766E),
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        'Transportasi Umum',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E293B),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Kurangi emisi dengan menggunakan transportasi umum.',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Color(0xFF475569),
+                          fontWeight: FontWeight.w600,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Custom Paint AQI Line Chart Widget
+class AqiLineChart extends StatelessWidget {
+  const AqiLineChart({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFF1F5F9)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Grafik AQI 7 Hari Terakhir',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A2E44),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 140,
+            width: double.infinity,
+            child: CustomPaint(painter: _AqiChartPainter()),
+          ),
+          const SizedBox(height: 16),
+          // Legend Row
+          Center(
+            child: Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              alignment: WrapAlignment.center,
+              children: [
+                _buildLegendItem(const Color(0xFF10B981), 'Baik (0-50)'),
+                _buildLegendItem(const Color(0xFFFBBF24), 'Sedang (51-100)'),
+                _buildLegendItem(
+                  const Color(0xFFEF4444),
+                  'Tidak Sehat (101-150)',
+                ),
+                _buildLegendItem(
+                  const Color(0xFF8B5CF6),
+                  'Sangat Tidak Sehat (>150)',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 10,
+            color: Color(0xFF64748B),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AqiChartPainter extends CustomPainter {
+  final List<int> values = [25, 30, 45, 38, 32, 28, 32];
+  final List<String> dates = [
+    '18 Sep',
+    '19 Sep',
+    '20 Sep',
+    '21 Sep',
+    '22 Sep',
+    '23 Sep',
+    '24 Sep',
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const double leftMargin = 20.0;
+    const double rightMargin = 20.0;
+    const double topMargin = 25.0;
+    const double bottomMargin = 25.0;
+
+    final double width = size.width - leftMargin - rightMargin;
+    final double height = size.height - topMargin - bottomMargin;
+    final double stepWidth = width / (values.length - 1);
+    const double maxVal = 50.0;
+
+    final List<Offset> points = [];
+    for (int i = 0; i < values.length; i++) {
+      final double x = leftMargin + i * stepWidth;
+      final double y =
+          size.height - bottomMargin - (values[i] / maxVal * height);
+      points.add(Offset(x, y));
+    }
+
+    // 1. Draw gradient area under the curve
+    final Path fillPath = Path();
+    fillPath.moveTo(points.first.dx, size.height - bottomMargin);
+    fillPath.lineTo(points.first.dx, points.first.dy);
+    for (int i = 1; i < points.length; i++) {
+      fillPath.lineTo(points[i].dx, points[i].dy);
+    }
+    fillPath.lineTo(points.last.dx, size.height - bottomMargin);
+    fillPath.close();
+
+    final fillPaint = Paint()
+      ..shader =
+          LinearGradient(
+            colors: [
+              const Color(0xFF10B981).withValues(alpha: 0.25),
+              const Color(0xFF10B981).withValues(alpha: 0.0),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ).createShader(
+            Rect.fromLTRB(
+              leftMargin,
+              topMargin,
+              size.width - rightMargin,
+              size.height - bottomMargin,
+            ),
+          )
+      ..style = PaintingStyle.fill;
+    canvas.drawPath(fillPath, fillPaint);
+
+    // 2. Draw line connecting points
+    final Path linePath = Path();
+    linePath.moveTo(points.first.dx, points.first.dy);
+    for (int i = 1; i < points.length; i++) {
+      linePath.lineTo(points[i].dx, points[i].dy);
+    }
+
+    final linePaint = Paint()
+      ..color = const Color(0xFF10B981)
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true;
+    canvas.drawPath(linePath, linePaint);
+
+    // 3. Draw dots, value text above dots, and date text below
+    final dotPaint = Paint()
+      ..color = const Color(0xFF10B981)
+      ..style = PaintingStyle.fill;
+    final dotInnerPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < points.length; i++) {
+      final offset = points[i];
+
+      // Draw outer circle
+      canvas.drawCircle(offset, 5.0, dotPaint);
+      // Draw inner white circle
+      canvas.drawCircle(offset, 2.5, dotInnerPaint);
+
+      // Draw value text above node
+      final valuePainter = TextPainter(
+        text: TextSpan(
+          text: '${values[i]}',
+          style: const TextStyle(
+            color: Color(0xFF1B2E44),
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      valuePainter.layout();
+      valuePainter.paint(
+        canvas,
+        Offset(offset.dx - valuePainter.width / 2, offset.dy - 18),
+      );
+
+      // Draw date text below
+      final datePainter = TextPainter(
+        text: TextSpan(
+          text: dates[i],
+          style: const TextStyle(
+            color: Color(0xFF94A3B8),
+            fontSize: 9,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      datePainter.layout();
+      datePainter.paint(
+        canvas,
+        Offset(
+          offset.dx - datePainter.width / 2,
+          size.height - bottomMargin + 6,
+        ),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
