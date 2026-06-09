@@ -3,43 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' hide Path;
-
-class AqiStation {
-  final String name;
-  final String region;
-  int aqi;
-  final LatLng position;
-  final String distance;
-
-  AqiStation({
-    required this.name,
-    required this.region,
-    required this.aqi,
-    required this.position,
-    required this.distance,
-  });
-
-  Color get color {
-    if (aqi <= 50) return const Color(0xFF10B981); // Baik (Green)
-    if (aqi <= 100) return const Color(0xFFFBBF24); // Sedang (Yellow)
-    if (aqi <= 150) return const Color(0xFFF97316); // Sangat Sedang (Orange)
-    return const Color(0xFFEF4444); // Tidak Sehat (Red)
-  }
-
-  String get status {
-    if (aqi <= 50) return 'Baik';
-    if (aqi <= 100) return 'Sedang';
-    if (aqi <= 150) return 'Sangat Sedang';
-    return 'Tidak Sehat';
-  }
-
-  String get statusIconText {
-    if (aqi <= 50) return '😊';
-    if (aqi <= 100) return '😐';
-    if (aqi <= 150) return '😷';
-    return '🚨';
-  }
-}
+import 'package:latihan_flutterd7/project_flutter/models/aqi_station_model.dart';
 
 class MapsView extends StatefulWidget {
   const MapsView({super.key});
@@ -61,57 +25,7 @@ class _MapsViewState extends State<MapsView> {
   String _selectedFilter = 'Semua';
   AqiStation? _selectedStation;
 
-  final List<AqiStation> _stations = [
-    AqiStation(
-      name: 'Jakarta Pusat',
-      region: 'DKI Jakarta',
-      aqi: 154,
-      position: const LatLng(-6.1818, 106.8223),
-      distance: 'Wilayah Barat',
-    ),
-    AqiStation(
-      name: 'Jakarta Selatan',
-      region: 'DKI Jakarta',
-      aqi: 115,
-      position: const LatLng(-6.2615, 106.8106),
-      distance: 'Wilayah Barat',
-    ),
-    AqiStation(
-      name: 'Bandung',
-      region: 'Jawa Barat',
-      aqi: 84,
-      position: const LatLng(-6.9175, 107.6191),
-      distance: 'Wilayah Barat',
-    ),
-    AqiStation(
-      name: 'Surabaya',
-      region: 'Jawa Timur',
-      aqi: 128,
-      position: const LatLng(-7.2575, 112.7521),
-      distance: 'Wilayah Timur',
-    ),
-    AqiStation(
-      name: 'Yogyakarta',
-      region: 'DI Yogyakarta',
-      aqi: 42,
-      position: const LatLng(-7.7956, 110.3695),
-      distance: 'Wilayah Tengah',
-    ),
-    AqiStation(
-      name: 'Medan',
-      region: 'Sumatera Utara',
-      aqi: 68,
-      position: const LatLng(3.5952, 98.6722),
-      distance: 'Wilayah Utara',
-    ),
-    AqiStation(
-      name: 'Denpasar',
-      region: 'Bali',
-      aqi: 32,
-      position: const LatLng(-8.6705, 115.2126),
-      distance: 'Wilayah Selatan',
-    ),
-  ];
+  final List<AqiStation> _stations = List.from(AqiStation.defaultStations);
 
   @override
   void initState() {
@@ -222,7 +136,7 @@ class _MapsViewState extends State<MapsView> {
                       : null,
                   boxShadow: [
                     BoxShadow(
-                      color: s.color.withOpacity(0.4),
+                      color: s.color.withValues(alpha: 0.4),
                       blurRadius: isSelected ? 12 : 6,
                       spreadRadius: isSelected ? 3 : 1,
                     ),
@@ -232,12 +146,15 @@ class _MapsViewState extends State<MapsView> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 16,
-                      height: 16,
+                      constraints: const BoxConstraints(
+                        minWidth: 20,
+                        minHeight: 20,
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                       alignment: Alignment.center,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.white,
-                        shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         '${s.aqi}',
@@ -245,6 +162,7 @@ class _MapsViewState extends State<MapsView> {
                           color: s.color,
                           fontSize: 9,
                           fontWeight: FontWeight.w900,
+                          height: 1.0,
                         ),
                       ),
                     ),
@@ -270,7 +188,7 @@ class _MapsViewState extends State<MapsView> {
                 height: 6,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: s.color.withOpacity(0.6),
+                  color: s.color.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -282,41 +200,21 @@ class _MapsViewState extends State<MapsView> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF8FAFC),
         elevation: 0,
         centerTitle: false,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Peta Kualitas Udara',
-              style: TextStyle(
-                color: primaryTeal,
-                fontWeight: FontWeight.w900,
-                fontSize: 20,
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: Image.asset(
+                'assets/images/logo_ruas.png',
+                height: 40,
+                errorBuilder: (context, error, stackTrace) {
+                  return const SizedBox.shrink();
+                },
               ),
-            ),
-            const SizedBox(height: 2),
-            Row(
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF10B981),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'Terakhir Diperbarui: ${_formatTime(_lastUpdated)}',
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
@@ -338,150 +236,170 @@ class _MapsViewState extends State<MapsView> {
           const SizedBox(width: 8),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Search Bar & Filters Section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Row(
+      body: Stack(
+        children: [
+          // 1. Full Screen Interactive Map
+          Positioned.fill(
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: const LatLng(-2.5, 118.0), // Center on Indonesia
+                initialZoom: 4.8,
+                minZoom: 3.0,
+                maxZoom: 18.0,
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.ruas.id',
+                ),
+                MarkerLayer(markers: mapMarkers),
+              ],
+            ),
+          ),
+
+          // 2. Floating Search Bar & Filters Section (at the top)
+          Positioned(
+            top: 12,
+            left: 16,
+            right: 16,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.95),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: const Color(0xFFF1F5F9)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.02),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Peta Kualitas Udara',
+                            style: TextStyle(
+                              color: primaryTeal,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                width: 6,
+                                height: 6,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF10B981),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _formatTime(_lastUpdated),
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
-                          child: TextField(
-                            controller: _searchController,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: textDark,
-                              fontWeight: FontWeight.bold,
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: TextField(
+                          controller: _searchController,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: textDark,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Cari kota atau provinsi...',
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
-                            decoration: InputDecoration(
-                              hintText: 'Cari kota atau provinsi...',
-                              hintStyle: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              prefixIcon: Icon(
-                                Icons.search_rounded,
-                                color: activeTeal,
-                                size: 20,
-                              ),
-                              suffixIcon: _searchController.text.isNotEmpty
-                                  ? IconButton(
-                                      icon: const Icon(
-                                        Icons.clear_rounded,
-                                        color: Colors.grey,
-                                        size: 18,
-                                      ),
-                                      onPressed: () =>
-                                          _searchController.clear(),
-                                    )
-                                  : null,
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 14,
-                              ),
+                            prefixIcon: Icon(
+                              Icons.search_rounded,
+                              color: activeTeal,
+                              size: 18,
+                            ),
+                            suffixIcon: _searchController.text.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(
+                                      Icons.clear_rounded,
+                                      color: Colors.grey,
+                                      size: 16,
+                                    ),
+                                    onPressed: () => _searchController.clear(),
+                                  )
+                                : null,
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10,
                             ),
                           ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Horizontal filter tags
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        child: Row(
+                          children: [
+                            _buildFilterChip('Semua'),
+                            const SizedBox(width: 6),
+                            _buildFilterChip('Baik', color: const Color(0xFF10B981)),
+                            const SizedBox(width: 6),
+                            _buildFilterChip('Sedang', color: const Color(0xFFFBBF24)),
+                            const SizedBox(width: 6),
+                            _buildFilterChip('Tidak Sehat', color: const Color(0xFFEF4444)),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  // Horizontal filter tags
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    child: Row(
-                      children: [
-                        _buildFilterChip('Semua'),
-                        const SizedBox(width: 8),
-                        _buildFilterChip(
-                          'Baik',
-                          color: const Color(0xFF10B981),
-                        ),
-                        const SizedBox(width: 8),
-                        _buildFilterChip(
-                          'Sedang',
-                          color: const Color(0xFFFBBF24),
-                        ),
-                        const SizedBox(width: 8),
-                        _buildFilterChip(
-                          'Tidak Sehat',
-                          color: const Color(0xFFEF4444),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
+            ),
+          ),
+
+          // 3. Floating Station Details Card (at the bottom)
+          if (_selectedStation != null)
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: 104,
+              child: _buildStationDetailsCard(_selectedStation!),
             ),
 
-            // Map and Info Panel Section
-            Expanded(
-              child: Stack(
-                children: [
-                  // Real Interactive Map
-                  Positioned.fill(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: FlutterMap(
-                          mapController: _mapController,
-                          options: MapOptions(
-                            initialCenter: const LatLng(
-                              -2.5,
-                              118.0,
-                            ), // Center on Indonesia
-                            initialZoom: 4.8,
-                            minZoom: 3.0,
-                            maxZoom: 18.0,
-                          ),
-                          children: [
-                            TileLayer(
-                              urlTemplate:
-                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName: 'com.ruas.id',
-                            ),
-                            MarkerLayer(markers: mapMarkers),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Floating Station Details Card (at the bottom)
-                  if (_selectedStation != null)
-                    Positioned(
-                      left: 24,
-                      right: 24,
-                      bottom: 24,
-                      child: _buildStationDetailsCard(_selectedStation!),
-                    ),
-                ],
-              ),
-            ),
-
-            // Drawer/List of stations
-            if (_selectedStation == null)
-              Expanded(
-                child: Container(
+          // 4. Draggable Scrollable Sheet (at the bottom when no station is selected)
+          if (_selectedStation == null)
+            DraggableScrollableSheet(
+              initialChildSize: 0.42,
+              minChildSize: 0.22,
+              maxChildSize: 0.85,
+              builder: (context, scrollController) {
+                return Container(
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -496,142 +414,161 @@ class _MapsViewState extends State<MapsView> {
                       ),
                     ],
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 12),
-                          width: 40,
-                          height: 5,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE2E8F0),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 4,
-                        ),
-                        child: Text(
-                          'Stasiun Pemantau AQI (${filtered.length})',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                            color: textDark,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Expanded(
-                        child: filtered.isEmpty
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.location_off_rounded,
-                                      size: 48,
-                                      color: Colors.grey[300],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    const Text(
-                                      'Tidak ada stasiun ditemukan',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
+                  child: CustomScrollView(
+                    controller: scrollController,
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      // Header Section as a Sliver (so it is draggable)
+                      SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(vertical: 12),
+                                width: 40,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE2E8F0),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                              )
-                            : ListView.builder(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                itemCount: filtered.length,
-                                itemBuilder: (context, index) {
-                                  final station = filtered[index];
-                                  return Container(
-                                    margin: const EdgeInsets.only(bottom: 8),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFF8FAFC),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(
-                                        color: const Color(0xFFF1F5F9),
-                                      ),
-                                    ),
-                                    child: ListTile(
-                                      leading: Container(
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          color: station.color.withOpacity(0.1),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Text(
-                                          station.statusIconText,
-                                          style: const TextStyle(fontSize: 18),
-                                        ),
-                                      ),
-                                      title: Text(
-                                        station.name,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: textDark,
-                                        ),
-                                      ),
-                                      subtitle: Text(
-                                        '${station.region} • ${station.distance}',
-                                        style: const TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      trailing: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: station.color,
-                                          borderRadius: BorderRadius.circular(
-                                            20,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          'AQI ${station.aqi}',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w900,
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        setState(() {
-                                          _selectedStation = station;
-                                        });
-                                        _mapController.move(
-                                          station.position,
-                                          10.5,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
                               ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 4,
+                              ),
+                              child: Text(
+                                'Stasiun Pemantau AQI (${filtered.length})',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w900,
+                                  color: textDark,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                        ),
                       ),
+
+                      // Empty State or List of Stations as Slivers
+                      if (filtered.isEmpty)
+                        SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.location_off_rounded,
+                                  size: 48,
+                                  color: Colors.grey[300],
+                                ),
+                                const SizedBox(height: 12),
+                                const Text(
+                                  'Tidak ada stasiun ditemukan',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else
+                        SliverPadding(
+                          padding: const EdgeInsets.only(
+                            left: 20,
+                            right: 20,
+                            bottom: 110,
+                          ),
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                final station = filtered[index];
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF8FAFC),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: const Color(0xFFF1F5F9),
+                                    ),
+                                  ),
+                                  child: ListTile(
+                                    leading: Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: station.color.withValues(alpha: 0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        station.statusIconText,
+                                        style: const TextStyle(fontSize: 18),
+                                      ),
+                                    ),
+                                    title: Text(
+                                      station.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: textDark,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      '${station.region} • ${station.distance}',
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    trailing: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: station.color,
+                                        borderRadius: BorderRadius.circular(
+                                          20,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'AQI ${station.aqi}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedStation = station;
+                                      });
+                                      _mapController.move(
+                                        station.position,
+                                        10.5,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              childCount: filtered.length,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
-                ),
-              ),
-          ],
-        ),
+                );
+              },
+            ),
+        ],
       ),
     );
   }
@@ -696,6 +633,9 @@ class _MapsViewState extends State<MapsView> {
     final bool isModerate = station.aqi > 50 && station.aqi <= 100;
 
     return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.45,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -707,11 +647,12 @@ class _MapsViewState extends State<MapsView> {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Pinned Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -771,198 +712,209 @@ class _MapsViewState extends State<MapsView> {
               ),
             ],
           ),
-          const Divider(height: 24, color: Color(0xFFF1F5F9)),
+          const Divider(height: 16, color: Color(0xFFF1F5F9)),
 
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: station.color,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: station.color.withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    const Text(
-                      'AQI',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '${station.aqi}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Status: ${station.status}',
-                      style: TextStyle(
-                        color: station.color,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 15,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      isUnhealthy
-                          ? 'Kualitas udara tidak sehat bagi kelompok sensitif atau umum. Harap waspada.'
-                          : (isModerate
-                                ? 'Kualitas udara sedang. Orang yang sensitif disarankan mengurangi aktivitas luar.'
-                                : 'Kualitas udara sangat baik. Aman untuk beraktivitas di luar ruangan.'),
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 11,
-                        height: 1.4,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          const Text(
-            'Kandungan Partikulat (Polutan)',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: _buildPollutantMeter('PM2.5', '$pm25', pm25 / 150),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildPollutantMeter('PM10', '$pm10', pm10 / 150),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildPollutantMeter('CO', co, double.parse(co) / 15),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _buildPollutantMeter('SO2', so2, double.parse(so2) / 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(child: _buildPollutantMeter('O3', '$o3', o3 / 120)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          // Scrollable Content
+          Flexible(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      const Text(
-                        'CUACA',
-                        style: TextStyle(
-                          fontSize: 8,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: station.color,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: station.color.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'AQI',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '${station.aqi}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: const [
-                          Icon(
-                            Icons.thermostat_rounded,
-                            size: 12,
-                            color: Colors.orange,
-                          ),
-                          SizedBox(width: 2),
-                          Text(
-                            '29°C',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF0F172A),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Status: ${station.status}',
+                              style: TextStyle(
+                                color: station.color,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 15,
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              isUnhealthy
+                                  ? 'Kualitas udara tidak sehat bagi kelompok sensitif atau umum. Harap waspada.'
+                                  : (isModerate
+                                        ? 'Kualitas udara sedang. Orang yang sensitif disarankan mengurangi aktivitas luar.'
+                                        : 'Kualitas udara sangat baik. Aman untuk beraktivitas di luar ruangan.'),
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 11,
+                                height: 1.4,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
-          const Text(
-            'Rekomendasi Kesehatan',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
+                  const Text(
+                    'Kandungan Partikulat (Polutan)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildPollutantMeter('PM2.5', '$pm25', pm25 / 150),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildPollutantMeter('PM10', '$pm10', pm10 / 150),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildPollutantMeter('CO', co, double.parse(co) / 15),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildPollutantMeter('SO2', so2, double.parse(so2) / 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(child: _buildPollutantMeter('O3', '$o3', o3 / 120)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8FAFC),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'CUACA',
+                                style: TextStyle(
+                                  fontSize: 8,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Row(
+                                children: const [
+                                  Icon(
+                                    Icons.thermostat_rounded,
+                                    size: 12,
+                                    color: Colors.orange,
+                                  ),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    '29°C',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  const Text(
+                    'Rekomendasi Kesehatan',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildRecommendationItem(
+                        Icons.masks_rounded,
+                        'Masker',
+                        isUnhealthy ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                        isUnhealthy ? 'Wajib' : 'Opsional',
+                      ),
+                      _buildRecommendationItem(
+                        Icons.sensor_window_rounded,
+                        'Tutup Jendela',
+                        isUnhealthy ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                        isUnhealthy ? 'Ya' : 'Tidak',
+                      ),
+                      _buildRecommendationItem(
+                        Icons.directions_run_rounded,
+                        'Luar Ruangan',
+                        isUnhealthy ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                        isUnhealthy ? 'Hindari' : 'Aman',
+                      ),
+                      _buildRecommendationItem(
+                        Icons.air,
+                        'Purifier',
+                        isUnhealthy || isModerate
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF64748B),
+                        isUnhealthy || isModerate ? 'Nyalakan' : 'Tidak Perlu',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildRecommendationItem(
-                Icons.masks_rounded,
-                'Masker',
-                isUnhealthy ? const Color(0xFFEF4444) : const Color(0xFF10B981),
-                isUnhealthy ? 'Wajib' : 'Opsional',
-              ),
-              _buildRecommendationItem(
-                Icons.sensor_window_rounded,
-                'Tutup Jendela',
-                isUnhealthy ? const Color(0xFFEF4444) : const Color(0xFF10B981),
-                isUnhealthy ? 'Ya' : 'Tidak',
-              ),
-              _buildRecommendationItem(
-                Icons.directions_run_rounded,
-                'Luar Ruangan',
-                isUnhealthy ? const Color(0xFFEF4444) : const Color(0xFF10B981),
-                isUnhealthy ? 'Hindari' : 'Aman',
-              ),
-              _buildRecommendationItem(
-                Icons.air,
-                'Purifier',
-                isUnhealthy || isModerate
-                    ? const Color(0xFF10B981)
-                    : const Color(0xFF64748B),
-                isUnhealthy || isModerate ? 'Nyalakan' : 'Tidak Perlu',
-              ),
-            ],
           ),
         ],
       ),

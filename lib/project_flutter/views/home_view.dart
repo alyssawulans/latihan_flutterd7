@@ -1,5 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
+import 'package:latihan_flutterd7/project_flutter/models/aqi_station_model.dart';
 import 'package:latihan_flutterd7/project_flutter/models/laporan_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/detail_laporan.dart';
 import 'package:latihan_flutterd7/project_flutter/views/main_navigation_shell.dart';
@@ -18,6 +25,144 @@ class _HomeViewState extends State<HomeView> {
   int _edukasiCount = 0;
   List<LaporanModel> _recentLaporan = [];
   bool _isLoading = true;
+
+  String _currentLocationName = 'Cibadak, Sukabumi';
+  AqiStation? _nearestStation;
+
+  String get _cityName {
+    final parts = _currentLocationName.split(',');
+    if (parts.isNotEmpty) {
+      return parts.last.trim();
+    }
+    return 'kota Anda';
+  }
+
+  List<int> _get7DayAqiValues() {
+    if (_nearestStation == null) return [32, 32, 32, 32, 32, 32, 32];
+    final String name = _nearestStation!.name;
+    final int currentAqi = _nearestStation!.aqi;
+    final int seed = name.hashCode;
+    final List<int> vals = [];
+    for (int i = 0; i < 6; i++) {
+      final double offset = sin(seed + i) * 20;
+      final int val = (currentAqi + offset).round().clamp(15, 200);
+      vals.add(val);
+    }
+    vals.add(currentAqi);
+    return vals;
+  }
+
+  List<String> _get7DayAqiDates() {
+    final List<String> dates = [];
+    const idLocale = 'id_ID';
+    for (int i = 6; i >= 0; i--) {
+      final DateTime date = DateTime.now().subtract(Duration(days: i));
+      dates.add(DateFormat('dd MMM', idLocale).format(date));
+    }
+    return dates;
+  }
+
+  Future<void> _fetchGPSLocation() async {
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
+        final Position position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.low,
+            timeLimit: Duration(seconds: 4),
+          ),
+        );
+
+        final double lat = position.latitude;
+        final double lon = position.longitude;
+
+        // Cari stasiun pemantau AQI terdekat dari koordinat GPS ini
+        AqiStation? closestStation;
+        double minDistance = double.infinity;
+
+        for (final station in AqiStation.defaultStations) {
+          final double distance = Geolocator.distanceBetween(
+            lat,
+            lon,
+            station.position.latitude,
+            station.position.longitude,
+          );
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestStation = station;
+          }
+        }
+
+        String resolvedAddress = "";
+
+        try {
+          final client = HttpClient();
+          client.userAgent =
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) LatihanFlutterD7/1.0";
+          final request = await client
+              .getUrl(
+                Uri.parse(
+                  'https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lon&zoom=16',
+                ),
+              )
+              .timeout(const Duration(seconds: 3));
+
+          final response = await request.close();
+          if (response.statusCode == 200) {
+            final responseBody = await response.transform(utf8.decoder).join();
+            final decoded = json.decode(responseBody);
+            final address = decoded['address'];
+            if (address != null) {
+              final road =
+                  address['road'] ??
+                  address['suburb'] ??
+                  address['village'] ??
+                  '';
+              final city =
+                  address['city'] ??
+                  address['town'] ??
+                  address['city_district'] ??
+                  address['municipality'] ??
+                  address['county'] ??
+                  '';
+
+              List<String> parts = [];
+              if (road.toString().isNotEmpty) parts.add(road.toString());
+              if (city.toString().isNotEmpty) parts.add(city.toString());
+
+              if (parts.isNotEmpty) {
+                resolvedAddress = parts.join(', ');
+              }
+            }
+            if (resolvedAddress.isEmpty) {
+              resolvedAddress = decoded['display_name'] ?? "";
+            }
+          }
+        } catch (_) {}
+
+        if (mounted) {
+          setState(() {
+            if (resolvedAddress.isNotEmpty) {
+              _currentLocationName = resolvedAddress;
+            } else if (closestStation != null) {
+              _currentLocationName =
+                  '${closestStation.name}, ${closestStation.region}';
+            }
+            if (closestStation != null) {
+              _nearestStation = closestStation;
+            }
+          });
+        }
+      }
+    } catch (_) {
+      // Fail silently
+    }
+  }
 
   final Color primaryTeal = const Color(0xFF0F4C43);
   final Color activeTeal = const Color(0xFF0D9488);
@@ -51,9 +196,15 @@ class _HomeViewState extends State<HomeView> {
         _laporanCount = lCount;
         _edukasiCount = eCount;
         _recentLaporan = recent;
+        _nearestStation ??= AqiStation.defaultStations.firstWhere(
+          (s) => s.name == 'Sukabumi',
+          orElse: () => AqiStation.defaultStations.first,
+        );
         _isLoading = false;
       });
     }
+
+    _fetchGPSLocation();
   }
 
   Color getBadgeTextColor(String status) {
@@ -180,7 +331,7 @@ class _HomeViewState extends State<HomeView> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                'Cibadak, Sukabumi • 24 Sep 2023',
+                                '$_currentLocationName • ${DateFormat('dd MMM yyyy', 'id_ID').format(DateTime.now())}',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.white.withValues(alpha: 0.9),
@@ -236,12 +387,14 @@ class _HomeViewState extends State<HomeView> {
                                             CrossAxisAlignment.baseline,
                                         textBaseline: TextBaseline.alphabetic,
                                         children: [
-                                          const Text(
-                                            '32',
+                                          Text(
+                                            '${_nearestStation?.aqi ?? 32}',
                                             style: TextStyle(
                                               fontSize: 44,
                                               fontWeight: FontWeight.w900,
-                                              color: Color(0xFF10B981),
+                                              color:
+                                                  _nearestStation?.color ??
+                                                  const Color(0xFF10B981),
                                             ),
                                           ),
                                           const SizedBox(width: 8),
@@ -251,13 +404,15 @@ class _HomeViewState extends State<HomeView> {
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: const Color(0xFF10B981),
+                                              color:
+                                                  _nearestStation?.color ??
+                                                  const Color(0xFF10B981),
                                               borderRadius:
                                                   BorderRadius.circular(12),
                                             ),
-                                            child: const Text(
-                                              'Baik',
-                                              style: TextStyle(
+                                            child: Text(
+                                              _nearestStation?.status ?? 'Baik',
+                                              style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.bold,
@@ -267,9 +422,10 @@ class _HomeViewState extends State<HomeView> {
                                         ],
                                       ),
                                       const SizedBox(height: 6),
-                                      const Text(
-                                        'Kualitas udara baik untuk aktivitas luar ruangan.',
-                                        style: TextStyle(
+                                      Text(
+                                        _nearestStation?.description ??
+                                            'Kualitas udara baik untuk aktivitas luar ruangan.',
+                                        style: const TextStyle(
                                           fontSize: 12,
                                           color: Color(0xFF475569),
                                           height: 1.4,
@@ -314,22 +470,22 @@ class _HomeViewState extends State<HomeView> {
                                 _buildMiniParam(
                                   Icons.eco_outlined,
                                   'PM2.5',
-                                  '12 µg/m³',
+                                  '${_nearestStation?.pm25 ?? 12} µg/m³',
                                 ),
                                 _buildMiniParam(
                                   Icons.thermostat,
                                   'Suhu',
-                                  '28°C',
+                                  '${_nearestStation?.temp ?? 28}°C',
                                 ),
                                 _buildMiniParam(
                                   Icons.water_drop_outlined,
                                   'Lembab',
-                                  '65%',
+                                  '${_nearestStation?.humidity ?? 65}%',
                                 ),
                                 _buildMiniParam(
                                   Icons.air,
                                   'Ozon (O³)',
-                                  '0.02 ppm',
+                                  '${(_nearestStation?.o3 ?? 0.02).toStringAsFixed(3)} ppm',
                                 ),
                               ],
                             ),
@@ -408,7 +564,7 @@ class _HomeViewState extends State<HomeView> {
                               ),
                               _buildRedesignedStatCard(
                                 title: 'Peta Lokasi',
-                                value: '6',
+                                value: '${AqiStation.defaultStations.length}',
                                 desc: 'Titik pantau AQI',
                                 icon: Icons.map_outlined,
                                 color: const Color(0xFFEFF6FF),
@@ -428,11 +584,17 @@ class _HomeViewState extends State<HomeView> {
                               ),
                               _buildRedesignedStatCard(
                                 title: 'AQI Rerata',
-                                value: '32',
-                                desc: 'Tingkat Sukabumi',
+                                value: '${_nearestStation?.aqi ?? 32}',
+                                desc:
+                                    'Tingkat ${_nearestStation?.name ?? "Sukabumi"}',
                                 icon: Icons.air_outlined,
-                                color: const Color(0xFFECFDF5),
-                                iconColor: const Color(0xFF10B981),
+                                color:
+                                    (_nearestStation?.color ??
+                                            const Color(0xFFECFDF5))
+                                        .withValues(alpha: 0.12),
+                                iconColor:
+                                    _nearestStation?.color ??
+                                    const Color(0xFF10B981),
                                 onTap: () {},
                               ),
                             ],
@@ -445,7 +607,12 @@ class _HomeViewState extends State<HomeView> {
                     // 4. Grafik AQI 7 Hari Terakhir
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: const AqiLineChart(),
+                      child: AqiLineChart(
+                        values: _get7DayAqiValues(),
+                        dates: _get7DayAqiDates(),
+                        chartColor:
+                            _nearestStation?.color ?? const Color(0xFF10B981),
+                      ),
                     ),
                     const SizedBox(height: 20),
 
@@ -531,7 +698,7 @@ class _HomeViewState extends State<HomeView> {
                               },
                             ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 110),
                   ],
                 ),
               ),
@@ -557,7 +724,7 @@ class _HomeViewState extends State<HomeView> {
       'Mari jaga lingkungan kita tetap bersih & asri!',
       'Udara bersih adalah hak bersama, yuk kurangi emisi!',
       'Udara hari ini sangat baik untuk bersepeda atau berjalan kaki.',
-      'Gunakan transportasi umum demi langit biru Sukabumi.',
+      'Gunakan transportasi umum demi langit biru $_cityName.',
       'Matikan mesin kendaraan saat sedang berhenti lama.',
       'Menanam satu pohon hari ini memberikan napas untuk masa depan.',
     ];
@@ -566,6 +733,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildHealthRecommendations() {
+    if (_nearestStation == null) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -584,26 +752,26 @@ class _HomeViewState extends State<HomeView> {
             _buildHealthItem(
               Icons.child_care_rounded,
               'Anak-anak',
-              'Aman',
-              const Color(0xFF10B981),
+              _nearestStation!.getRecommendation('Anak-anak'),
+              _nearestStation!.getRecommendationColor('Anak-anak'),
             ),
             _buildHealthItem(
               Icons.elderly_rounded,
               'Lansia',
-              'Aman',
-              const Color(0xFF10B981),
+              _nearestStation!.getRecommendation('Lansia'),
+              _nearestStation!.getRecommendationColor('Lansia'),
             ),
             _buildHealthItem(
               Icons.masks_rounded,
               'Sensitif',
-              'Aman',
-              const Color(0xFF10B981),
+              _nearestStation!.getRecommendation('Sensitif'),
+              _nearestStation!.getRecommendationColor('Sensitif'),
             ),
             _buildHealthItem(
               Icons.directions_run_rounded,
               'Olahraga',
-              'Aman',
-              const Color(0xFF10B981),
+              _nearestStation!.getRecommendation('Olahraga'),
+              _nearestStation!.getRecommendationColor('Olahraga'),
             ),
           ],
         ),
@@ -808,7 +976,6 @@ class _HomeViewState extends State<HomeView> {
     Color gradientEndColor;
     switch (report.status.toLowerCase()) {
       case 'selesai':
-      case 'selesay':
         statusColor = const Color(0xFF10B981);
         gradientEndColor = const Color(0xFFECFDF5);
         break;
@@ -897,9 +1064,35 @@ class _HomeViewState extends State<HomeView> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(14),
-                        child: report.foto.startsWith('assets/')
+                        child: report.foto.startsWith('http')
+                            ? Image.network(
+                                report.foto,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      color: const Color(0xFFE6F4F1),
+                                      child: const Icon(
+                                        Icons.image,
+                                        color: Color(0xFF0D9488),
+                                      ),
+                                    ),
+                              )
+                            : report.foto.startsWith('assets/')
                             ? Image.asset(
                                 report.foto,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      color: const Color(0xFFE6F4F1),
+                                      child: const Icon(
+                                        Icons.image,
+                                        color: Color(0xFF0D9488),
+                                      ),
+                                    ),
+                              )
+                            : report.foto.isNotEmpty
+                            ? Image.file(
+                                File(report.foto),
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(
@@ -1041,6 +1234,85 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildAktivitasDanTips() {
+    final aqi = _nearestStation?.aqi ?? 32;
+
+    // Define Left Card properties based on AQI
+    String activityTitle;
+    String activitySubtitle;
+    String activityImage;
+    Color activityBorderColor;
+    Color activityBgStartColor;
+    Color activityBgEndColor;
+    Color activityAccentColor;
+
+    // Define Right Card properties based on AQI
+    String tipTitle;
+    String tipSubtitle;
+    String tipImage;
+    Color tipBorderColor;
+    Color tipBgStartColor;
+    Color tipBgEndColor;
+    Color tipAccentColor;
+
+    if (aqi <= 50) {
+      // Good AQI
+      activityTitle = 'Bersepeda';
+      activitySubtitle =
+          'Kualitas udara sangat bersih, mari aktif bersepeda di luar ruangan.';
+      activityImage = 'assets/images/project_akhir/aktivitas_1.png';
+      activityBorderColor = const Color(0xFFDCFCE7);
+      activityBgStartColor = const Color(0xFFF0FDF4);
+      activityBgEndColor = const Color(0xFFDCFCE7);
+      activityAccentColor = const Color(0xFF166534);
+
+      tipTitle = 'Buka Jendela';
+      tipSubtitle =
+          'Buka ventilasi rumah untuk sirkulasi udara alami yang segar.';
+      tipImage = 'assets/images/project_akhir/aktivitas_9.png';
+      tipBorderColor = const Color(0xFFCCFBF1);
+      tipBgStartColor = const Color(0xFFF0FDFA);
+      tipBgEndColor = const Color(0xFFCCFBF1);
+      tipAccentColor = const Color(0xFF0F766E);
+    } else if (aqi <= 100) {
+      // Moderate AQI
+      activityTitle = 'Jalan Santai';
+      activitySubtitle =
+          'Kualitas udara sedang, aman untuk beraktivitas luar ruangan santai.';
+      activityImage = 'assets/images/project_akhir/aktivitas_3.png';
+      activityBorderColor = const Color(0xFFFEF3C7);
+      activityBgStartColor = const Color(0xFFFFFDF2);
+      activityBgEndColor = const Color(0xFFFEF3C7);
+      activityAccentColor = const Color(0xFF92400E);
+
+      tipTitle = 'Transportasi Umum';
+      tipSubtitle =
+          'Kurangi emisi polusi dengan menggunakan angkutan umum atau jalan kaki.';
+      tipImage = 'assets/images/project_akhir/aktivitas_2.png';
+      tipBorderColor = const Color(0xFFCCFBF1);
+      tipBgStartColor = const Color(0xFFF0FDFA);
+      tipBgEndColor = const Color(0xFFCCFBF1);
+      tipAccentColor = const Color(0xFF0F766E);
+    } else {
+      // Unhealthy / Poor AQI (>100)
+      activityTitle = 'Air Purifier';
+      activitySubtitle =
+          'Kualitas udara kurang baik. Gunakan Air Purifier di dalam rumah.';
+      activityImage = 'assets/images/project_akhir/aktivitas_8.png';
+      activityBorderColor = const Color(0xFFFEE2E2);
+      activityBgStartColor = const Color(0xFFFEF2F2);
+      activityBgEndColor = const Color(0xFFFEE2E2);
+      activityAccentColor = const Color(0xFF991B1B);
+
+      tipTitle = 'Gunakan Masker';
+      tipSubtitle =
+          'Paparan polusi udara tinggi. Gunakan masker medis/N95 jika harus keluar ruangan.';
+      tipImage = 'assets/images/project_akhir/aktivitas_7.png';
+      tipBorderColor = const Color(0xFFFEE2E2);
+      tipBgStartColor = const Color(0xFFFEF2F2);
+      tipBgEndColor = const Color(0xFFFEE2E2);
+      tipAccentColor = const Color(0xFF991B1B);
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -1057,54 +1329,86 @@ class _HomeViewState extends State<HomeView> {
           const SizedBox(height: 12),
           Row(
             children: [
-              // Left Card: Aktivitas Disarankan (Bersepeda)
+              // Left Card
               Expanded(
                 child: Container(
                   height: 195,
+                  clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFDCFCE7)),
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
+                    border: Border.all(color: activityBorderColor),
+                    gradient: LinearGradient(
+                      colors: [activityBgStartColor, activityBgEndColor],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    image: const DecorationImage(
-                      image: AssetImage(
-                        'assets/images/project_akhir/aktivitas_1.png',
-                      ),
-                      fit: BoxFit.cover,
-                    ),
                   ),
-                  padding: const EdgeInsets.all(14.0),
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Stack(
                     children: [
-                      Text(
-                        'Aktivitas Disarankan',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF166534),
+                      Positioned.fill(
+                        child: Transform.scale(
+                          scale: 1.3,
+                          child: Image.asset(activityImage, fit: BoxFit.cover),
                         ),
                       ),
-                      SizedBox(height: 6),
-                      Text(
-                        'Bersepeda',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E293B),
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Aktivitas luar ruangan baik untuk AQI hari ini.',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Color(0xFF475569),
-                          fontWeight: FontWeight.w600,
-                          height: 1.3,
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        right: 10,
+                        child: Container(
+                          padding: const EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.5),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.04),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Aktivitas Disarankan',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: activityAccentColor,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                activityTitle,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1E293B),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                activitySubtitle,
+                                style: const TextStyle(
+                                  fontSize: 9,
+                                  color: Color(0xFF475569),
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -1112,56 +1416,86 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
               const SizedBox(width: 12),
-              // Right Card: Tips Hari Ini (Gunakan transportasi umum)
+              // Right Card
               Expanded(
                 child: Container(
                   height: 195,
+                  clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFCCFBF1)),
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFF0FDFA), Color(0xFFCCFBF1)],
+                    border: Border.all(color: tipBorderColor),
+                    gradient: LinearGradient(
+                      colors: [tipBgStartColor, tipBgEndColor],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    image: const DecorationImage(
-                      image: AssetImage(
-                        'assets/images/project_akhir/aktivitas_2.png',
-                      ),
-                      fit: BoxFit.cover,
-                    ),
                   ),
-                  padding: const EdgeInsets.all(14.0),
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Stack(
                     children: [
-                      Text(
-                        'Tips Hari Ini',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F766E),
+                      Positioned.fill(
+                        child: Transform.scale(
+                          scale: 1.3,
+                          child: Image.asset(tipImage, fit: BoxFit.cover),
                         ),
                       ),
-                      SizedBox(height: 6),
-                      Text(
-                        'Transportasi Umum',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E293B),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Kurangi emisi dengan menggunakan transportasi umum.',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Color(0xFF475569),
-                          fontWeight: FontWeight.w600,
-                          height: 1.3,
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        right: 10,
+                        child: Container(
+                          padding: const EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.5),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.04),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Tips Hari Ini',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: tipAccentColor,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                tipTitle,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1E293B),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                tipSubtitle,
+                                style: const TextStyle(
+                                  fontSize: 9,
+                                  color: Color(0xFF475569),
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -1178,7 +1512,16 @@ class _HomeViewState extends State<HomeView> {
 
 // Custom Paint AQI Line Chart Widget
 class AqiLineChart extends StatelessWidget {
-  const AqiLineChart({super.key});
+  final List<int> values;
+  final List<String> dates;
+  final Color chartColor;
+
+  const AqiLineChart({
+    super.key,
+    required this.values,
+    required this.dates,
+    required this.chartColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1212,7 +1555,13 @@ class AqiLineChart extends StatelessWidget {
           SizedBox(
             height: 140,
             width: double.infinity,
-            child: CustomPaint(painter: _AqiChartPainter()),
+            child: CustomPaint(
+              painter: _AqiChartPainter(
+                values: values,
+                dates: dates,
+                chartColor: chartColor,
+              ),
+            ),
           ),
           const SizedBox(height: 16),
           // Legend Row
@@ -1225,13 +1574,10 @@ class AqiLineChart extends StatelessWidget {
                 _buildLegendItem(const Color(0xFF10B981), 'Baik (0-50)'),
                 _buildLegendItem(const Color(0xFFFBBF24), 'Sedang (51-100)'),
                 _buildLegendItem(
-                  const Color(0xFFEF4444),
-                  'Tidak Sehat (101-150)',
+                  const Color(0xFFF97316),
+                  'Sangat Sedang (101-150)',
                 ),
-                _buildLegendItem(
-                  const Color(0xFF8B5CF6),
-                  'Sangat Tidak Sehat (>150)',
-                ),
+                _buildLegendItem(const Color(0xFFEF4444), 'Tidak Sehat (>150)'),
               ],
             ),
           ),
@@ -1264,16 +1610,15 @@ class AqiLineChart extends StatelessWidget {
 }
 
 class _AqiChartPainter extends CustomPainter {
-  final List<int> values = [25, 30, 45, 38, 32, 28, 32];
-  final List<String> dates = [
-    '18 Sep',
-    '19 Sep',
-    '20 Sep',
-    '21 Sep',
-    '22 Sep',
-    '23 Sep',
-    '24 Sep',
-  ];
+  final List<int> values;
+  final List<String> dates;
+  final Color chartColor;
+
+  _AqiChartPainter({
+    required this.values,
+    required this.dates,
+    required this.chartColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1285,7 +1630,14 @@ class _AqiChartPainter extends CustomPainter {
     final double width = size.width - leftMargin - rightMargin;
     final double height = size.height - topMargin - bottomMargin;
     final double stepWidth = width / (values.length - 1);
-    const double maxVal = 50.0;
+
+    // Dynamic maximum calculation to prevent clipping when value > 50
+    final double maxVal =
+        values.fold<double>(
+          50.0,
+          (max, val) => val > max ? val.toDouble() : max,
+        ) *
+        1.15;
 
     final List<Offset> points = [];
     for (int i = 0; i < values.length; i++) {
@@ -1309,8 +1661,8 @@ class _AqiChartPainter extends CustomPainter {
       ..shader =
           LinearGradient(
             colors: [
-              const Color(0xFF10B981).withValues(alpha: 0.25),
-              const Color(0xFF10B981).withValues(alpha: 0.0),
+              chartColor.withValues(alpha: 0.25),
+              chartColor.withValues(alpha: 0.0),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -1333,7 +1685,7 @@ class _AqiChartPainter extends CustomPainter {
     }
 
     final linePaint = Paint()
-      ..color = const Color(0xFF10B981)
+      ..color = chartColor
       ..strokeWidth = 2.5
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
@@ -1342,7 +1694,7 @@ class _AqiChartPainter extends CustomPainter {
 
     // 3. Draw dots, value text above dots, and date text below
     final dotPaint = Paint()
-      ..color = const Color(0xFF10B981)
+      ..color = chartColor
       ..style = PaintingStyle.fill;
     final dotInnerPaint = Paint()
       ..color = Colors.white
@@ -1398,5 +1750,9 @@ class _AqiChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _AqiChartPainter oldDelegate) {
+    return oldDelegate.values != values ||
+        oldDelegate.dates != dates ||
+        oldDelegate.chartColor != chartColor;
+  }
 }

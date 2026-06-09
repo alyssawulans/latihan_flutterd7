@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/project_flutter/models/laporan_model.dart';
-import 'package:latihan_flutterd7/project_flutter/views/riwayat_laporan.dart';
-import 'package:latihan_flutterd7/project_flutter/views/laporan_beranda.dart';
 import 'package:latihan_flutterd7/project_flutter/views/detail_laporan.dart';
+import 'package:latihan_flutterd7/project_flutter/views/laporan_beranda.dart';
 
 class KonfirmasiLaporan extends StatefulWidget {
   final String nomorLaporan;
@@ -27,8 +26,6 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
   final Color activeTeal = const Color(0xFF0D9488);
   final Color textDark = const Color(0xFF0F172A);
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,30 +41,36 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                   children: [
                     const SizedBox(height: 40),
                     // Success Circle Check
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFE6F4F1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.check_circle,
-                        color: activeTeal,
-                        size: 80,
+                    SizedBox(
+                      width: 180,
+                      height: 180,
+                      // decoration: const BoxDecoration(
+                      //   color: Color(0xFFE6F4F1),
+                      //   shape: BoxShape.circle,
+                      // ),
+                      child: Image.asset(
+                        "assets/images/project_akhir/success.png",
                       ),
                     ),
                     const SizedBox(height: 24),
                     Text(
                       "Laporan Berhasil Dikirim!",
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textDark),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: textDark,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 32.0),
                       child: Text(
                         "Terima kasih atas partisipasi Anda dalam menjaga lingkungan. Laporan Anda akan kami tindak lanjuti.",
-                        style: TextStyle(fontSize: 13, color: Colors.grey[500], height: 1.4),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey[500],
+                          height: 1.4,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -94,7 +97,11 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                           Center(
                             child: Text(
                               "Nomor Laporan",
-                              style: TextStyle(fontSize: 11, color: Colors.grey[400], fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey[400],
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -115,13 +122,19 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                                   // Simulated Copy to clipboard
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text("Nomor laporan disalin ke clipboard!"),
+                                      content: Text(
+                                        "Nomor laporan disalin ke clipboard!",
+                                      ),
                                       duration: Duration(seconds: 1),
                                       behavior: SnackBarBehavior.floating,
                                     ),
                                   );
                                 },
-                                child: Icon(Icons.copy, size: 18, color: activeTeal),
+                                child: Icon(
+                                  Icons.copy,
+                                  size: 18,
+                                  color: activeTeal,
+                                ),
                               ),
                             ],
                           ),
@@ -130,7 +143,10 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                           const SizedBox(height: 12),
                           Text(
                             "Tanggal",
-                            style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[400],
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -144,7 +160,10 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                           const SizedBox(height: 16),
                           Text(
                             "Kategori",
-                            style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[400],
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -180,7 +199,8 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => DetailLaporan(report: widget.report),
+                                    builder: (context) =>
+                                        DetailLaporan(report: widget.report),
                                   ),
                                 );
                               },
@@ -209,7 +229,8 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const LaporanBeranda(),
+                                    builder: (context) =>
+                                        const LaporanBeranda(),
                                   ),
                                 );
                               },

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/laporan_model.dart';
@@ -224,8 +225,8 @@ class _LaporanListViewState extends State<LaporanListView> {
               // Photo Thumbnail
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: report.foto.startsWith('assets/')
-                    ? Image.asset(
+                child: report.foto.startsWith('http')
+                    ? Image.network(
                         report.foto,
                         width: 80,
                         height: 80,
@@ -237,12 +238,38 @@ class _LaporanListViewState extends State<LaporanListView> {
                           child: const Icon(Icons.image, color: Color(0xFF0D9488)),
                         ),
                       )
-                    : Container(
-                        width: 80,
-                        height: 80,
-                        color: Colors.teal.shade50,
-                        child: const Icon(Icons.photo_library_outlined, color: Color(0xFF0D9488)),
-                      ),
+                    : report.foto.startsWith('assets/')
+                        ? Image.asset(
+                            report.foto,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              width: 80,
+                              height: 80,
+                              color: Colors.teal.shade50,
+                              child: const Icon(Icons.image, color: Color(0xFF0D9488)),
+                            ),
+                          )
+                        : report.foto.isNotEmpty
+                            ? Image.file(
+                                File(report.foto),
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Container(
+                                  width: 80,
+                                  height: 80,
+                                  color: Colors.teal.shade50,
+                                  child: const Icon(Icons.image, color: Color(0xFF0D9488)),
+                                ),
+                              )
+                            : Container(
+                                width: 80,
+                                height: 80,
+                                color: Colors.teal.shade50,
+                                child: const Icon(Icons.photo_library_outlined, color: Color(0xFF0D9488)),
+                              ),
               ),
               const SizedBox(width: 12),
               Expanded(

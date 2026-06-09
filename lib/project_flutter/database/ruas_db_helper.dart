@@ -22,9 +22,17 @@ class RuasDbHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
+  }
+
+  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE users ADD COLUMN tempat_lahir TEXT');
+      await db.execute('ALTER TABLE users ADD COLUMN tanggal_lahir TEXT');
+    }
   }
 
   Future _createDB(Database db, int version) async {
@@ -36,7 +44,9 @@ class RuasDbHelper {
         email TEXT NOT NULL UNIQUE,
         nomor_telp TEXT NOT NULL,
         password TEXT NOT NULL,
-        tanggal_daftar TEXT NOT NULL
+        tanggal_daftar TEXT NOT NULL,
+        tempat_lahir TEXT,
+        tanggal_lahir TEXT
       )
     ''');
 
@@ -158,6 +168,8 @@ class RuasDbHelper {
         nomorTelp: user.nomorTelp,
         password: user.password,
         tanggalDaftar: user.tanggalDaftar,
+        tempatLahir: user.tempatLahir,
+        tanggalLahir: user.tanggalLahir,
       );
     } catch (e) {
       // Email duplicate error
@@ -193,14 +205,21 @@ class RuasDbHelper {
     return null;
   }
 
-  Future<int> updateUserProfile(int id, String nama, String nomorTelp) async {
+  Future<int> updateUserProfile(int id, String nama, String nomorTelp, {String? tempatLahir, String? tanggalLahir}) async {
     final db = await instance.database;
+    final Map<String, dynamic> values = {
+      'nama': nama,
+      'nomor_telp': nomorTelp,
+    };
+    if (tempatLahir != null) {
+      values['tempat_lahir'] = tempatLahir;
+    }
+    if (tanggalLahir != null) {
+      values['tanggal_lahir'] = tanggalLahir;
+    }
     return await db.update(
       'users',
-      {
-        'nama': nama,
-        'nomor_telp': nomorTelp,
-      },
+      values,
       where: 'id = ?',
       whereArgs: [id],
     );

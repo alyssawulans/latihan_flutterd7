@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/views/pengaturan_view.dart';
 import 'package:latihan_flutterd7/project_flutter/views/splash_view.dart';
@@ -14,10 +18,15 @@ class ProfilView extends StatefulWidget {
 class _ProfilViewState extends State<ProfilView> {
   String _userName = 'Andi Pratama';
   String _userEmail = 'andi.pratama@gmail.com';
+  String? _profilePhotoPath;
   int _laporanCount = 0;
   int _laporanDiprosesCount = 0;
   int _laporanSelesaiCount = 0;
   bool _isLoading = true;
+
+  String _ecoStarterTier = 'Bronze';
+  String _greenReporterTier = 'Locked';
+  String _airGuardianTier = 'Locked';
 
   final Color primaryTeal = const Color(0xFF0F4C43);
   final Color activeTeal = const Color(0xFF0D9488);
@@ -51,18 +60,425 @@ class _ProfilViewState extends State<ProfilView> {
         )
         .length;
 
+    // 1. Eco Starter:
+    String ecoStarter = 'Bronze';
+    if (user != null) {
+      final bool isProfileComplete =
+          user.tempatLahir.isNotEmpty && user.tanggalLahir.isNotEmpty;
+      if (isProfileComplete) {
+        if (lCount >= 3) {
+          ecoStarter = 'Gold';
+        } else {
+          ecoStarter = 'Silver';
+        }
+      }
+    }
+
+    // 2. Green Reporter:
+    String greenReporter = 'Locked';
+    if (lCount >= 5) {
+      greenReporter = 'Gold';
+    } else if (lCount >= 3) {
+      greenReporter = 'Silver';
+    } else if (lCount >= 1) {
+      greenReporter = 'Bronze';
+    }
+
+    // 3. Air Guardian:
+    final readKey = 'read_articles_$userId';
+    final readList = prefs.getStringList(readKey) ?? [];
+    final readCount = readList.length;
+
+    String airGuardian = 'Locked';
+    if (readCount >= 5) {
+      airGuardian = 'Gold';
+    } else if (readCount >= 3) {
+      airGuardian = 'Silver';
+    } else if (readCount >= 1) {
+      airGuardian = 'Bronze';
+    }
+
     if (mounted) {
       setState(() {
         if (user != null) {
           _userName = user.nama;
           _userEmail = user.email;
         }
+        _profilePhotoPath = prefs.getString('profile_photo_$userId');
         _laporanCount = lCount;
         _laporanDiprosesCount = lDiproses;
         _laporanSelesaiCount = lSelesai;
+        _ecoStarterTier = ecoStarter;
+        _greenReporterTier = greenReporter;
+        _airGuardianTier = airGuardian;
         _isLoading = false;
       });
     }
+  }
+
+  Color _getTopBadgeColor(String eco, String reporter, String guardian) {
+    if (reporter == 'Gold' || guardian == 'Gold' || eco == 'Gold') {
+      return const Color(0xFFD97706); // Amber Gold
+    }
+    if (reporter == 'Silver' || guardian == 'Silver' || eco == 'Silver') {
+      return const Color(0xFF475569); // Slate Silver
+    }
+    return const Color(0xFFB45309); // Bronze
+  }
+
+  String _getRankName(String eco, String reporter, String guardian) {
+    int score = 0;
+    if (eco == 'Gold') {
+      score += 3;
+    } else if (eco == 'Silver') {
+      score += 2;
+    } else if (eco == 'Bronze') {
+      score += 1;
+    }
+
+    if (reporter == 'Gold') {
+      score += 3;
+    } else if (reporter == 'Silver') {
+      score += 2;
+    } else if (reporter == 'Bronze') {
+      score += 1;
+    }
+
+    if (guardian == 'Gold') {
+      score += 3;
+    } else if (guardian == 'Silver') {
+      score += 2;
+    } else if (guardian == 'Bronze') {
+      score += 1;
+    }
+
+    if (score >= 8) return 'Gold Guardian';
+    if (score >= 5) return 'Silver Volunteer';
+    return 'Eco Starter';
+  }
+
+  Color _getBadgeDetailBgColor(String tier) {
+    switch (tier) {
+      case 'Gold':
+        return const Color(0xFFFFFBEB);
+      case 'Silver':
+        return const Color(0xFFF8FAFC);
+      case 'Bronze':
+        return const Color(0xFFFFF7ED);
+      default:
+        return const Color(0xFFF1F5F9);
+    }
+  }
+
+  Color _getBadgeDetailBorderColor(String tier) {
+    switch (tier) {
+      case 'Gold':
+        return const Color(0xFFFDE68A);
+      case 'Silver':
+        return const Color(0xFFE2E8F0);
+      case 'Bronze':
+        return const Color(0xFFFED7AA);
+      default:
+        return const Color(0xFFCBD5E1);
+    }
+  }
+
+  void _showEditProfileDialog() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('current_user_id') ?? 1;
+    final user = await RuasDbHelper.instance.getUser(userId);
+    if (user == null) return;
+
+    final namaController = TextEditingController(text: user.nama);
+    final telpController = TextEditingController(text: user.nomorTelp);
+    final tempatLahirController = TextEditingController(text: user.tempatLahir);
+    String selectedTanggalLahir = user.tanggalLahir;
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            clipBehavior: Clip.antiAlias,
+            backgroundColor: Colors.white,
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [activeTeal, primaryTeal],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: const Icon(
+                      Icons.person_outline_rounded,
+                      color: Colors.white,
+                      size: 44,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Edit Profil',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: textDark,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Perbarui informasi pribadi Anda untuk melengkapi profil dan meningkatkan lencana.',
+                          style: TextStyle(
+                            color: Color(0xFF64748B),
+                            fontSize: 12,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        _buildInputField(
+                          'Nama Lengkap',
+                          namaController,
+                          Icons.person_outline,
+                        ),
+                        const SizedBox(height: 14),
+                        _buildInputField(
+                          'Nomor Telepon',
+                          telpController,
+                          Icons.phone_android_outlined,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        const SizedBox(height: 14),
+                        _buildInputField(
+                          'Tempat Lahir',
+                          tempatLahirController,
+                          Icons.location_city_outlined,
+                        ),
+                        const SizedBox(height: 14),
+                        GestureDetector(
+                          onTap: () async {
+                            final initialDate = selectedTanggalLahir.isNotEmpty
+                                ? (DateFormat(
+                                        'dd MMM yyyy',
+                                        'id_ID',
+                                      ).tryParse(selectedTanggalLahir) ??
+                                      DateTime.now())
+                                : DateTime.now();
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: initialDate,
+                              firstDate: DateTime(1950),
+                              lastDate: DateTime.now(),
+                              builder: (context, child) {
+                                return Theme(
+                                  data: Theme.of(context).copyWith(
+                                    colorScheme: ColorScheme.light(
+                                      primary: activeTeal,
+                                      onPrimary: Colors.white,
+                                      onSurface: textDark,
+                                    ),
+                                  ),
+                                  child: child!,
+                                );
+                              },
+                            );
+                            if (picked != null) {
+                              setDialogState(() {
+                                selectedTanggalLahir = DateFormat(
+                                  'dd MMM yyyy',
+                                  'id_ID',
+                                ).format(picked);
+                              });
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: const Color(0xFFE2E8F0),
+                              ),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.calendar_today_outlined,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Tanggal Lahir',
+                                        style: TextStyle(
+                                          color: Color(0xFF64748B),
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        selectedTanggalLahir.isNotEmpty
+                                            ? selectedTanggalLahir
+                                            : 'Pilih Tanggal Lahir',
+                                        style: TextStyle(
+                                          color: selectedTanggalLahir.isNotEmpty
+                                              ? textDark
+                                              : const Color(0xFF94A3B8),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () => Navigator.pop(context),
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(
+                                    color: Color(0xFFCBD5E1),
+                                  ),
+                                  foregroundColor: const Color(0xFF64748B),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Batal',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  if (namaController.text.trim().isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Nama tidak boleh kosong',
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                  await RuasDbHelper.instance.updateUserProfile(
+                                    userId,
+                                    namaController.text.trim(),
+                                    telpController.text.trim(),
+                                    tempatLahir: tempatLahirController.text
+                                        .trim(),
+                                    tanggalLahir: selectedTanggalLahir,
+                                  );
+
+                                  await prefs.setString(
+                                    'current_user_name',
+                                    namaController.text.trim(),
+                                  );
+
+                                  if (mounted) {
+                                    Navigator.pop(context);
+                                    _loadUserProfile();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Profil berhasil diperbarui',
+                                        ),
+                                        backgroundColor: Color(0xFF0D9488),
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: activeTeal,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Simpan',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildInputField(
+    String label,
+    TextEditingController controller,
+    IconData icon, {
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          icon: Icon(icon, color: Colors.grey, size: 20),
+          labelText: label,
+          labelStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
+          border: InputBorder.none,
+        ),
+      ),
+    );
   }
 
   void _changePassword() {
@@ -381,7 +797,6 @@ class _ProfilViewState extends State<ProfilView> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Header Gradient Banner
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -422,24 +837,36 @@ class _ProfilViewState extends State<ProfilView> {
                     title: 'Eco Starter',
                     desc:
                         'Telah bergabung dengan aplikasi RUAS untuk menjaga kelestarian lingkungan.',
-                    bgColor: const Color(0xFFECFDF5),
-                    borderColor: const Color(0xFFA7F3D0),
+                    bgColor: _getBadgeDetailBgColor(_ecoStarterTier),
+                    borderColor: _getBadgeDetailBorderColor(_ecoStarterTier),
+                    statusText: _ecoStarterTier == 'Locked'
+                        ? 'Terkunci'
+                        : 'Level: $_ecoStarterTier',
+                    isLocked: _ecoStarterTier == 'Locked',
                   ),
                   _buildBadgeDetailItem(
                     image: 'assets/images/project_akhir/badge_2.png',
                     title: 'Green Reporter',
                     desc:
-                        'Mengirimkan laporan pertama mengenai polusi atau sampah lingkungan sekitar.',
-                    bgColor: const Color(0xFFFFF7ED),
-                    borderColor: const Color(0xFFFED7AA),
+                        'Mengirimkan laporan mengenai polusi atau sampah lingkungan sekitar.',
+                    bgColor: _getBadgeDetailBgColor(_greenReporterTier),
+                    borderColor: _getBadgeDetailBorderColor(_greenReporterTier),
+                    statusText: _greenReporterTier == 'Locked'
+                        ? 'Terkunci'
+                        : 'Level: $_greenReporterTier',
+                    isLocked: _greenReporterTier == 'Locked',
                   ),
                   _buildBadgeDetailItem(
                     image: 'assets/images/project_akhir/badge_3.png',
                     title: 'Air Guardian',
                     desc:
-                        'Teraktif membaca artikel edukasi & memantau indeks kualitas udara Sukabumi.',
-                    bgColor: const Color(0xFFEFF6FF),
-                    borderColor: const Color(0xFFBFDBFE),
+                        'Membaca artikel edukasi & memantau indeks kualitas udara.',
+                    bgColor: _getBadgeDetailBgColor(_airGuardianTier),
+                    borderColor: _getBadgeDetailBorderColor(_airGuardianTier),
+                    statusText: _airGuardianTier == 'Locked'
+                        ? 'Terkunci'
+                        : 'Level: $_airGuardianTier',
+                    isLocked: _airGuardianTier == 'Locked',
                   ),
                   const SizedBox(height: 16),
                   Center(
@@ -478,37 +905,104 @@ class _ProfilViewState extends State<ProfilView> {
     required String desc,
     required Color bgColor,
     required Color borderColor,
+    required String statusText,
+    required bool isLocked,
   }) {
+    Color statusColor;
+    if (statusText.contains('Gold')) {
+      statusColor = const Color(0xFFD97706);
+    } else if (statusText.contains('Silver')) {
+      statusColor = const Color(0xFF475569);
+    } else if (statusText.contains('Bronze')) {
+      statusColor = const Color(0xFFB45309);
+    } else {
+      statusColor = Colors.grey;
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor),
+        border: Border.all(color: borderColor, width: 1.5),
       ),
       child: Row(
         children: [
-          Image.asset(
-            image,
-            width: 48,
-            height: 48,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) =>
-                const Icon(Icons.stars, color: Color(0xFF10B981), size: 36),
+          ColorFiltered(
+            colorFilter: isLocked
+                ? const ColorFilter.matrix(<double>[
+                    0.2126,
+                    0.7152,
+                    0.0722,
+                    0,
+                    0,
+                    0.2126,
+                    0.7152,
+                    0.0722,
+                    0,
+                    0,
+                    0.2126,
+                    0.7152,
+                    0.0722,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                  ])
+                : const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+            child: Image.asset(
+              image,
+              width: 48,
+              height: 48,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => Icon(
+                Icons.stars,
+                color: isLocked ? Colors.grey : statusColor,
+                size: 36,
+              ),
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: textDark,
-                    fontSize: 13,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: textDark,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isLocked
+                            ? Colors.grey[300]
+                            : statusColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        statusText,
+                        style: TextStyle(
+                          color: isLocked ? Colors.grey[600] : statusColor,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -524,6 +1018,130 @@ class _ProfilViewState extends State<ProfilView> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final image = await picker.pickImage(
+        source: source,
+        imageQuality: 70,
+        maxWidth: 400,
+      );
+
+      if (image != null) {
+        final prefs = await SharedPreferences.getInstance();
+        final userId = prefs.getInt('current_user_id') ?? 1;
+        await prefs.setString('profile_photo_$userId', image.path);
+
+        setState(() {
+          _profilePhotoPath = image.path;
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Foto profil berhasil diubah!'),
+              backgroundColor: Color(0xFF0D9488),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal mengambil gambar: $e')));
+      }
+    }
+  }
+
+  void _showImageSourcePicker() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Color(0xFF0D9488)),
+              title: const Text('Kamera'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.photo_library,
+                color: Color(0xFF0D9488),
+              ),
+              title: const Text('Galeri'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+            if (_profilePhotoPath != null)
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Hapus Foto Profil'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final prefs = await SharedPreferences.getInstance();
+                  final userId = prefs.getInt('current_user_id') ?? 1;
+                  await prefs.remove('profile_photo_$userId');
+                  setState(() {
+                    _profilePhotoPath = null;
+                  });
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Foto profil dihapus.'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileImage() {
+    if (_profilePhotoPath != null) {
+      if (_profilePhotoPath!.startsWith('assets/')) {
+        return Image.asset(
+          _profilePhotoPath!,
+          width: 76,
+          height: 76,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              const Icon(Icons.person, size: 38, color: Color(0xFF0D9488)),
+        );
+      } else {
+        return Image.file(
+          File(_profilePhotoPath!),
+          width: 76,
+          height: 76,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              const Icon(Icons.person, size: 38, color: Color(0xFF0D9488)),
+        );
+      }
+    }
+    return Image.asset(
+      'assets/images/profile.webp',
+      width: 76,
+      height: 76,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) =>
+          const Icon(Icons.person, size: 38, color: Color(0xFF0D9488)),
     );
   }
 
@@ -598,28 +1216,16 @@ class _ProfilViewState extends State<ProfilView> {
                           const SizedBox(height: 16),
                           Row(
                             children: [
-                              // Avatar Stack with Verified Badge
+                              // Avatar Stack with Verified Badge & Edit Button
                               Stack(
                                 children: [
-                                  CircleAvatar(
-                                    radius: 38,
-                                    backgroundImage: const AssetImage(
-                                      'assets/images/profile.webp',
-                                    ),
-                                    backgroundColor: const Color(0xFFE2F1ED),
-                                    child: ClipOval(
-                                      child: Image.asset(
-                                        'assets/images/profile.webp',
-                                        width: 76,
-                                        height: 76,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                const Icon(
-                                                  Icons.person,
-                                                  size: 38,
-                                                  color: Color(0xFF0D9488),
-                                                ),
+                                  GestureDetector(
+                                    onTap: _showImageSourcePicker,
+                                    child: CircleAvatar(
+                                      radius: 38,
+                                      backgroundColor: const Color(0xFFE2F1ED),
+                                      child: ClipOval(
+                                        child: _buildProfileImage(),
                                       ),
                                     ),
                                   ),
@@ -636,6 +1242,25 @@ class _ProfilViewState extends State<ProfilView> {
                                         Icons.check,
                                         color: Colors.white,
                                         size: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    left: 0,
+                                    child: GestureDetector(
+                                      onTap: _showImageSourcePicker,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFF0D9488),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.camera_alt,
+                                          color: Colors.white,
+                                          size: 12,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -666,6 +1291,48 @@ class _ProfilViewState extends State<ProfilView> {
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 3,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: _getTopBadgeColor(
+                                          _ecoStarterTier,
+                                          _greenReporterTier,
+                                          _airGuardianTier,
+                                        ).withValues(alpha: 0.12),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.verified_rounded,
+                                            size: 12,
+                                            color: _getTopBadgeColor(
+                                              _ecoStarterTier,
+                                              _greenReporterTier,
+                                              _airGuardianTier,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'Pangkat: ${_getRankName(_ecoStarterTier, _greenReporterTier, _airGuardianTier)}',
+                                            style: TextStyle(
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w800,
+                                              color: _getTopBadgeColor(
+                                                _ecoStarterTier,
+                                                _greenReporterTier,
+                                                _airGuardianTier,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -732,14 +1399,17 @@ class _ProfilViewState extends State<ProfilView> {
                         _buildMockupBadgeItem(
                           image: 'assets/images/project_akhir/badge_1.png',
                           label: 'Eco Starter',
+                          tier: _ecoStarterTier,
                         ),
                         _buildMockupBadgeItem(
                           image: 'assets/images/project_akhir/badge_2.png',
                           label: 'Green Reporter',
+                          tier: _greenReporterTier,
                         ),
                         _buildMockupBadgeItem(
                           image: 'assets/images/project_akhir/badge_3.png',
                           label: 'Air Guardian',
+                          tier: _airGuardianTier,
                         ),
                       ],
                     ),
@@ -761,6 +1431,12 @@ class _ProfilViewState extends State<ProfilView> {
                       ),
                       child: Column(
                         children: [
+                          _buildMenuTile(
+                            Icons.person_outline_rounded,
+                            'Edit Profil',
+                            onTap: _showEditProfileDialog,
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
                           _buildMenuTile(
                             Icons.notifications_none_rounded,
                             'Notifikasi',
@@ -807,7 +1483,9 @@ class _ProfilViewState extends State<ProfilView> {
                                               end: Alignment.bottomRight,
                                             ),
                                           ),
-                                          padding: const EdgeInsets.symmetric(vertical: 28),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 28,
+                                          ),
                                           child: Stack(
                                             alignment: Alignment.center,
                                             children: [
@@ -816,18 +1494,32 @@ class _ProfilViewState extends State<ProfilView> {
                                                   Image.asset(
                                                     'assets/images/logo_ruas.png',
                                                     height: 72,
-                                                    errorBuilder: (context, error, stackTrace) => Container(
-                                                      padding: const EdgeInsets.all(12),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white.withOpacity(0.2),
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                      child: const Icon(
-                                                        Icons.air_rounded,
-                                                        color: Colors.white,
-                                                        size: 48,
-                                                      ),
-                                                    ),
+                                                    errorBuilder:
+                                                        (
+                                                          context,
+                                                          error,
+                                                          stackTrace,
+                                                        ) => Container(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                12,
+                                                              ),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                color: Colors
+                                                                    .white
+                                                                    .withOpacity(
+                                                                      0.2,
+                                                                    ),
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                              ),
+                                                          child: const Icon(
+                                                            Icons.air_rounded,
+                                                            color: Colors.white,
+                                                            size: 48,
+                                                          ),
+                                                        ),
                                                   ),
                                                   const SizedBox(height: 12),
                                                   const Text(
@@ -835,7 +1527,8 @@ class _ProfilViewState extends State<ProfilView> {
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 24,
-                                                      fontWeight: FontWeight.w900,
+                                                      fontWeight:
+                                                          FontWeight.w900,
                                                       letterSpacing: 1.5,
                                                     ),
                                                   ),
@@ -844,7 +1537,8 @@ class _ProfilViewState extends State<ProfilView> {
                                                     style: TextStyle(
                                                       color: Colors.white70,
                                                       fontSize: 12,
-                                                      fontWeight: FontWeight.w500,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                 ],
@@ -855,20 +1549,35 @@ class _ProfilViewState extends State<ProfilView> {
                                         Padding(
                                           padding: const EdgeInsets.all(24.0),
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               // Description Card
                                               Container(
-                                                padding: const EdgeInsets.all(14),
+                                                padding: const EdgeInsets.all(
+                                                  14,
+                                                ),
                                                 decoration: BoxDecoration(
-                                                  color: const Color(0xFFEFF6F5),
-                                                  borderRadius: BorderRadius.circular(16),
-                                                  border: Border.all(color: const Color(0xFFCCECE7)),
+                                                  color: const Color(
+                                                    0xFFEFF6F5,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  border: Border.all(
+                                                    color: const Color(
+                                                      0xFFCCECE7,
+                                                    ),
+                                                  ),
                                                 ),
                                                 child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
-                                                    Icon(Icons.spa_rounded, color: activeTeal, size: 20),
+                                                    Icon(
+                                                      Icons.spa_rounded,
+                                                      color: activeTeal,
+                                                      size: 20,
+                                                    ),
                                                     const SizedBox(width: 8),
                                                     Expanded(
                                                       child: Text(
@@ -877,7 +1586,8 @@ class _ProfilViewState extends State<ProfilView> {
                                                           fontSize: 12,
                                                           height: 1.5,
                                                           color: textDark,
-                                                          fontWeight: FontWeight.w500,
+                                                          fontWeight:
+                                                              FontWeight.w500,
                                                         ),
                                                       ),
                                                     ),
@@ -895,13 +1605,37 @@ class _ProfilViewState extends State<ProfilView> {
                                               ),
                                               const SizedBox(height: 12),
                                               // Feature Rows inline
-                                              _buildFeatureRow(Icons.map_rounded, const Color(0xFFE0F2FE), Colors.blue, 'Peta AQI Nasional', 'Pantau indeks standar pencemar udara terupdate di wilayah Indonesia.'),
+                                              _buildFeatureRow(
+                                                Icons.map_rounded,
+                                                const Color(0xFFE0F2FE),
+                                                Colors.blue,
+                                                'Peta AQI Nasional',
+                                                'Pantau indeks standar pencemar udara terupdate di wilayah Indonesia.',
+                                              ),
                                               const SizedBox(height: 10),
-                                              _buildFeatureRow(Icons.campaign_rounded, const Color(0xFFFEF3C7), Colors.amber[800]!, 'Laporan Masyarakat', 'Laporkan titik polusi udara dan sampah secara real-time.'),
+                                              _buildFeatureRow(
+                                                Icons.campaign_rounded,
+                                                const Color(0xFFFEF3C7),
+                                                Colors.amber[800]!,
+                                                'Laporan Masyarakat',
+                                                'Laporkan titik polusi udara dan sampah secara real-time.',
+                                              ),
                                               const SizedBox(height: 10),
-                                              _buildFeatureRow(Icons.menu_book_rounded, const Color(0xFFEFF6F5), primaryTeal, 'Edukasi Interaktif', 'Pelajari kiat-kiat kebersihan dan dampak kualitas udara bagi kesehatan.'),
+                                              _buildFeatureRow(
+                                                Icons.menu_book_rounded,
+                                                const Color(0xFFEFF6F5),
+                                                primaryTeal,
+                                                'Edukasi Interaktif',
+                                                'Pelajari kiat-kiat kebersihan dan dampak kualitas udara bagi kesehatan.',
+                                              ),
                                               const SizedBox(height: 10),
-                                              _buildFeatureRow(Icons.quiz_rounded, const Color(0xFFFCE7F3), Colors.pink, 'Kuis & Tantangan', 'Uji pengetahuan lingkunganmu untuk mendapatkan reward pencapaian.'),
+                                              _buildFeatureRow(
+                                                Icons.quiz_rounded,
+                                                const Color(0xFFFCE7F3),
+                                                Colors.pink,
+                                                'Kuis & Tantangan',
+                                                'Uji pengetahuan lingkunganmu untuk mendapatkan reward pencapaian.',
+                                              ),
                                               const SizedBox(height: 24),
                                               // App Metadata
                                               Center(
@@ -909,12 +1643,22 @@ class _ProfilViewState extends State<ProfilView> {
                                                   children: [
                                                     const Text(
                                                       'Versi 1.0.0 (Tugas 13 Final Project)',
-                                                      style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.bold),
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        color: Colors.grey,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
                                                     const SizedBox(height: 4),
                                                     Text(
                                                       'Dikembangkan dengan 💚 oleh Tim RUAS',
-                                                      style: TextStyle(fontSize: 11, color: activeTeal, fontWeight: FontWeight.w600),
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        color: activeTeal,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -924,17 +1668,31 @@ class _ProfilViewState extends State<ProfilView> {
                                               SizedBox(
                                                 width: double.infinity,
                                                 child: ElevatedButton(
-                                                  onPressed: () => Navigator.pop(context),
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor: activeTeal,
-                                                    foregroundColor: Colors.white,
+                                                    foregroundColor:
+                                                        Colors.white,
                                                     elevation: 0,
-                                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          vertical: 14,
+                                                        ),
                                                     shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(16),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            16,
+                                                          ),
                                                     ),
                                                   ),
-                                                  child: const Text('Tutup', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                  child: const Text(
+                                                    'Tutup',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -972,7 +1730,7 @@ class _ProfilViewState extends State<ProfilView> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 110),
                   ],
                 ),
               ),
@@ -1011,34 +1769,127 @@ class _ProfilViewState extends State<ProfilView> {
     );
   }
 
-  Widget _buildMockupBadgeItem({required String image, required String label}) {
+  Widget _buildMockupBadgeItem({
+    required String image,
+    required String label,
+    required String tier,
+  }) {
+    final bool isLocked = tier == 'Locked';
+
+    Color tierColor;
+    switch (tier) {
+      case 'Gold':
+        tierColor = const Color(0xFFD97706);
+        break;
+      case 'Silver':
+        tierColor = const Color(0xFF475569);
+        break;
+      case 'Bronze':
+        tierColor = const Color(0xFFB45309);
+        break;
+      default:
+        tierColor = Colors.grey;
+    }
+
     return Column(
       children: [
-        Container(
-          width: 68,
-          height: 68,
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFEFF3F8)),
-          ),
-          child: Image.asset(
-            image,
-            width: 56,
-            height: 56,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) =>
-                const Icon(Icons.stars, color: Color(0xFF10B981), size: 40),
-          ),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: isLocked
+                    ? const Color(0xFFF1F5F9)
+                    : tierColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isLocked
+                      ? const Color(0xFFE2E8F0)
+                      : tierColor.withValues(alpha: 0.5),
+                  width: isLocked ? 1 : 2.5,
+                ),
+              ),
+              child: ColorFiltered(
+                colorFilter: isLocked
+                    ? const ColorFilter.matrix(<double>[
+                        0.2126,
+                        0.7152,
+                        0.0722,
+                        0,
+                        0,
+                        0.2126,
+                        0.7152,
+                        0.0722,
+                        0,
+                        0,
+                        0.2126,
+                        0.7152,
+                        0.0722,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
+                      ])
+                    : const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+                child: Image.asset(
+                  image,
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => Icon(
+                    Icons.stars,
+                    color: isLocked ? Colors.grey : tierColor,
+                    size: 40,
+                  ),
+                ),
+              ),
+            ),
+            if (!isLocked)
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: tierColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    tier.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 8),
         Text(
           label,
           style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF475569),
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1E293B),
+          ),
+        ),
+        Text(
+          isLocked ? 'Terkunci' : 'Tingkat: $tier',
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w500,
+            color: isLocked ? const Color(0xFF94A3B8) : tierColor,
           ),
         ),
       ],
@@ -1071,7 +1922,13 @@ class _ProfilViewState extends State<ProfilView> {
     );
   }
 
-  Widget _buildFeatureRow(IconData icon, Color bgColor, Color iconColor, String title, String desc) {
+  Widget _buildFeatureRow(
+    IconData icon,
+    Color bgColor,
+    Color iconColor,
+    String title,
+    String desc,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

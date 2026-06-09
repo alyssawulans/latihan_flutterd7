@@ -5,6 +5,8 @@ class UserModel {
   final String nomorTelp;
   final String password;
   final String tanggalDaftar;
+  final String tempatLahir;
+  final String tanggalLahir;
 
   UserModel({
     this.id,
@@ -13,6 +15,8 @@ class UserModel {
     required this.nomorTelp,
     required this.password,
     required this.tanggalDaftar,
+    this.tempatLahir = '',
+    this.tanggalLahir = '',
   });
 
   Map<String, dynamic> toMap() {
@@ -23,6 +27,8 @@ class UserModel {
       'nomor_telp': nomorTelp,
       'password': password,
       'tanggal_daftar': tanggalDaftar,
+      'tempat_lahir': tempatLahir,
+      'tanggal_lahir': tanggalLahir,
     };
   }
 
@@ -34,6 +40,8 @@ class UserModel {
       nomorTelp: map['nomor_telp'] ?? '',
       password: map['password'] ?? '',
       tanggalDaftar: map['tanggal_daftar'] ?? '',
+      tempatLahir: map['tempat_lahir'] ?? '',
+      tanggalLahir: map['tanggal_lahir'] ?? '',
     );
   }
 }

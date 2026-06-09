@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/edukasi_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/edukasi_form_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EdukasiDetailView extends StatefulWidget {
   final EdukasiModel article;
@@ -18,6 +19,22 @@ class _EdukasiDetailViewState extends State<EdukasiDetailView> {
   void initState() {
     super.initState();
     _currentArticle = widget.article;
+    _markArticleAsRead();
+  }
+
+  Future<void> _markArticleAsRead() async {
+    if (_currentArticle.id == null) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('current_user_id') ?? 1;
+      final readKey = 'read_articles_$userId';
+      final readList = prefs.getStringList(readKey) ?? [];
+      final articleIdStr = _currentArticle.id.toString();
+      if (!readList.contains(articleIdStr)) {
+        readList.add(articleIdStr);
+        await prefs.setStringList(readKey, readList);
+      }
+    } catch (_) {}
   }
 
   Future<void> _deleteArticle() async {

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/laporan_model.dart';
@@ -129,8 +130,8 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                     height: 220,
                     width: double.infinity,
                     color: Colors.grey.shade100,
-                    child: _currentLaporan.foto.startsWith('assets/')
-                        ? Image.asset(
+                    child: _currentLaporan.foto.startsWith('http')
+                        ? Image.network(
                             _currentLaporan.foto,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) => const Icon(
@@ -139,9 +140,29 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                               color: Colors.grey,
                             ),
                           )
-                        : const Center(
-                            child: Icon(Icons.photo_outlined, size: 60, color: Colors.black26),
-                          ),
+                        : _currentLaporan.foto.startsWith('assets/')
+                            ? Image.asset(
+                                _currentLaporan.foto,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => const Icon(
+                                  Icons.broken_image_outlined,
+                                  size: 60,
+                                  color: Colors.grey,
+                                ),
+                              )
+                            : _currentLaporan.foto.isNotEmpty
+                                ? Image.file(
+                                    File(_currentLaporan.foto),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => const Icon(
+                                      Icons.broken_image_outlined,
+                                      size: 60,
+                                      color: Colors.grey,
+                                    ),
+                                  )
+                                : const Center(
+                                    child: Icon(Icons.photo_outlined, size: 60, color: Colors.black26),
+                                  ),
                   ),
 
                   Padding(

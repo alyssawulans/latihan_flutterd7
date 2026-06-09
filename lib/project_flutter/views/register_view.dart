@@ -15,7 +15,7 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   final _registerFormKey = GlobalKey<FormState>();
   bool obscureNewPassword = true;
-  bool isCheck = true;
+  bool isCheck = false;
   bool _isLoading = false;
 
   // Controllers
@@ -23,6 +23,8 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController tempatLahirController = TextEditingController();
+  final TextEditingController tanggalLahirController = TextEditingController();
 
   @override
   void dispose() {
@@ -30,7 +32,243 @@ class _RegisterViewState extends State<RegisterView> {
     emailController.dispose();
     phoneController.dispose();
     passwordController.dispose();
+    tempatLahirController.dispose();
+    tanggalLahirController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectTanggalLahir() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFF0D9488),
+              onPrimary: Colors.white,
+              onSurface: Color(0xFF1A2E44),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        tanggalLahirController.text = DateFormat('dd MMM yyyy', 'id_ID').format(picked);
+      });
+    }
+  }
+
+  void _showTermsBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.all(24),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.75,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Syarat & Ketentuan",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A2E44),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const Divider(),
+              const SizedBox(height: 8),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Selamat datang di RUAS (Rukun Udara & Asri Selaras). Dengan mendaftar dan menggunakan aplikasi ini, Anda setuju untuk mematuhi ketentuan berikut:",
+                        style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "1. Akun Pengguna",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Anda wajib memberikan informasi pendaftaran yang akurat, lengkap, dan terbaru termasuk nama lengkap, tempat lahir, dan tanggal lahir. Anda bertanggung jawab penuh atas keamanan kata sandi Anda.",
+                        style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "2. Penggunaan Layanan",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Layanan ini ditujukan untuk memantau kualitas udara, melaporkan isu lingkungan, serta mempelajari edukasi lingkungan. Anda dilarang mengunggah laporan palsu atau konten yang mengandung SARA.",
+                        style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "3. Hak Cipta & Konten",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Semua konten edukasi, desain, dan ilustrasi di dalam aplikasi adalah hak milik RUAS. Penggunaan konten di luar aplikasi wajib mencantumkan sumber.",
+                        style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0D9488),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Saya Mengerti", style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showPrivacyBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.all(24),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.75,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Kebijakan Privasi",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A2E44),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const Divider(),
+              const SizedBox(height: 8),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda saat menggunakan aplikasi RUAS:",
+                        style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "1. Informasi yang Kami Kumpulkan",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Kami mengumpulkan data pendaftaran seperti nama, email, nomor telepon, serta tempat & tanggal lahir. Kami juga mengumpulkan koordinat lokasi GPS saat Anda membuat laporan lingkungan.",
+                        style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "2. Penggunaan Data",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Data Anda digunakan untuk memverifikasi identitas, menindaklanjuti laporan lingkungan ke instansi terkait, serta memberikan notifikasi perkembangan kualitas udara di sekitar Anda.",
+                        style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "3. Keamanan Informasi",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Kami berkomitmen melindungi data pribadi Anda dari akses tidak sah melalui langkah-langkah enkripsi database dan kontrol akses ketat.",
+                        style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0D9488),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Saya Mengerti", style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _showSuccessDialog() {
@@ -229,6 +467,8 @@ class _RegisterViewState extends State<RegisterView> {
       nomorTelp: phoneController.text.trim(),
       password: passwordController.text,
       tanggalDaftar: formattedDate,
+      tempatLahir: tempatLahirController.text.trim(),
+      tanggalLahir: tanggalLahirController.text.trim(),
     );
 
     final result = await RuasDbHelper.instance.registerUser(user);
@@ -391,6 +631,54 @@ class _RegisterViewState extends State<RegisterView> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
+                          "Tempat Lahir",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1A2E44),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: tempatLahirController,
+                          decoration: _buildInputDecoration(
+                            "Masukkan Tempat Lahir Anda",
+                            Icons.location_city_outlined,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "Tempat Lahir tidak boleh kosong";
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Tanggal Lahir",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1A2E44),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: tanggalLahirController,
+                          readOnly: true,
+                          onTap: _selectTanggalLahir,
+                          decoration: _buildInputDecoration(
+                            "Pilih Tanggal Lahir",
+                            Icons.calendar_today_outlined,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Tanggal Lahir tidak boleh kosong";
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
                           "Kata Sandi Baru",
                           style: TextStyle(
                             fontSize: 14,
@@ -443,11 +731,7 @@ class _RegisterViewState extends State<RegisterView> {
                                 children: [
                                   TextSpan(
                                     recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Menampilkan Syarat & Ketentuan...')),
-                                        );
-                                      },
+                                      ..onTap = _showTermsBottomSheet,
                                     text: " Syarat & Ketentuan",
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -464,11 +748,7 @@ class _RegisterViewState extends State<RegisterView> {
                                   ),
                                   TextSpan(
                                     recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Menampilkan Kebijakan Privasi...')),
-                                        );
-                                      },
+                                      ..onTap = _showPrivacyBottomSheet,
                                     text: " Kebijakan Privasi",
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,

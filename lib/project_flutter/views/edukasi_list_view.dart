@@ -3,7 +3,9 @@ import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/edukasi_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/daftar_edukasi_view.dart';
 import 'package:latihan_flutterd7/project_flutter/views/edukasi_detail_view.dart';
+import 'package:latihan_flutterd7/project_flutter/views/edukasi_image_viewer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EdukasiListView extends StatefulWidget {
   const EdukasiListView({super.key});
@@ -28,6 +30,27 @@ class _EdukasiListViewState extends State<EdukasiListView> {
   final Color primaryTeal = const Color(0xFF0F4C43);
   final Color activeTeal = const Color(0xFF0D9488);
   final Color textDark = const Color(0xFF0F172A);
+
+  // List of daily fun facts
+  final List<String> _funFacts = [
+    'Satu pohon dewasa mampu menyerap sekitar 22 kg CO₂ setiap tahun untuk membantu menyaring udara.',
+    'Menanam tanaman hias seperti Lidah Mertua di dalam ruangan dapat menyerap racun benzena dan formaldehida.',
+    'Kualitas udara di dalam ruangan bisa 2 hingga 5 kali lebih buruk daripada kualitas udara di luar ruangan.',
+    'Hutan hujan Amazon menghasilkan sekitar 20 persen oksigen di bumi dari seluruh pepohonan di sana.',
+    'Berkendara sepeda sejauh 10 km setiap hari dapat mencegah emisi sekitar 1,3 ton CO₂ per tahun.',
+    'Polusi udara dapat berdampak negatif pada kesehatan mental dan memicu stres atau kecemasan.',
+    'Menggunakan transportasi umum dapat mengurangi emisi karbon pribadi Anda hingga 45 persen setiap perjalanan.',
+    'Sebagian besar debu di rumah kita sebenarnya berasal dari sel kulit mati manusia dan serat pakaian.',
+    'Tanaman Lidah Buaya melepaskan oksigen pada malam hari, menjadikannya tanaman ideal diletakkan di kamar tidur.',
+    'Membuka jendela selama 15 menit setiap pagi dapat mengurangi penumpukan gas karbon dioksida di dalam rumah.',
+    'Satu hektar hutan kota mampu menghasilkan oksigen yang cukup untuk kebutuhan bernapas 18 orang setiap hari.',
+    'Polusi partikulat halus (PM2.5) dapat terbawa angin hingga jarak ratusan kilometer dari sumber asalnya.',
+  ];
+
+  String get _todayFunFact {
+    final day = DateTime.now().day;
+    return _funFacts[day % _funFacts.length];
+  }
 
   @override
   void initState() {
@@ -68,6 +91,31 @@ class _EdukasiListViewState extends State<EdukasiListView> {
     }
   }
 
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    try {
+      if (!await launchUrl(url, mode: LaunchMode.inAppWebView)) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Tidak dapat membuka tautan: $urlString'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error membuka tautan: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,6 +140,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
               child: CircularProgressIndicator(color: Color(0xFF0D9488)),
             )
           : SafeArea(
+              bottom: false,
               child: RefreshIndicator(
                 onRefresh: _loadDashboardData,
                 color: activeTeal,
@@ -383,15 +432,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                             icon: Icons.article_rounded,
                             bgColor: const Color(0xFFEFF6FF),
                             iconColor: const Color(0xFF2563EB),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const DaftarEdukasiView(),
-                                ),
-                              ).then((_) => _loadDashboardData());
-                            },
+                            onTap: () => _showArtikelBottomSheet(context),
                           ),
                           _buildQuickNavButton(
                             label: 'Video\nEdukasi',
@@ -445,7 +486,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  'Satu pohon dewasa mampu menyerap sekitar 22 kg CO₂ setiap tahun.',
+                                  _todayFunFact,
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -472,7 +513,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 110),
                     ],
                   ),
                 ),
@@ -510,6 +551,134 @@ class _EdukasiListViewState extends State<EdukasiListView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showArtikelBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 48,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Artikel Populer',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: textDark,
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Pelajari artikel populer mengenai lingkungan dan polusi udara berikut:',
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            _buildArtikelRowItem(
+              title: 'Polusi Udara Perkotaan - Greenpeace Indonesia',
+              source: 'Greenpeace Indonesia',
+              url:
+                  'https://www.greenpeace.org/indonesia/kampanye/perkotaan/polusi-udara/',
+            ),
+            _buildArtikelRowItem(
+              title: 'Dampak Polusi Jakarta bagi Kesehatan - UGM OHCE',
+              source: 'OHCE UGM',
+              url:
+                  'https://ohce.wg.ugm.ac.id/polusi-jakarta-peringkat-1-di-dunia-bagaimana-dampaknya-pada-kesehatan/',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArtikelRowItem({
+    required String title,
+    required String source,
+    required String url,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => _launchURL(url),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEFF6FF),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.article_rounded,
+                    color: Color(0xFF2563EB),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: textDark,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        source,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.open_in_new_rounded,
+                  color: Colors.grey,
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -553,21 +722,23 @@ class _EdukasiListViewState extends State<EdukasiListView> {
               style: TextStyle(color: Colors.grey, fontSize: 13),
             ),
             const SizedBox(height: 16),
-            // Mock Video Items
             _buildVideoRowItem(
-              title: 'Cara Mengatasi Polusi Udara di Kota',
-              duration: '10:15',
-              channel: 'Lestari Bumi',
+              title: 'Solusi Polusi Udara di Indonesia',
+              duration: 'YouTube',
+              channel: 'Edukasi Lingkungan',
+              url: 'https://youtu.be/ltbx_Gb4x9w?si=MoZQZ7ObKwZ9kgAL',
             ),
             _buildVideoRowItem(
-              title: 'Limbah Plastik & Dampaknya pada Ekosistem',
-              duration: '07:42',
-              channel: 'Hijau Lestari',
+              title: 'Penyebab & Dampak Buruk Kualitas Udara',
+              duration: 'YouTube',
+              channel: 'Info Lingkungan',
+              url: 'https://youtu.be/GVBeY1jSG9Y?si=wnjAn-cSth1LVehD',
             ),
             _buildVideoRowItem(
-              title: 'Tips Menanam Pohon di Lahan Sempit',
-              duration: '05:30',
-              channel: 'Kebun Kota',
+              title: 'Cara Melindungi Diri dari Polusi Udara',
+              duration: 'YouTube',
+              channel: 'Kesehatan Masyarakat',
+              url: 'https://youtu.be/jtiANpcpJJY?si=BNh6UBoae7YTtddh',
             ),
           ],
         ),
@@ -579,53 +750,71 @@ class _EdukasiListViewState extends State<EdukasiListView> {
     required String title,
     required String duration,
     required String channel,
+    required String url,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFDF2F8),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.play_arrow_rounded,
-              color: Color(0xFFDB2777),
-              size: 28,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => _launchURL(url),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: textDark,
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFDF2F8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  child: const Icon(
+                    Icons.play_arrow_rounded,
+                    color: Color(0xFFDB2777),
+                    size: 28,
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '$channel • $duration',
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: textDark,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '$channel • $duration',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.open_in_new_rounded,
+                  color: Colors.grey,
+                  size: 16,
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -670,16 +859,19 @@ class _EdukasiListViewState extends State<EdukasiListView> {
             ),
             const SizedBox(height: 16),
             _buildInfografisRowItem(
-              title: 'Infografis: Komposisi Polutan Udara Utama',
-              size: '1.2 MB',
+              title: 'Hubungan Deret Hari Kering dengan Konsentrasi Partikulat',
+              size: 'PNG',
+              imagePath: 'assets/images/project_akhir/infografis_1.png',
             ),
             _buildInfografisRowItem(
-              title: 'Panduan Praktis Pemilahan Sampah 3R',
-              size: '850 KB',
+              title: 'Penentuan Lokasi Lintas Batas Pencemar Udara',
+              size: 'PNG',
+              imagePath: 'assets/images/project_akhir/infografis_2.png',
             ),
             _buildInfografisRowItem(
-              title: 'Cara Mandiri Membuat Filter Udara Sederhana',
-              size: '2.1 MB',
+              title: 'Kondisi Udara Jakarta 2026',
+              size: 'JPG',
+              imagePath: 'assets/images/project_akhir/infografis_3.jpg',
             ),
           ],
         ),
@@ -690,53 +882,76 @@ class _EdukasiListViewState extends State<EdukasiListView> {
   Widget _buildInfografisRowItem({
     required String title,
     required String size,
+    required String imagePath,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFFECFDF5),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.insert_chart_outlined_rounded,
-              color: Color(0xFF059669),
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            Navigator.pop(context); // close bottom sheet
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    EdukasiImageViewer(imagePath: imagePath, title: title),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: textDark,
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFECFDF5),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  child: const Icon(
+                    Icons.insert_chart_outlined_rounded,
+                    color: Color(0xFF059669),
+                    size: 24,
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Format: PDF • $size',
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: textDark,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Format: $size • Tap untuk memperbesar',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                const Icon(Icons.zoom_in_rounded, color: Colors.grey, size: 20),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -784,7 +999,9 @@ class _EdukasiListViewState extends State<EdukasiListView> {
             final progress = (currentQuestion + 1) / questions.length;
 
             return Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+              ),
               clipBehavior: Clip.antiAlias,
               backgroundColor: Colors.white,
               child: Column(
@@ -816,7 +1033,9 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                             child: LinearProgressIndicator(
                               value: progress,
                               backgroundColor: Colors.white.withOpacity(0.2),
-                              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                               minHeight: 6,
                             ),
                           ),
@@ -843,9 +1062,10 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                             Text(
                               'Soal ${currentQuestion + 1} dari ${questions.length}',
                               style: const TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.bold),
+                                fontSize: 11,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -879,15 +1099,21 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                               itemBgColor = const Color(0xFFECFDF5);
                               prefixBgColor = const Color(0xFF10B981);
                               prefixTextColor = Colors.white;
-                              trailingIcon = const Icon(Icons.check_circle_rounded,
-                                  color: Color(0xFF10B981), size: 20);
+                              trailingIcon = const Icon(
+                                Icons.check_circle_rounded,
+                                color: Color(0xFF10B981),
+                                size: 20,
+                              );
                             } else if (isSelected) {
                               itemBorderColor = const Color(0xFFEF4444);
                               itemBgColor = const Color(0xFFFEF2F2);
                               prefixBgColor = const Color(0xFFEF4444);
                               prefixTextColor = Colors.white;
-                              trailingIcon = const Icon(Icons.cancel_rounded,
-                                  color: Color(0xFFEF4444), size: 20);
+                              trailingIcon = const Icon(
+                                Icons.cancel_rounded,
+                                color: Color(0xFFEF4444),
+                                size: 20,
+                              );
                             }
                           } else if (isSelected) {
                             itemBorderColor = activeTeal;
@@ -911,10 +1137,13 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   side: BorderSide(
-                                      color: itemBorderColor,
-                                      width: isSelected || (hasSubmitted && isCorrect)
-                                          ? 2.0
-                                          : 1.0),
+                                    color: itemBorderColor,
+                                    width:
+                                        isSelected ||
+                                            (hasSubmitted && isCorrect)
+                                        ? 2.0
+                                        : 1.0,
+                                  ),
                                 ),
                               ),
                               onPressed: hasSubmitted
@@ -930,21 +1159,28 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                                       }
 
                                       // Wait 1.2s to show result feedback
-                                      Future.delayed(const Duration(milliseconds: 1200), () {
-                                        if (context.mounted) {
-                                          if (currentQuestion < questions.length - 1) {
-                                            setDialogState(() {
-                                              currentQuestion++;
-                                              selectedOptionIndex = -1;
-                                              hasSubmitted = false;
-                                            });
-                                          } else {
-                                            Navigator.pop(context);
-                                            _showResultDialog(
-                                                context, score, questions.length);
+                                      Future.delayed(
+                                        const Duration(milliseconds: 1200),
+                                        () {
+                                          if (context.mounted) {
+                                            if (currentQuestion <
+                                                questions.length - 1) {
+                                              setDialogState(() {
+                                                currentQuestion++;
+                                                selectedOptionIndex = -1;
+                                                hasSubmitted = false;
+                                              });
+                                            } else {
+                                              Navigator.pop(context);
+                                              _showResultDialog(
+                                                context,
+                                                score,
+                                                questions.length,
+                                              );
+                                            }
                                           }
-                                        }
-                                      });
+                                        },
+                                      );
                                     },
                               child: Row(
                                 children: [
@@ -975,7 +1211,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                                       ),
                                     ),
                                   ),
-                                  if (trailingIcon != null) trailingIcon,
+                                  ?trailingIcon,
                                 ],
                               ),
                             ),
@@ -1012,13 +1248,20 @@ class _EdukasiListViewState extends State<EdukasiListView> {
     String feedbackTitle = 'Semangat! 📚';
     String feedbackDesc =
         'Terus belajar tentang kebersihan lingkungan dan kualitas udara ya!';
-    List<Color> headerColors = [const Color(0xFFF59E0B), const Color(0xFFD97706)]; // Orange/Gold
+    List<Color> headerColors = [
+      const Color(0xFFF59E0B),
+      const Color(0xFFD97706),
+    ]; // Orange/Gold
     IconData medalIcon = Icons.emoji_events_rounded;
 
     if (percentage == 1.0) {
       feedbackTitle = 'Sempurna! 🏆';
-      feedbackDesc = 'Luar biasa! Kamu adalah Pahlawan Udara sejati. Semua jawaban benar!';
-      headerColors = [const Color(0xFF10B981), const Color(0xFF047857)]; // Emerald
+      feedbackDesc =
+          'Luar biasa! Kamu adalah Pahlawan Udara sejati. Semua jawaban benar!';
+      headerColors = [
+        const Color(0xFF10B981),
+        const Color(0xFF047857),
+      ]; // Emerald
       medalIcon = Icons.military_tech_rounded;
     } else if (percentage >= 0.6) {
       feedbackTitle = 'Hebat! 🌟';
@@ -1051,11 +1294,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
               padding: const EdgeInsets.symmetric(vertical: 28),
               child: Column(
                 children: [
-                  Icon(
-                    medalIcon,
-                    color: Colors.white,
-                    size: 56,
-                  ),
+                  Icon(medalIcon, color: Colors.white, size: 56),
                   const SizedBox(height: 8),
                   Text(
                     feedbackTitle,
@@ -1088,8 +1327,8 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                             percentage == 1.0
                                 ? const Color(0xFF10B981)
                                 : (percentage >= 0.6
-                                    ? const Color(0xFF3B82F6)
-                                    : const Color(0xFFF59E0B)),
+                                      ? const Color(0xFF3B82F6)
+                                      : const Color(0xFFF59E0B)),
                           ),
                         ),
                       ),
@@ -1117,7 +1356,10 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                   const SizedBox(height: 24),
                   // Details Card
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF8FAFC),
                       borderRadius: BorderRadius.circular(16),
@@ -1126,11 +1368,26 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildStatBox('Benar', '$score', const Color(0xFF10B981)),
-                        Container(width: 1, height: 32, color: const Color(0xFFCBD5E1)),
                         _buildStatBox(
-                            'Salah', '${total - score}', const Color(0xFFEF4444)),
-                        Container(width: 1, height: 32, color: const Color(0xFFCBD5E1)),
+                          'Benar',
+                          '$score',
+                          const Color(0xFF10B981),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 32,
+                          color: const Color(0xFFCBD5E1),
+                        ),
+                        _buildStatBox(
+                          'Salah',
+                          '${total - score}',
+                          const Color(0xFFEF4444),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 32,
+                          color: const Color(0xFFCBD5E1),
+                        ),
                         _buildStatBox('Soal', '$total', activeTeal),
                       ],
                     ),

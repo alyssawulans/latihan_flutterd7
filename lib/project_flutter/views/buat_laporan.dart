@@ -8,6 +8,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart' hide Path;
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/laporan_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/konfirmasi_laporan.dart';
@@ -978,11 +980,12 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              // Vector Simulated Map
+                              // Real Interactive Map
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(16),
                                 child: SimulatedMapWidget(
                                   locationName: currentLokasi,
+                                  koordinatStr: currentKoordinat,
                                 ),
                               ),
                             ],
@@ -1358,12 +1361,26 @@ class _BuatLaporanState extends State<BuatLaporan> {
 // Vector simulated Map grid drawing
 class SimulatedMapWidget extends StatelessWidget {
   final String locationName;
-  const SimulatedMapWidget({super.key, required this.locationName});
+  final String koordinatStr;
+  const SimulatedMapWidget({
+    super.key,
+    required this.locationName,
+    required this.koordinatStr,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final parts = koordinatStr.split(',');
+    double lat = -6.8894;
+    double lon = 106.7914;
+    if (parts.length == 2) {
+      lat = double.tryParse(parts[0].trim()) ?? -6.8894;
+      lon = double.tryParse(parts[1].trim()) ?? 106.7914;
+    }
+    final position = LatLng(lat, lon);
+
     return Container(
-      height: 160,
+      height: 180,
       width: double.infinity,
       decoration: BoxDecoration(
         color: const Color(0xFFE2E8F0),
@@ -1373,46 +1390,70 @@ class SimulatedMapWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Stack(
           children: [
-            // Abstract grid map styling using CustomPainter
-            Positioned.fill(child: CustomPaint(painter: MapGridPainter())),
-            // Location label inside map
-            Positioned(
-              bottom: 12,
-              left: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+            FlutterMap(
+              options: MapOptions(
+                initialCenter: position,
+                initialZoom: 15.0,
+                minZoom: 10.0,
+                maxZoom: 18.0,
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.ruas.id',
                 ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black12, blurRadius: 4),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.location_on, color: Colors.red, size: 14),
-                    const SizedBox(width: 4),
-                    Text(
-                      locationName,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: position,
+                      width: 40.0,
+                      height: 40.0,
+                      child: const Icon(
+                        Icons.location_on_rounded,
+                        color: Colors.red,
+                        size: 38,
                       ),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
-            // Pin in the center
-            const Center(
-              child: Icon(
-                Icons.location_on,
-                color: Color(0xFF0D9488),
-                size: 40,
+            // Floating location info card
+            Positioned(
+              bottom: 12,
+              left: 12,
+              right: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.95),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.my_location_rounded, color: Color(0xFF0D9488), size: 14),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        locationName.replaceAll(RegExp(r'\([-0-9.,\s]+\)'), '').trim(),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E293B),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -1420,73 +1461,6 @@ class SimulatedMapWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-class MapGridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 3;
-
-    // Draw some random map streets/grids
-    canvas.drawLine(
-      Offset(size.width * 0.2, 0),
-      Offset(size.width * 0.3, size.height),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(size.width * 0.5, 0),
-      Offset(size.width * 0.5, size.height),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(size.width * 0.8, 0),
-      Offset(size.width * 0.7, size.height),
-      paint,
-    );
-
-    canvas.drawLine(
-      Offset(0, size.height * 0.3),
-      Offset(size.width, size.height * 0.25),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(0, size.height * 0.6),
-      Offset(size.width, size.height * 0.65),
-      paint,
-    );
-
-    // Draw a blue river
-    final Paint riverPaint = Paint()
-      ..color = const Color(0xFF93C5FD)
-      ..strokeWidth = 12
-      ..style = PaintingStyle.stroke;
-    final Path path = Path()
-      ..moveTo(0, size.height * 0.8)
-      ..quadraticBezierTo(
-        size.width * 0.3,
-        size.height * 0.7,
-        size.width * 0.6,
-        size.height * 0.9,
-      )
-      ..lineTo(size.width, size.height * 0.8);
-    canvas.drawPath(path, riverPaint);
-
-    // Draw a green park area
-    final Paint parkPaint = Paint()..color = const Color(0xFFBBF7D0);
-    canvas.drawRect(
-      Rect.fromLTWH(size.width * 0.1, size.height * 0.1, 40, 45),
-      parkPaint,
-    );
-    canvas.drawRect(
-      Rect.fromLTWH(size.width * 0.6, size.height * 0.4, 60, 30),
-      parkPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class DashedBorderPainter extends CustomPainter {

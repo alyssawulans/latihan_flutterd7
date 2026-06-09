@@ -13,23 +13,44 @@ class _OnboardingViewState extends State<OnboardingView> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<Map<String, String>> _onboardingData = [
+  final List<Map<String, dynamic>> _onboardingData = [
     {
       'title': 'Pantau\nKualitas Udara',
       'subtitle':
           'Pantau kualitas udara di sekitar Anda secara mudah dan real-time.',
       'image': 'assets/images/project_akhir/splash_1.png',
+      'highlights': [
+        {'icon': Icons.thermostat, 'text': 'Sensor Kualitas Udara Real-Time'},
+        {
+          'icon': Icons.health_and_safety,
+          'text': 'Rekomendasi Aktivitas Sehat',
+        },
+        {'icon': Icons.map, 'text': 'Peta Polusi Interaktif Wilayah'},
+      ],
     },
     {
       'title': 'Laporkan\nPermasalahan Lingkungan',
       'subtitle': 'Laporkan masalah lingkungan langsung dari lokasi kejadian.',
       'image': 'assets/images/project_akhir/splash_2.png',
+      'highlights': [
+        {
+          'icon': Icons.camera_alt,
+          'text': 'Unggah Foto Bukti & Detail Laporan',
+        },
+        {'icon': Icons.my_location, 'text': 'Pinpoint Lokasi GPS Akurat'},
+        {'icon': Icons.track_changes, 'text': 'Pantau Progres Tindak Lanjut'},
+      ],
     },
     {
       'title': 'Edukasi\nUntuk Masa Depan',
       'subtitle':
           'Pelajari cara menjaga udara bersih untuk masa depan yang lebih baik.',
       'image': 'assets/images/project_akhir/splash3.png',
+      'highlights': [
+        {'icon': Icons.menu_book, 'text': 'Artikel & Tips Edukasi Lingkungan'},
+        {'icon': Icons.eco, 'text': 'Aksi Nyata & Kegiatan Ramah Lingkungan'},
+        {'icon': Icons.workspace_premium, 'text': 'Kumpulkan Lencana Menarik'},
+      ],
     },
   ];
 
@@ -42,6 +63,32 @@ class _OnboardingViewState extends State<OnboardingView> {
         MaterialPageRoute(builder: (context) => const LoginView()),
       );
     }
+  }
+
+  Widget _buildHighlightItem(IconData icon, String text) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: const BoxDecoration(
+            color: Color(0xFFE6F4F1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 18, color: const Color(0xFF0D9488)),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF334155),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -67,6 +114,8 @@ class _OnboardingViewState extends State<OnboardingView> {
             itemCount: _onboardingData.length,
             itemBuilder: (context, index) {
               final data = _onboardingData[index];
+              final highlights =
+                  data['highlights'] as List<Map<String, dynamic>>;
 
               if (index < 2) {
                 // Page 1 & 2: Background image layout (stretch to cover)
@@ -133,6 +182,54 @@ class _OnboardingViewState extends State<OnboardingView> {
                                 ),
                               ),
                             ),
+                            const Spacer(),
+                            // Highlights Card
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: const Color(0xFFF1F5F9),
+                                  width: 1.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.04),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  _buildHighlightItem(
+                                    highlights[0]['icon'] as IconData,
+                                    highlights[0]['text'] as String,
+                                  ),
+                                  const Divider(
+                                    height: 20,
+                                    color: Color(0xFFF1F5F9),
+                                  ),
+                                  _buildHighlightItem(
+                                    highlights[1]['icon'] as IconData,
+                                    highlights[1]['text'] as String,
+                                  ),
+                                  const Divider(
+                                    height: 20,
+                                    color: Color(0xFFF1F5F9),
+                                  ),
+                                  _buildHighlightItem(
+                                    highlights[2]['icon'] as IconData,
+                                    highlights[2]['text'] as String,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 120),
                           ],
                         ),
                       ),
@@ -175,15 +272,64 @@ class _OnboardingViewState extends State<OnboardingView> {
                         const Spacer(),
                         // Centered Container for splash_3
                         Expanded(
-                          flex: 5,
+                          flex: 4,
                           child: Center(
                             child: Image.asset(
+                              height: 500,
+                              width: 500,
                               data['image']!,
-                              fit: BoxFit.contain,
+                              fit: BoxFit.fitHeight,
                             ),
                           ),
                         ),
-                        const Spacer(flex: 3),
+                        const Spacer(),
+                        // Highlights Card
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: const Color(0xFFF1F5F9),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 16,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              _buildHighlightItem(
+                                highlights[0]['icon'] as IconData,
+                                highlights[0]['text'] as String,
+                              ),
+                              const Divider(
+                                height: 20,
+                                color: Color(0xFFF1F5F9),
+                              ),
+                              _buildHighlightItem(
+                                highlights[1]['icon'] as IconData,
+                                highlights[1]['text'] as String,
+                              ),
+                              const Divider(
+                                height: 20,
+                                color: Color(0xFFF1F5F9),
+                              ),
+                              _buildHighlightItem(
+                                highlights[2]['icon'] as IconData,
+                                highlights[2]['text'] as String,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 120),
                       ],
                     ),
                   ),

@@ -517,7 +517,7 @@ class _LaporanBerandaState extends State<LaporanBeranda> {
                           );
                         },
                       ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 110),
           ],
         ),
       ),
