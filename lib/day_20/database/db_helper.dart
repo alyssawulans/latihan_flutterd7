@@ -31,7 +31,7 @@ class DBHelper {
             email TEXT UNIQUE,
             phone TEXT,
             password TEXT,
-            alamat TEXT
+            alamat TEXT,
           )
         ''');
       },

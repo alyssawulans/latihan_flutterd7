@@ -91,19 +91,27 @@ class _EdukasiFormViewState extends State<EdukasiFormView> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.article != null;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final Color cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark ? const Color(0xFFF8FAFC) : Colors.black87;
+    final Color subTextColor = isDark ? const Color(0xFF94A3B8) : Colors.black38;
+    final Color labelColor = isDark ? const Color(0xFFE2E8F0) : Colors.black87;
+    final Color borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           isEditing ? 'Ubah Artikel' : 'Tulis Artikel Baru',
-          style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold),
         ),
       ),
       body: SafeArea(
@@ -115,13 +123,22 @@ class _EdukasiFormViewState extends State<EdukasiFormView> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Judul
-                const Text('Judul Artikel *', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text('Judul Artikel *', style: TextStyle(fontWeight: FontWeight.bold, color: labelColor)),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _judulController,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     hintText: 'Contoh: Apa itu Partikulat PM2.5?',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    hintStyle: TextStyle(color: subTextColor),
+                    fillColor: cardColor,
+                    filled: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF0D9488), width: 2),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -133,15 +150,27 @@ class _EdukasiFormViewState extends State<EdukasiFormView> {
                 const SizedBox(height: 16),
 
                 // Kategori
-                const Text('Kategori *', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text('Kategori *', style: TextStyle(fontWeight: FontWeight.bold, color: labelColor)),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   value: _selectedKategori,
+                  dropdownColor: cardColor,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    fillColor: cardColor,
+                    filled: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF0D9488), width: 2),
+                    ),
                   ),
                   items: _kategoriList.map((kat) {
-                    return DropdownMenuItem(value: kat, child: Text(kat));
+                    return DropdownMenuItem(
+                      value: kat,
+                      child: Text(kat, style: TextStyle(color: textColor)),
+                    );
                   }).toList(),
                   onChanged: (val) {
                     setState(() {
@@ -152,12 +181,13 @@ class _EdukasiFormViewState extends State<EdukasiFormView> {
                 const SizedBox(height: 16),
 
                 // Preset Gambar
-                const Text('Ilustrasi Gambar *', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text('Ilustrasi Gambar *', style: TextStyle(fontWeight: FontWeight.bold, color: labelColor)),
                 const SizedBox(height: 8),
                 Container(
                   height: 110,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black12),
+                    border: Border.all(color: borderColor),
+                    color: cardColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: ListView.builder(
@@ -196,14 +226,23 @@ class _EdukasiFormViewState extends State<EdukasiFormView> {
                 const SizedBox(height: 16),
 
                 // Konten
-                const Text('Konten Artikel *', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text('Konten Artikel *', style: TextStyle(fontWeight: FontWeight.bold, color: labelColor)),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _kontenController,
                   maxLines: 8,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     hintText: 'Tulis penjelasan lengkap mengenai isu lingkungan di sini...',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    hintStyle: TextStyle(color: subTextColor),
+                    fillColor: cardColor,
+                    filled: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF0D9488), width: 2),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -221,10 +260,10 @@ class _EdukasiFormViewState extends State<EdukasiFormView> {
                       child: OutlinedButton(
                         onPressed: () => Navigator.pop(context),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black54,
+                          foregroundColor: isDark ? const Color(0xFF94A3B8) : Colors.black54,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          side: const BorderSide(color: Colors.black26),
+                          side: BorderSide(color: borderColor),
                         ),
                         child: const Text('Batal'),
                       ),

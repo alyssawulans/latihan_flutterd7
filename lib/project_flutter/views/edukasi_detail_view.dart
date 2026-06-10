@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/edukasi_model.dart';
-import 'package:latihan_flutterd7/project_flutter/views/edukasi_form_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EdukasiDetailView extends StatefulWidget {
@@ -37,78 +35,31 @@ class _EdukasiDetailViewState extends State<EdukasiDetailView> {
     } catch (_) {}
   }
 
-  Future<void> _deleteArticle() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hapus Artikel'),
-        content: const Text('Apakah Anda yakin ingin menghapus artikel edukasi ini secara permanen dari database?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Batal', style: TextStyle(color: Colors.black54)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Hapus', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
 
-    if (confirm == true) {
-      await RuasDbHelper.instance.deleteEdukasi(_currentArticle.id!);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Artikel berhasil dihapus'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        Navigator.pop(context); // Go back to list
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final Color appBarColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark ? const Color(0xFFF8FAFC) : Colors.black87;
+    final Color subTextColor = isDark ? const Color(0xFF94A3B8) : Colors.black45;
+    final Color dividerColor = isDark ? const Color(0xFF334155) : Colors.grey.shade300;
+    final Color tagBg = isDark ? const Color(0xFF0F4C43).withOpacity(0.3) : const Color(0xFFE2F1ED);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: appBarColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Detail Edukasi',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined, color: Color(0xFF0D9488)),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EdukasiFormView(article: _currentArticle),
-                ),
-              ).then((updatedArticle) {
-                if (updatedArticle != null && updatedArticle is EdukasiModel) {
-                  setState(() {
-                    _currentArticle = updatedArticle;
-                  });
-                }
-              });
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: _deleteArticle,
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -118,19 +69,19 @@ class _EdukasiDetailViewState extends State<EdukasiDetailView> {
             Container(
               height: 240,
               width: double.infinity,
-              color: Colors.grey.shade100,
+              color: isDark ? const Color(0xFF1E293B) : Colors.grey.shade100,
               child: _currentArticle.gambar.startsWith('assets/')
                   ? Image.asset(
                       _currentArticle.gambar,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
+                      errorBuilder: (context, error, stackTrace) => Icon(
                         Icons.broken_image_outlined,
                         size: 60,
-                        color: Colors.grey,
+                        color: isDark ? Colors.white30 : Colors.grey,
                       ),
                     )
-                  : const Center(
-                      child: Icon(Icons.menu_book, size: 60, color: Colors.black26),
+                  : Center(
+                      child: Icon(Icons.menu_book, size: 60, color: isDark ? Colors.white38 : Colors.black26),
                     ),
             ),
 
@@ -145,8 +96,9 @@ class _EdukasiDetailViewState extends State<EdukasiDetailView> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE2F1ED),
+                          color: tagBg,
                           borderRadius: BorderRadius.circular(6),
+                          border: isDark ? Border.all(color: const Color(0xFF0D9488).withOpacity(0.5)) : null,
                         ),
                         child: Text(
                           _currentArticle.kategori,
@@ -158,11 +110,11 @@ class _EdukasiDetailViewState extends State<EdukasiDetailView> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Icon(Icons.calendar_today_outlined, size: 14, color: Colors.black38),
+                      Icon(Icons.calendar_today_outlined, size: 14, color: isDark ? Colors.white38 : Colors.black38),
                       const SizedBox(width: 6),
                       Text(
                         _currentArticle.tanggal,
-                        style: const TextStyle(fontSize: 12, color: Colors.black45),
+                        style: TextStyle(fontSize: 12, color: subTextColor),
                       ),
                     ],
                   ),
@@ -171,23 +123,23 @@ class _EdukasiDetailViewState extends State<EdukasiDetailView> {
                   // Title
                   Text(
                     _currentArticle.judul,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: textColor,
                       height: 1.3,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Divider(),
+                  Divider(color: dividerColor),
                   const SizedBox(height: 16),
 
                   // Content
                   Text(
                     _currentArticle.konten,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
-                      color: Colors.black87,
+                      color: textColor,
                       height: 1.6,
                     ),
                   ),

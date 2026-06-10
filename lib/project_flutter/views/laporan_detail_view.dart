@@ -44,16 +44,21 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
   }
 
   Future<void> _deleteReport() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hapus Laporan'),
-        content: const Text('Apakah Anda yakin ingin menghapus laporan ini secara permanen dari database?'),
+        title: Text('Hapus Laporan', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus laporan ini secara permanen dari database?',
+          style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.black54),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Batal', style: TextStyle(color: Colors.black54)),
+            child: Text('Batal', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.black54)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
@@ -79,6 +84,12 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final Color textColor = isDark ? const Color(0xFFF8FAFC) : Colors.black87;
+    final Color borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     Color statusColor = Colors.orange;
     if (_currentLaporan.status == 'Selesai') {
       statusColor = Colors.green;
@@ -87,17 +98,17 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Detail Laporan',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -129,7 +140,7 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                   Container(
                     height: 220,
                     width: double.infinity,
-                    color: Colors.grey.shade100,
+                    color: isDark ? const Color(0xFF1E293B) : Colors.grey.shade100,
                     child: _currentLaporan.foto.startsWith('http')
                         ? Image.network(
                             _currentLaporan.foto,
@@ -195,10 +206,10 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                         // Title
                         Text(
                           _currentLaporan.judul,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: textColor,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -207,19 +218,19 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
+                            color: isDark ? const Color(0xFF1E293B) : Colors.grey.shade50,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.black12),
+                            border: Border.all(color: borderColor),
                           ),
                           child: Column(
                             children: [
-                              _buildInfoRow(Icons.category_outlined, 'Kategori', _currentLaporan.kategori),
-                              const Divider(height: 16),
-                              _buildInfoRow(Icons.location_on_outlined, 'Lokasi', _currentLaporan.lokasi),
-                              const Divider(height: 16),
-                              _buildInfoRow(Icons.calendar_today_outlined, 'Tanggal', _currentLaporan.tanggal),
-                              const Divider(height: 16),
-                              _buildInfoRow(Icons.person_outline, 'Pelapor', _pelaporName),
+                              _buildInfoRow(Icons.category_outlined, 'Kategori', _currentLaporan.kategori, isDark),
+                              Divider(height: 16, color: borderColor),
+                              _buildInfoRow(Icons.location_on_outlined, 'Lokasi', _currentLaporan.lokasi, isDark),
+                              Divider(height: 16, color: borderColor),
+                              _buildInfoRow(Icons.calendar_today_outlined, 'Tanggal', _currentLaporan.tanggal, isDark),
+                              Divider(height: 16, color: borderColor),
+                              _buildInfoRow(Icons.person_outline, 'Pelapor', _pelaporName, isDark),
                             ],
                           ),
                         ),
@@ -230,9 +241,9 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEFF6F5),
+                              color: isDark ? const Color(0xFF0F2625) : const Color(0xFFEFF6F5),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color(0xFFCCE5E1)),
+                              border: Border.all(color: isDark ? const Color(0xFF134E4A) : const Color(0xFFCCE5E1)),
                             ),
                             child: Row(
                               children: [
@@ -242,21 +253,21 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
+                                      Text(
                                         'Telemetri GPS (Koordinat)',
                                         style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,
-                                          color: Color(0xFF0F766E),
+                                          color: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0F766E),
                                         ),
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
                                         _currentLaporan.koordinat,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 13,
                                           fontFamily: 'monospace',
-                                          color: Colors.black87,
+                                          color: textColor,
                                         ),
                                       ),
                                     ],
@@ -269,9 +280,13 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                                     );
                                   },
                                   icon: const Icon(Icons.map, size: 14, color: Color(0xFF0D9488)),
-                                  label: const Text(
+                                  label: Text(
                                     'Buka Peta',
-                                    style: TextStyle(fontSize: 11, color: Color(0xFF0D9488), fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0D9488),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -281,36 +296,36 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                         ],
 
                         // Description
-                        const Text(
+                        Text(
                           'Deskripsi Laporan',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: textColor,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           _currentLaporan.deskripsi,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black87,
+                            color: textColor,
                             height: 1.4,
                           ),
                         ),
                         const SizedBox(height: 24),
 
                         // Timeline progress
-                        const Text(
+                        Text(
                           'Alur Tindak Lanjut',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: textColor,
                           ),
                         ),
                         const SizedBox(height: 16),
-                        _buildTimeline(),
+                        _buildTimeline(isDark),
                         const SizedBox(height: 36),
 
                         // Delete button
@@ -338,20 +353,23 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(IconData icon, String label, String value, bool isDark) {
+    final Color labelColor = isDark ? const Color(0xFF94A3B8) : Colors.black54;
+    final Color valColor = isDark ? const Color(0xFFF8FAFC) : Colors.black87;
+
     return Row(
       children: [
-        Icon(icon, color: Colors.black54, size: 20),
+        Icon(icon, color: labelColor, size: 20),
         const SizedBox(width: 12),
         Text(
           '$label:',
-          style: const TextStyle(color: Colors.black54, fontSize: 13),
+          style: TextStyle(color: labelColor, fontSize: 13),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 13),
+            style: TextStyle(color: valColor, fontWeight: FontWeight.bold, fontSize: 13),
             textAlign: TextAlign.right,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -361,28 +379,33 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
     );
   }
 
-  Widget _buildTimeline() {
+  Widget _buildTimeline(bool isDark) {
     bool isDiproses = _currentLaporan.status == 'Diproses' || _currentLaporan.status == 'Selesai';
     bool isSelesai = _currentLaporan.status == 'Selesai';
 
     return Column(
       children: [
-        _buildTimelineStep('Laporan Diterima', 'Laporan Anda telah berhasil masuk database lokal RUAS.', true),
-        _buildTimelineLine(isDiproses),
-        _buildTimelineStep('Sedang Diproses', 'Petugas sedang meninjau lokasi pelanggaran lingkungan.', isDiproses),
-        _buildTimelineLine(isSelesai),
-        _buildTimelineStep('Selesai Ditindak', 'Kondisi lingkungan sudah dibersihkan atau diselesaikan.', isSelesai),
+        _buildTimelineStep('Laporan Diterima', 'Laporan Anda telah berhasil masuk database lokal RUAS.', true, isDark),
+        _buildTimelineLine(isDiproses, isDark),
+        _buildTimelineStep('Sedang Diproses', 'Petugas sedang meninjau lokasi pelanggaran lingkungan.', isDiproses, isDark),
+        _buildTimelineLine(isSelesai, isDark),
+        _buildTimelineStep('Selesai Ditindak', 'Kondisi lingkungan sudah dibersihkan atau diselesaikan.', isSelesai, isDark),
       ],
     );
   }
 
-  Widget _buildTimelineStep(String title, String desc, bool isActive) {
+  Widget _buildTimelineStep(String title, String desc, bool isActive, bool isDark) {
+    final Color activeTitleColor = isDark ? const Color(0xFFF8FAFC) : Colors.black87;
+    final Color inactiveTitleColor = isDark ? const Color(0xFF475569) : Colors.black38;
+    final Color activeDescColor = isDark ? const Color(0xFF94A3B8) : Colors.black54;
+    final Color inactiveDescColor = isDark ? const Color(0xFF475569) : Colors.black38;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CircleAvatar(
           radius: 12,
-          backgroundColor: isActive ? const Color(0xFF0D9488) : Colors.grey.shade300,
+          backgroundColor: isActive ? const Color(0xFF0D9488) : (isDark ? const Color(0xFF334155) : Colors.grey.shade300),
           child: Icon(
             isActive ? Icons.check : Icons.circle,
             size: isActive ? 14 : 8,
@@ -399,7 +422,7 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
-                  color: isActive ? Colors.black87 : Colors.black38,
+                  color: isActive ? activeTitleColor : inactiveTitleColor,
                 ),
               ),
               const SizedBox(height: 4),
@@ -407,7 +430,7 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
                 desc,
                 style: TextStyle(
                   fontSize: 12,
-                  color: isActive ? Colors.black54 : Colors.black38,
+                  color: isActive ? activeDescColor : inactiveDescColor,
                 ),
               ),
             ],
@@ -417,14 +440,14 @@ class _LaporanDetailViewState extends State<LaporanDetailView> {
     );
   }
 
-  Widget _buildTimelineLine(bool isActive) {
+  Widget _buildTimelineLine(bool isActive, bool isDark) {
     return Container(
       margin: const EdgeInsets.only(left: 11, top: 2, bottom: 2),
       alignment: Alignment.centerLeft,
       child: Container(
         height: 24,
         width: 2,
-        color: isActive ? const Color(0xFF0D9488) : Colors.grey.shade300,
+        color: isActive ? const Color(0xFF0D9488) : (isDark ? const Color(0xFF334155) : Colors.grey.shade300),
       ),
     );
   }

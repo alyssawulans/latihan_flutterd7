@@ -72,15 +72,15 @@ class _LaporanEditViewState extends State<LaporanEditView> {
         );
         setState(() {
           _koordinat = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
-          _lokasiController.text = 'Sukabumi (GPS Terdeteksi)';
+          _lokasiController.text = 'DKI Jakarta (GPS Terdeteksi)';
         });
       } else {
         throw Exception('Izin lokasi ditolak');
       }
     } catch (e) {
       setState(() {
-        _koordinat = '-6.9184, 106.8924';
-        _lokasiController.text = 'Cisaat, Sukabumi (Simulasi)';
+        _koordinat = '-6.9175, 107.6191';
+        _lokasiController.text = 'Bandung, Jawa Barat (Simulasi)';
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -123,8 +123,10 @@ class _LaporanEditViewState extends State<LaporanEditView> {
   }
 
   void _showImageSourcePicker() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
+      backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -133,7 +135,7 @@ class _LaporanEditViewState extends State<LaporanEditView> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt, color: Color(0xFF0D9488)),
-              title: const Text('Kamera'),
+              title: Text('Kamera', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.camera);
@@ -141,7 +143,7 @@ class _LaporanEditViewState extends State<LaporanEditView> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: Color(0xFF0D9488)),
-              title: const Text('Galeri'),
+              title: Text('Galeri', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.gallery);
@@ -149,7 +151,7 @@ class _LaporanEditViewState extends State<LaporanEditView> {
             ),
             ListTile(
               leading: const Icon(Icons.image, color: Colors.blue),
-              title: const Text('Gunakan Dummy Asset'),
+              title: Text('Gunakan Dummy Asset', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
               onTap: () {
                 Navigator.pop(context);
                 setState(() {
@@ -210,18 +212,27 @@ class _LaporanEditViewState extends State<LaporanEditView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final Color cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark ? const Color(0xFFF8FAFC) : Colors.black87;
+    final Color subTextColor = isDark ? const Color(0xFF94A3B8) : Colors.black38;
+    final Color labelColor = isDark ? const Color(0xFFE2E8F0) : Colors.black87;
+    final Color borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Ubah Laporan',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold),
         ),
       ),
       body: SafeArea(
@@ -233,12 +244,20 @@ class _LaporanEditViewState extends State<LaporanEditView> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Judul Laporan
-                const Text('Judul Laporan *', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text('Judul Laporan *', style: TextStyle(fontWeight: FontWeight.bold, color: labelColor)),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _judulController,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    fillColor: cardColor,
+                    filled: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF0D9488), width: 2),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -250,17 +269,26 @@ class _LaporanEditViewState extends State<LaporanEditView> {
                 const SizedBox(height: 16),
 
                 // Kategori
-                const Text('Kategori *', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text('Kategori *', style: TextStyle(fontWeight: FontWeight.bold, color: labelColor)),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   value: _selectedKategori,
+                  dropdownColor: cardColor,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    fillColor: cardColor,
+                    filled: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF0D9488), width: 2),
+                    ),
                   ),
                   items: _kategoriList.map((kat) {
                     return DropdownMenuItem(
                       value: kat,
-                      child: Text(kat),
+                      child: Text(kat, style: TextStyle(color: textColor)),
                     );
                   }).toList(),
                   onChanged: (val) {
@@ -272,17 +300,26 @@ class _LaporanEditViewState extends State<LaporanEditView> {
                 const SizedBox(height: 16),
 
                 // Status Laporan (Kunci Demonstrasi Presentasi)
-                const Text('Status Laporan *', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text('Status Laporan *', style: TextStyle(fontWeight: FontWeight.bold, color: labelColor)),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   value: _selectedStatus,
+                  dropdownColor: cardColor,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    fillColor: cardColor,
+                    filled: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF0D9488), width: 2),
+                    ),
                   ),
                   items: _statusList.map((stat) {
                     return DropdownMenuItem(
                       value: stat,
-                      child: Text(stat),
+                      child: Text(stat, style: TextStyle(color: textColor)),
                     );
                   }).toList(),
                   onChanged: (val) {
@@ -294,12 +331,20 @@ class _LaporanEditViewState extends State<LaporanEditView> {
                 const SizedBox(height: 16),
 
                 // Lokasi
-                const Text('Lokasi Kejadian *', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text('Lokasi Kejadian *', style: TextStyle(fontWeight: FontWeight.bold, color: labelColor)),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _lokasiController,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    fillColor: cardColor,
+                    filled: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF0D9488), width: 2),
+                    ),
                     suffixIcon: _isGettingLocation
                         ? const Padding(
                             padding: EdgeInsets.all(12.0),
@@ -324,18 +369,26 @@ class _LaporanEditViewState extends State<LaporanEditView> {
                 const SizedBox(height: 8),
                 Text(
                   'Koordinat Terpilih: $_koordinat',
-                  style: const TextStyle(fontSize: 11, color: Colors.black45, fontFamily: 'monospace'),
+                  style: TextStyle(fontSize: 11, color: subTextColor, fontFamily: 'monospace'),
                 ),
                 const SizedBox(height: 16),
 
                 // Deskripsi
-                const Text('Deskripsi Detail *', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text('Deskripsi Detail *', style: TextStyle(fontWeight: FontWeight.bold, color: labelColor)),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _deskripsiController,
                   maxLines: 4,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    fillColor: cardColor,
+                    filled: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF0D9488), width: 2),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -347,30 +400,30 @@ class _LaporanEditViewState extends State<LaporanEditView> {
                 const SizedBox(height: 20),
 
                 // Foto Bukti
-                const Text('Foto Bukti (Opsional)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text('Foto Bukti (Opsional)', style: TextStyle(fontWeight: FontWeight.bold, color: labelColor)),
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: _showImageSourcePicker,
                   child: Container(
                     height: 140,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
+                      color: isDark ? const Color(0xFF1E293B) : Colors.grey.shade50,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: CustomPaint(
                       painter: DashedBorderPainter(
-                        color: const Color(0xFF0D9488),
+                        color: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0D9488),
                         borderRadius: 10,
                       ),
                       child: _pickedImagePath == null
-                          ? const Column(
+                          ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.camera_alt_outlined, size: 40, color: Color(0xFF0D9488)),
-                                SizedBox(height: 8),
+                                const Icon(Icons.camera_alt_outlined, size: 40, color: Color(0xFF0D9488)),
+                                const SizedBox(height: 8),
                                 Text(
                                   'Ambil Foto Bukti Kejadian',
-                                  style: TextStyle(fontSize: 12, color: Color(0xFF0D9488), fontWeight: FontWeight.bold),
+                                  style: TextStyle(fontSize: 12, color: const Color(0xFF0D9488), fontWeight: FontWeight.bold),
                                 ),
                               ],
                             )
@@ -402,10 +455,10 @@ class _LaporanEditViewState extends State<LaporanEditView> {
                       child: OutlinedButton(
                         onPressed: () => Navigator.pop(context),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black54,
+                          foregroundColor: isDark ? const Color(0xFF94A3B8) : Colors.black54,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          side: const BorderSide(color: Colors.black26),
+                          side: BorderSide(color: borderColor),
                         ),
                         child: const Text('Batal'),
                       ),

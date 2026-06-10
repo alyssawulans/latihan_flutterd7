@@ -45,7 +45,7 @@ class _OnboardingViewState extends State<OnboardingView> {
       'title': 'Edukasi\nUntuk Masa Depan',
       'subtitle':
           'Pelajari cara menjaga udara bersih untuk masa depan yang lebih baik.',
-      'image': 'assets/images/project_akhir/splash3.png',
+      'image': 'assets/images/project_akhir/splash_3.png',
       'highlights': [
         {'icon': Icons.menu_book, 'text': 'Artikel & Tips Edukasi Lingkungan'},
         {'icon': Icons.eco, 'text': 'Aksi Nyata & Kegiatan Ramah Lingkungan'},
@@ -117,7 +117,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               final highlights =
                   data['highlights'] as List<Map<String, dynamic>>;
 
-              if (index < 2) {
+              if (index < 3) {
                 // Page 1 & 2: Background image layout (stretch to cover)
                 return Stack(
                   children: [
@@ -238,103 +238,104 @@ class _OnboardingViewState extends State<OnboardingView> {
                 );
               } else {
                 // Page 3: Centered illustration layout
-                return SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(height: 32),
-                        Text(
-                          data['title']!,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF1A2E44),
-                            height: 1.3,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            data['subtitle']!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF64748B),
-                              height: 1.5,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        // Centered Container for splash_3
-                        Expanded(
-                          flex: 4,
-                          child: Center(
-                            child: Image.asset(
-                              height: 500,
-                              width: 500,
-                              data['image']!,
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        // Highlights Card
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: const Color(0xFFF1F5F9),
-                              width: 1.5,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
-                                blurRadius: 16,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              _buildHighlightItem(
-                                highlights[0]['icon'] as IconData,
-                                highlights[0]['text'] as String,
-                              ),
-                              const Divider(
-                                height: 20,
-                                color: Color(0xFFF1F5F9),
-                              ),
-                              _buildHighlightItem(
-                                highlights[1]['icon'] as IconData,
-                                highlights[1]['text'] as String,
-                              ),
-                              const Divider(
-                                height: 20,
-                                color: Color(0xFFF1F5F9),
-                              ),
-                              _buildHighlightItem(
-                                highlights[2]['icon'] as IconData,
-                                highlights[2]['text'] as String,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 120),
-                      ],
-                    ),
-                  ),
-                );
+                // return SafeArea(
+                //   child: Padding(
+                //     padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.stretch,
+                //       children: [
+                //         const SizedBox(height: 32),
+                //         Text(
+                //           data['title']!,
+                //           textAlign: TextAlign.center,
+                //           style: const TextStyle(
+                //             fontSize: 26,
+                //             fontWeight: FontWeight.w800,
+                //             color: Color(0xFF1A2E44),
+                //             height: 1.3,
+                //             letterSpacing: -0.5,
+                //           ),
+                //         ),
+                //         const SizedBox(height: 16),
+                //         Padding(
+                //           padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                //           child: Text(
+                //             data['subtitle']!,
+                //             textAlign: TextAlign.center,
+                //             style: const TextStyle(
+                //               fontSize: 14,
+                //               color: Color(0xFF64748B),
+                //               height: 1.5,
+                //             ),
+                //           ),
+                //         ),
+                //         const Spacer(),
+                //         // Centered Container for splash_3
+                //         Expanded(
+                //           flex: 4,
+                //           child: Center(
+                //             child: Image.asset(
+                //               height: 500,
+                //               width: 500,
+                //               data['image']!,
+                //               fit: BoxFit.fitHeight,
+                //             ),
+                //           ),
+                //         ),
+                //         const Spacer(),
+                //         // Highlights Card
+                //         Container(
+                //           padding: const EdgeInsets.symmetric(
+                //             horizontal: 16,
+                //             vertical: 14,
+                //           ),
+                //           decoration: BoxDecoration(
+                //             color: Colors.white,
+                //             borderRadius: BorderRadius.circular(20),
+                //             border: Border.all(
+                //               color: const Color(0xFFF1F5F9),
+                //               width: 1.5,
+                //             ),
+                //             boxShadow: [
+                //               BoxShadow(
+                //                 color: Colors.black.withOpacity(0.04),
+                //                 blurRadius: 16,
+                //                 offset: const Offset(0, 8),
+                //               ),
+                //             ],
+                //           ),
+                //           child: Column(
+                //             children: [
+                //               _buildHighlightItem(
+                //                 highlights[0]['icon'] as IconData,
+                //                 highlights[0]['text'] as String,
+                //               ),
+                //               const Divider(
+                //                 height: 20,
+                //                 color: Color(0xFFF1F5F9),
+                //               ),
+                //               _buildHighlightItem(
+                //                 highlights[1]['icon'] as IconData,
+                //                 highlights[1]['text'] as String,
+                //               ),
+                //               const Divider(
+                //                 height: 20,
+                //                 color: Color(0xFFF1F5F9),
+                //               ),
+                //               _buildHighlightItem(
+                //                 highlights[2]['icon'] as IconData,
+                //                 highlights[2]['text'] as String,
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //         const SizedBox(height: 120),
+                //       ],
+                //     ),
+                //   ),
+                // );
               }
+              return null;
             },
           ),
           // Positioned Overlay for dots and navigation

@@ -28,11 +28,13 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _showSuccessDialog(String name) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
+          backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24.0),
           ),
@@ -45,8 +47,8 @@ class _LoginViewState extends State<LoginView> {
                 // Styled Circular Icon Badge
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFE6F4F1), // Soft teal background
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF0F2625) : const Color(0xFFE6F4F1), // Soft teal background
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -57,12 +59,12 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 const SizedBox(height: 20),
                 // Title
-                const Text(
+                Text(
                   "Masuk Berhasil",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A2E44),
+                    color: isDark ? Colors.white : const Color(0xFF1A2E44),
                     letterSpacing: 0.3,
                   ),
                 ),
@@ -71,9 +73,9 @@ class _LoginViewState extends State<LoginView> {
                 Text(
                   "Selamat datang kembali, $name! Mari terus bersama menjaga kualitas udara bersih dan lingkungan sehat.",
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFF64748B),
+                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                     height: 1.5,
                   ),
                 ),
@@ -118,10 +120,12 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _showErrorDialog(String message) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
+          backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24.0),
           ),
@@ -134,8 +138,8 @@ class _LoginViewState extends State<LoginView> {
                 // Styled Circular Icon Badge
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFEE2E2), // Soft red background
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF3B1E1E) : const Color(0xFFFEE2E2), // Soft red background
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -146,12 +150,12 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 const SizedBox(height: 20),
                 // Title
-                const Text(
+                Text(
                   "Gagal Masuk",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A2E44),
+                    color: isDark ? Colors.white : const Color(0xFF1A2E44),
                     letterSpacing: 0.3,
                   ),
                 ),
@@ -160,9 +164,9 @@ class _LoginViewState extends State<LoginView> {
                 Text(
                   message,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFF64748B),
+                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                     height: 1.5,
                   ),
                 ),
@@ -248,8 +252,16 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF4F8FB);
+    final Color cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF1A2E44);
+    final Color subTextColor = isDark ? const Color(0xFF94A3B8) : Colors.grey;
+    final Color dividerColor = isDark ? const Color(0xFF334155) : Colors.grey[300]!;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F8FB),
+      backgroundColor: bgColor,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -274,12 +286,12 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           "Selamat Datang",
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A2E44),
+                            color: textColor,
                           ),
                         ),
                         const Text(
@@ -291,9 +303,9 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        const Text(
+                        Text(
                           "Masuk untuk melanjutkan kontribusimu di lingkungan bersih RUAS",
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          style: TextStyle(fontSize: 14, color: subTextColor),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -303,34 +315,37 @@ class _LoginViewState extends State<LoginView> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [
+                      border: isDark ? Border.all(color: const Color(0xFF334155)) : null,
+                      boxShadow: [
                         BoxShadow(
                           blurRadius: 10,
-                          color: Colors.black12,
-                          offset: Offset(0, 4),
+                          color: isDark ? Colors.black26 : Colors.black12,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           "Email",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A2E44),
+                            color: textColor,
                           ),
                         ),
                         const SizedBox(height: 8),
                         TextFormField(
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
+                          style: TextStyle(color: textColor),
                           decoration: _buildInputDecoration(
                             "Masukkan Email Anda",
                             Icons.email_outlined,
+                            isDark,
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
@@ -343,12 +358,12 @@ class _LoginViewState extends State<LoginView> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           "Kata Sandi",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A2E44),
+                            color: textColor,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -356,9 +371,11 @@ class _LoginViewState extends State<LoginView> {
                           controller: passwordController,
                           obscureText: obscurePassword,
                           obscuringCharacter: "*",
+                          style: TextStyle(color: textColor),
                           decoration: _buildInputDecoration(
                             "Masukkan Kata Sandi Anda",
                             Icons.lock_outline_rounded,
+                            isDark,
                           ).copyWith(
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -405,10 +422,10 @@ class _LoginViewState extends State<LoginView> {
                           height: 54,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1A2E44),
+                              backgroundColor: isDark ? const Color(0xFF0F4C43) : const Color(0xFF1A2E44),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12),
                               ),
                               elevation: 0,
                             ),
@@ -444,8 +461,8 @@ class _LoginViewState extends State<LoginView> {
                             icon: const Icon(Icons.flash_on, size: 18),
                             label: const Text('Gunakan Akun Demo (Andi)'),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.indigo,
-                              side: const BorderSide(color: Colors.indigo),
+                              foregroundColor: isDark ? const Color(0xFF818CF8) : Colors.indigo,
+                              side: BorderSide(color: isDark ? const Color(0xFF4338CA) : Colors.indigo),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -457,7 +474,7 @@ class _LoginViewState extends State<LoginView> {
                           children: [
                             Expanded(
                               child: Divider(
-                                color: Colors.grey[300],
+                                color: dividerColor,
                                 thickness: 1,
                               ),
                             ),
@@ -473,7 +490,7 @@ class _LoginViewState extends State<LoginView> {
                             ),
                             Expanded(
                               child: Divider(
-                                color: Colors.grey[300],
+                                color: dividerColor,
                                 thickness: 1,
                               ),
                             ),
@@ -484,12 +501,14 @@ class _LoginViewState extends State<LoginView> {
                           label: "Masuk dengan Google",
                           icon: Icons.g_mobiledata_rounded,
                           iconColor: Colors.red,
+                          isDark: isDark,
                         ),
                         const SizedBox(height: 12),
                         _buildSocialButton(
                           label: "Masuk dengan Apple",
                           icon: Icons.apple,
-                          iconColor: Colors.black,
+                          iconColor: isDark ? Colors.white : Colors.black,
+                          isDark: isDark,
                         ),
                       ],
                     ),
@@ -528,12 +547,12 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  InputDecoration _buildInputDecoration(String hint, IconData prefixIcon) {
+  InputDecoration _buildInputDecoration(String hint, IconData prefixIcon, bool isDark) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+      hintStyle: TextStyle(fontSize: 13, color: isDark ? const Color(0xFF64748B) : Colors.grey),
       filled: true,
-      fillColor: const Color(0xFFF8FAF9),
+      fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAF9),
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -551,7 +570,7 @@ class _LoginViewState extends State<LoginView> {
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Colors.red, width: 1.5),
       ),
-      prefixIcon: Icon(prefixIcon, color: const Color(0xFF1A2E44)),
+      prefixIcon: Icon(prefixIcon, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF1A2E44)),
     );
   }
 
@@ -559,19 +578,20 @@ class _LoginViewState extends State<LoginView> {
     required String label,
     required IconData icon,
     required Color iconColor,
+    required bool isDark,
   }) {
     return OutlinedButton.icon(
       style: OutlinedButton.styleFrom(
         minimumSize: const Size.fromHeight(54),
-        side: BorderSide(color: Colors.grey[300]!),
+        side: BorderSide(color: isDark ? const Color(0xFF334155) : Colors.grey[300]!),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       onPressed: () {},
       icon: Icon(icon, color: iconColor, size: 24),
       label: Text(
         label,
-        style: const TextStyle(
-          color: Colors.black87,
+        style: TextStyle(
+          color: isDark ? Colors.white : Colors.black87,
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),

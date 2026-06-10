@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:latihan_flutterd7/project_flutter/config/app_settings.dart';
+import 'package:latihan_flutterd7/project_flutter/config/app_translations.dart';
 import 'package:latihan_flutterd7/project_flutter/views/edukasi_list_view.dart';
 import 'package:latihan_flutterd7/project_flutter/views/home_view.dart';
 import 'package:latihan_flutterd7/project_flutter/views/laporan_beranda.dart';
@@ -42,9 +44,12 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     IconData normalIcon,
     IconData selectedIcon,
     String label,
+    bool isDark,
   ) {
     final isSelected = _currentIndex == index;
-    final color = isSelected ? const Color(0xFF0D9488) : Colors.black38;
+    final color = isSelected 
+        ? const Color(0xFF0D9488) 
+        : (isDark ? Colors.white38 : Colors.black38);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => _onTabTapped(index),
@@ -69,6 +74,10 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final settings = AppSettingsController.instance.settingsNotifier.value;
+    final lang = settings.languageCode;
+
     return Scaffold(
       extendBody: true, // Crucial for floating bottom bar transparent areas
       body: IndexedStack(index: _currentIndex, children: _views),
@@ -77,11 +86,11 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
         child: Container(
           height: 72,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.08),
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -96,12 +105,19 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
                   0,
                   Icons.home_outlined,
                   Icons.home,
-                  'Home',
+                  AppTranslations.translate('nav_home', lang),
+                  isDark,
                 ),
               ),
               // Maps
               Expanded(
-                child: _buildNavItem(1, Icons.map_outlined, Icons.map, 'Maps'),
+                child: _buildNavItem(
+                  1,
+                  Icons.map_outlined,
+                  Icons.map,
+                  AppTranslations.translate('nav_maps', lang),
+                  isDark,
+                ),
               ),
               // Center Green Button (Laporan)
               GestureDetector(
@@ -134,7 +150,8 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
                   3,
                   Icons.school_outlined,
                   Icons.school,
-                  'Edukasi',
+                  AppTranslations.translate('nav_education', lang),
+                  isDark,
                 ),
               ),
               // Profil
@@ -143,7 +160,8 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
                   4,
                   Icons.person_outline,
                   Icons.person,
-                  'Profil',
+                  AppTranslations.translate('nav_profile', lang),
+                  isDark,
                 ),
               ),
             ],

@@ -50,14 +50,14 @@ class RuasData {
   static final List<Alatpantau> listModel = [
     Alatpantau(
       nama: "Pembuangan Sampah Sembarangan",
-      deskripsi: "Cibadak, Sukabumi",
+      deskripsi: "Jakarta Pusat, DKI Jakarta",
       pathGambar: "assets/images/sensor_indoor.png",
       status: "DIPROSES",
       waktu: "2 Jam yang lalu",
     ),
     Alatpantau(
       nama: "Pembuangan Sampah Sembarangan",
-      deskripsi: "Cibadak, Sukabumi",
+      deskripsi: "Bandung, Jawa Barat",
       pathGambar: "assets/images/sensor_indoor.png",
       status: "DIPROSES",
       waktu: "2 Jam yang lalu",

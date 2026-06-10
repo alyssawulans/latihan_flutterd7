@@ -80,16 +80,24 @@ class _DetailLaporanState extends State<DetailLaporan> {
   }
 
   Future<void> _deleteReport() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hapus Laporan'),
-        content: const Text('Apakah Anda yakin ingin menghapus laporan ini?'),
+        title: Text(
+          'Hapus Laporan',
+          style: TextStyle(color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A)),
+        ),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus laporan ini?',
+          style: TextStyle(color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF334155)),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Batal', style: TextStyle(color: Colors.black54)),
+            child: Text('Batal', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.black54)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
@@ -123,15 +131,15 @@ class _DetailLaporanState extends State<DetailLaporan> {
     }
   }
 
-  Color getStatusBgColor(String status) {
+  Color getStatusBgColor(String status, bool isDark) {
     switch (status.toLowerCase()) {
       case 'selesai':
-        return const Color(0xFFECFDF5);
+        return isDark ? const Color(0xFF064E3B) : const Color(0xFFECFDF5);
       case 'ditolak':
-        return const Color(0xFFFEF2F2);
+        return isDark ? const Color(0xFF7F1D1D) : const Color(0xFFFEF2F2);
       case 'diproses':
       default:
-        return const Color(0xFFFFFBEB);
+        return isDark ? const Color(0xFF78350F) : const Color(0xFFFFFBEB);
     }
   }
 
@@ -195,22 +203,32 @@ class _DetailLaporanState extends State<DetailLaporan> {
   @override
   Widget build(BuildContext context) {
     final report = this;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final Color cardBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
+    final Color subTextColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final Color borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+    final Color appBarBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color titleColor = isDark ? Colors.white : primaryTeal;
+    final Color cardIconBg = isDark ? const Color(0xFF0F4C43).withOpacity(0.3) : const Color(0xFFF0FDFA);
+
     final statusColor = getStatusColor(_currentReport.status);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: appBarBgColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: primaryTeal),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : primaryTeal),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           "Detail Laporan",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: primaryTeal,
+            color: titleColor,
             fontSize: 20,
           ),
         ),
@@ -249,10 +267,10 @@ class _DetailLaporanState extends State<DetailLaporan> {
               Container(
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: getStatusBgColor(report.status),
+                  color: getStatusBgColor(report.status, isDark),
                   borderRadius: BorderRadius.circular(16.0),
                   border: Border.all(
-                    color: statusColor.withOpacity(0.2),
+                    color: statusColor.withOpacity(isDark ? 0.4 : 0.2),
                     width: 1.0,
                   ),
                 ),
@@ -262,7 +280,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                     Text(
                       "Status Laporan",
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: subTextColor,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -291,14 +309,14 @@ class _DetailLaporanState extends State<DetailLaporan> {
                       report.detailStatusDesc,
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey[700],
+                        color: isDark ? const Color(0xFFE2E8F0) : Colors.grey[700],
                         height: 1.4,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       report.detailStatusTime,
-                      style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                      style: TextStyle(fontSize: 11, color: subTextColor),
                     ),
                   ],
                 ),
@@ -311,17 +329,18 @@ class _DetailLaporanState extends State<DetailLaporan> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: textDark,
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 12),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: cardBgColor,
                   borderRadius: BorderRadius.circular(16.0),
+                  border: Border.all(color: borderColor),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
+                      color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -344,11 +363,11 @@ class _DetailLaporanState extends State<DetailLaporan> {
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
                                     height: 180,
-                                    color: Colors.grey[200],
-                                    child: const Icon(
+                                    color: isDark ? const Color(0xFF334155) : Colors.grey[200],
+                                    child: Icon(
                                       Icons.broken_image,
                                       size: 48,
-                                      color: Colors.grey,
+                                      color: isDark ? Colors.white30 : Colors.grey,
                                     ),
                                   ),
                             )
@@ -360,11 +379,11 @@ class _DetailLaporanState extends State<DetailLaporan> {
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
                                     height: 180,
-                                    color: Colors.grey[200],
-                                    child: const Icon(
+                                    color: isDark ? const Color(0xFF334155) : Colors.grey[200],
+                                    child: Icon(
                                       Icons.broken_image,
                                       size: 48,
-                                      color: Colors.grey,
+                                      color: isDark ? Colors.white30 : Colors.grey,
                                     ),
                                   ),
                             ),
@@ -380,7 +399,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: textDark,
+                              color: textColor,
                               height: 1.3,
                             ),
                           ),
@@ -392,7 +411,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF0FDFA),
+                                  color: cardIconBg,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Icon(
@@ -410,7 +429,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                                       "Kategori",
                                       style: TextStyle(
                                         fontSize: 11,
-                                        color: Colors.grey[400],
+                                        color: subTextColor,
                                       ),
                                     ),
                                     Text(
@@ -418,7 +437,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
-                                        color: textDark,
+                                        color: textColor,
                                       ),
                                     ),
                                   ],
@@ -434,7 +453,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF0FDFA),
+                                  color: cardIconBg,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Icon(
@@ -452,7 +471,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                                       "Lokasi",
                                       style: TextStyle(
                                         fontSize: 11,
-                                        color: Colors.grey[400],
+                                        color: subTextColor,
                                       ),
                                     ),
                                     Text(
@@ -460,7 +479,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
-                                        color: textDark,
+                                        color: textColor,
                                       ),
                                     ),
                                   ],
@@ -475,7 +494,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                             "Deskripsi",
                             style: TextStyle(
                               fontSize: 11,
-                              color: Colors.grey[400],
+                              color: subTextColor,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -483,7 +502,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                             report.description,
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.grey[700],
+                              color: isDark ? const Color(0xFFE2E8F0) : Colors.grey[700],
                               height: 1.5,
                             ),
                           ),
@@ -501,7 +520,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: textDark,
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 12),
@@ -521,7 +540,7 @@ class _DetailLaporanState extends State<DetailLaporan> {
                         height: 80,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[200]!),
+                          border: Border.all(color: borderColor),
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
@@ -530,18 +549,18 @@ class _DetailLaporanState extends State<DetailLaporan> {
                                   imgUrl,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(
+                                      Icon(
                                         Icons.broken_image,
-                                        color: Colors.grey,
+                                        color: isDark ? Colors.white30 : Colors.grey,
                                       ),
                                 )
                               : Image.file(
                                   File(imgUrl),
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(
+                                      Icon(
                                         Icons.broken_image,
-                                        color: Colors.grey,
+                                        color: isDark ? Colors.white30 : Colors.grey,
                                       ),
                                 ),
                         ),
@@ -558,18 +577,19 @@ class _DetailLaporanState extends State<DetailLaporan> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: textDark,
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: cardBgColor,
                   borderRadius: BorderRadius.circular(16.0),
+                  border: Border.all(color: borderColor),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
+                      color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -616,14 +636,14 @@ class _DetailLaporanState extends State<DetailLaporan> {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: textDark,
+                                      color: textColor,
                                     ),
                                   ),
                                   Text(
                                     step['waktu'] ?? '',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.grey[500],
+                                      color: subTextColor,
                                     ),
                                   ),
                                 ],

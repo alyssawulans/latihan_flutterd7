@@ -107,6 +107,13 @@ class _MapsViewState extends State<MapsView> {
   @override
   Widget build(BuildContext context) {
     final filtered = _filteredStations;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final Color appBarBgColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC);
+    final Color cardBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
+    final Color subTextColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final Color borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
 
     final List<Marker> mapMarkers = filtered.map((s) {
       final isSelected =
@@ -198,9 +205,9 @@ class _MapsViewState extends State<MapsView> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: appBarBgColor,
         elevation: 0,
         centerTitle: false,
         title: Column(
@@ -269,12 +276,12 @@ class _MapsViewState extends State<MapsView> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.95),
+                    color: cardBgColor.withOpacity(0.95),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    border: Border.all(color: borderColor),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
+                        color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withValues(alpha: 0.08),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),
@@ -289,7 +296,7 @@ class _MapsViewState extends State<MapsView> {
                           Text(
                             'Peta Kualitas Udara',
                             style: TextStyle(
-                              color: primaryTeal,
+                              color: isDark ? activeTeal : primaryTeal,
                               fontWeight: FontWeight.w900,
                               fontSize: 16,
                             ),
@@ -307,8 +314,8 @@ class _MapsViewState extends State<MapsView> {
                               const SizedBox(width: 4),
                               Text(
                                 _formatTime(_lastUpdated),
-                                style: const TextStyle(
-                                  color: Colors.grey,
+                                style: TextStyle(
+                                  color: subTextColor,
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -320,7 +327,7 @@ class _MapsViewState extends State<MapsView> {
                       const SizedBox(height: 10),
                       Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
+                          color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: TextField(
@@ -332,8 +339,8 @@ class _MapsViewState extends State<MapsView> {
                           ),
                           decoration: InputDecoration(
                             hintText: 'Cari kota atau provinsi...',
-                            hintStyle: const TextStyle(
-                              color: Colors.grey,
+                            hintStyle: TextStyle(
+                              color: subTextColor,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
@@ -344,9 +351,9 @@ class _MapsViewState extends State<MapsView> {
                             ),
                             suffixIcon: _searchController.text.isNotEmpty
                                 ? IconButton(
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.clear_rounded,
-                                      color: Colors.grey,
+                                      color: subTextColor,
                                       size: 16,
                                     ),
                                     onPressed: () => _searchController.clear(),
@@ -400,17 +407,17 @@ class _MapsViewState extends State<MapsView> {
               maxChildSize: 0.85,
               builder: (context, scrollController) {
                 return Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: cardBgColor,
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(28),
                       topRight: Radius.circular(28),
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black12,
+                        color: isDark ? Colors.black.withOpacity(0.3) : Colors.black12,
                         blurRadius: 16,
-                        offset: Offset(0, -4),
+                        offset: const Offset(0, -4),
                       ),
                     ],
                   ),
@@ -429,7 +436,7 @@ class _MapsViewState extends State<MapsView> {
                                 width: 40,
                                 height: 5,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFE2E8F0),
+                                  color: borderColor,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
@@ -444,7 +451,7 @@ class _MapsViewState extends State<MapsView> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w900,
-                                  color: textDark,
+                                  color: textColor,
                                 ),
                               ),
                             ),
@@ -460,21 +467,21 @@ class _MapsViewState extends State<MapsView> {
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.location_off_rounded,
-                                  size: 48,
-                                  color: Colors.grey[300],
-                                ),
-                                const SizedBox(height: 12),
-                                const Text(
-                                  'Tidak ada stasiun ditemukan',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
+                                children: [
+                                  Icon(
+                                    Icons.location_off_rounded,
+                                    size: 48,
+                                    color: isDark ? Colors.white10 : Colors.grey[300],
                                   ),
-                                ),
+                                const SizedBox(height: 12),
+                                  Text(
+                                    'Tidak ada stasiun ditemukan',
+                                    style: TextStyle(
+                                      color: subTextColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
@@ -493,10 +500,10 @@ class _MapsViewState extends State<MapsView> {
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 8),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFF8FAFC),
+                                    color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: const Color(0xFFF1F5F9),
+                                      color: borderColor,
                                     ),
                                   ),
                                   child: ListTile(
@@ -516,13 +523,13 @@ class _MapsViewState extends State<MapsView> {
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
-                                        color: textDark,
+                                        color: textColor,
                                       ),
                                     ),
                                     subtitle: Text(
                                       '${station.region} • ${station.distance}',
-                                      style: const TextStyle(
-                                        color: Colors.grey,
+                                      style: TextStyle(
+                                        color: subTextColor,
                                         fontSize: 11,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -574,7 +581,12 @@ class _MapsViewState extends State<MapsView> {
   }
 
   Widget _buildFilterChip(String label, {Color? color}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isSelected = _selectedFilter == label;
+    final chipBgColor = isSelected ? (color ?? activeTeal) : (isDark ? const Color(0xFF1E293B) : Colors.white);
+    final chipBorderColor = isSelected ? (color ?? activeTeal) : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0));
+    final chipTextColor = isSelected ? Colors.white : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B));
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -584,10 +596,10 @@ class _MapsViewState extends State<MapsView> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? (color ?? activeTeal) : Colors.white,
+          color: chipBgColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? (color ?? activeTeal) : const Color(0xFFE2E8F0),
+            color: chipBorderColor,
           ),
           boxShadow: isSelected
               ? [
@@ -611,7 +623,7 @@ class _MapsViewState extends State<MapsView> {
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.white : const Color(0xFF64748B),
+                color: chipTextColor,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
@@ -623,6 +635,12 @@ class _MapsViewState extends State<MapsView> {
   }
 
   Widget _buildStationDetailsCard(AqiStation station) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color cardBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color dividerColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+    final Color textPrimary = isDark ? const Color(0xFFF8FAFC) : textDark;
+    final Color textSecondary = isDark ? const Color(0xFF94A3B8) : Colors.grey;
+
     final pm25 = (station.aqi * 0.35).round();
     final pm10 = (station.aqi * 0.65).round();
     final co = (station.aqi * 0.08).toStringAsFixed(1);
@@ -637,11 +655,11 @@ class _MapsViewState extends State<MapsView> {
         maxHeight: MediaQuery.of(context).size.height * 0.45,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.15),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -667,7 +685,7 @@ class _MapsViewState extends State<MapsView> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
-                            color: textDark,
+                            color: textPrimary,
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -677,7 +695,7 @@ class _MapsViewState extends State<MapsView> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFECFDF5),
+                            color: const Color(0xFFECFDF5).withOpacity(isDark ? 0.2 : 1.0),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Text(
@@ -693,8 +711,8 @@ class _MapsViewState extends State<MapsView> {
                     ),
                     Text(
                       station.region,
-                      style: const TextStyle(
-                        color: Colors.grey,
+                      style: TextStyle(
+                        color: textSecondary,
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                       ),
@@ -703,7 +721,7 @@ class _MapsViewState extends State<MapsView> {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close_rounded, color: Colors.grey),
+                icon: Icon(Icons.close_rounded, color: textSecondary),
                 onPressed: () {
                   setState(() {
                     _selectedStation = null;
@@ -712,7 +730,7 @@ class _MapsViewState extends State<MapsView> {
               ),
             ],
           ),
-          const Divider(height: 16, color: Color(0xFFF1F5F9)),
+          Divider(height: 16, color: dividerColor),
 
           // Scrollable Content
           Flexible(
@@ -740,7 +758,7 @@ class _MapsViewState extends State<MapsView> {
                           ],
                         ),
                         child: Column(
-                          children: [
+                           children: [
                             const Text(
                               'AQI',
                               style: TextStyle(
@@ -780,8 +798,8 @@ class _MapsViewState extends State<MapsView> {
                                   : (isModerate
                                         ? 'Kualitas udara sedang. Orang yang sensitif disarankan mengurangi aktivitas luar.'
                                         : 'Kualitas udara sangat baik. Aman untuk beraktivitas di luar ruangan.'),
-                              style: const TextStyle(
-                                color: Colors.grey,
+                              style: TextStyle(
+                                color: textSecondary,
                                 fontSize: 11,
                                 height: 1.4,
                                 fontWeight: FontWeight.w500,
@@ -794,12 +812,12 @@ class _MapsViewState extends State<MapsView> {
                   ),
                   const SizedBox(height: 16),
 
-                  const Text(
+                  Text(
                     'Kandungan Partikulat (Polutan)',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      color: textSecondary,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -831,35 +849,35 @@ class _MapsViewState extends State<MapsView> {
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF8FAFC),
+                            color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'CUACA',
                                 style: TextStyle(
                                   fontSize: 8,
-                                  color: Colors.grey,
+                                  color: textSecondary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Row(
-                                children: const [
-                                  Icon(
+                                children: [
+                                  const Icon(
                                     Icons.thermostat_rounded,
                                     size: 12,
                                     color: Colors.orange,
                                   ),
-                                  SizedBox(width: 2),
+                                  const SizedBox(width: 2),
                                   Text(
                                     '29°C',
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF0F172A),
+                                      color: textPrimary,
                                     ),
                                   ),
                                 ],
@@ -872,12 +890,12 @@ class _MapsViewState extends State<MapsView> {
                   ),
                   const SizedBox(height: 16),
 
-                  const Text(
+                  Text(
                     'Rekomendasi Kesehatan',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      color: textSecondary,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -922,11 +940,15 @@ class _MapsViewState extends State<MapsView> {
   }
 
   Widget _buildPollutantMeter(String label, String value, double progressVal) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textSecondary = isDark ? const Color(0xFF94A3B8) : Colors.grey;
+    final textPrimary = isDark ? const Color(0xFFF8FAFC) : textDark;
     final clampedProgress = progressVal.clamp(0.0, 1.0);
+
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -934,9 +956,9 @@ class _MapsViewState extends State<MapsView> {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 8,
-              color: Colors.grey,
+              color: textSecondary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -946,7 +968,7 @@ class _MapsViewState extends State<MapsView> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: textDark,
+              color: textPrimary,
             ),
           ),
           const SizedBox(height: 4),
@@ -955,7 +977,7 @@ class _MapsViewState extends State<MapsView> {
             child: LinearProgressIndicator(
               value: clampedProgress,
               minHeight: 3,
-              backgroundColor: const Color(0xFFE2E8F0),
+              backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
               valueColor: AlwaysStoppedAnimation<Color>(
                 clampedProgress > 0.7
                     ? const Color(0xFFEF4444)
@@ -976,6 +998,8 @@ class _MapsViewState extends State<MapsView> {
     Color color,
     String action,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textSecondary = isDark ? const Color(0xFF94A3B8) : Colors.grey;
     return Column(
       children: [
         Container(
@@ -989,9 +1013,9 @@ class _MapsViewState extends State<MapsView> {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 8,
-            color: Colors.grey,
+            color: textSecondary,
             fontWeight: FontWeight.bold,
           ),
         ),

@@ -83,13 +83,13 @@ class AqiStation {
 
   static final List<AqiStation> defaultStations = [
     AqiStation(
-      name: 'Sukabumi',
-      region: 'Jawa Barat',
-      aqi: 32,
-      position: const LatLng(-6.9181, 106.9263),
-      distance: 'Wilayah Barat',
-      temp: 26,
-      humidity: 65,
+      name: 'Semarang',
+      region: 'Jawa Tengah',
+      aqi: 48,
+      position: const LatLng(-6.9667, 110.4167),
+      distance: 'Wilayah Tengah',
+      temp: 29,
+      humidity: 62,
     ),
     AqiStation(
       name: 'Jakarta Pusat',

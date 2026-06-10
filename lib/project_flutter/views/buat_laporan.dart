@@ -4,20 +4,20 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart' hide Path;
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/laporan_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/konfirmasi_laporan.dart';
 import 'package:latihan_flutterd7/project_flutter/views/laporan_beranda.dart';
-import 'package:latihan_flutterd7/project_flutter/views/riwayat_laporan.dart';
+import 'package:latlong2/latlong.dart' hide Path;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BuatLaporan extends StatefulWidget {
-  const BuatLaporan({super.key});
+  final String? initialCategory;
+  const BuatLaporan({super.key, this.initialCategory});
 
   @override
   State<BuatLaporan> createState() => _BuatLaporanState();
@@ -61,8 +61,8 @@ class _BuatLaporanState extends State<BuatLaporan> {
   final TextEditingController deskripsiController = TextEditingController();
 
   String? selectedDropdown;
-  String currentLokasi = "Cibadak, Sukabumi";
-  String currentKoordinat = "-6.8894, 106.7914";
+  String currentLokasi = "Jakarta Pusat, DKI Jakarta";
+  String currentKoordinat = "-6.1818, 106.8223";
 
   // List to hold selected photos (simulated URLs or local file paths)
   final List<String> selectedPhotos = [];
@@ -80,6 +80,7 @@ class _BuatLaporanState extends State<BuatLaporan> {
   @override
   void initState() {
     super.initState();
+    selectedDropdown = widget.initialCategory;
     judulController.addListener(() {
       setState(() {
         titleLength = judulController.text.length;
@@ -109,21 +110,30 @@ class _BuatLaporanState extends State<BuatLaporan> {
     "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop",
   ];
 
-  // Helper lists of Sukabumi sub-districts
-  final List<Map<String, String>> sukabumiKecamatan = [
-    {"nama": "Cibadak, Sukabumi", "koordinat": "-6.8894, 106.7914"},
-    {"nama": "Cisaat, Sukabumi", "koordinat": "-6.9084, 106.8832"},
-    {"nama": "Cikole, Sukabumi", "koordinat": "-6.9175, 106.9275"},
-    {"nama": "Warudoyong, Sukabumi", "koordinat": "-6.9254, 106.9142"},
-    {"nama": "Citamiang, Sukabumi", "koordinat": "-6.9321, 106.9367"},
-    {"nama": "Baros, Sukabumi", "koordinat": "-6.9534, 106.9423"},
-    {"nama": "Gunungpuyuh, Sukabumi", "koordinat": "-6.9123, 106.9087"},
+  // Helper lists of national cities
+  final List<Map<String, String>> wilayahNasional = [
+    {"nama": "Jakarta Pusat, DKI Jakarta", "koordinat": "-6.1818, 106.8223"},
+    {"nama": "Bandung, Jawa Barat", "koordinat": "-6.9175, 107.6191"},
+    {"nama": "Surabaya, Jawa Timur", "koordinat": "-7.2575, 112.7521"},
+    {"nama": "Yogyakarta, DI Yogyakarta", "koordinat": "-7.7956, 110.3695"},
+    {"nama": "Medan, Sumatera Utara", "koordinat": "3.5952, 98.6722"},
+    {"nama": "Denpasar, Bali", "koordinat": "-8.6705, 115.2126"},
+    {"nama": "Makassar, Sulawesi Selatan", "koordinat": "-5.1476, 119.4327"},
   ];
 
   void _showLocationPicker() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color sheetBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF0F172A);
+    final Color subTextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF64748B);
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: sheetBgColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -132,6 +142,7 @@ class _BuatLaporanState extends State<BuatLaporan> {
           builder: (context, setModalState) {
             return Container(
               padding: const EdgeInsets.all(24),
+              color: sheetBgColor,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,7 +152,9 @@ class _BuatLaporanState extends State<BuatLaporan> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: isDark
+                            ? const Color(0xFF475569)
+                            : Colors.grey[300],
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -152,7 +165,7 @@ class _BuatLaporanState extends State<BuatLaporan> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: textDark,
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -160,30 +173,40 @@ class _BuatLaporanState extends State<BuatLaporan> {
                   ListTile(
                     leading: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFF0FDFA),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF0F4C43).withOpacity(0.3)
+                            : const Color(0xFFF0FDFA),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(Icons.my_location, color: activeTeal),
                     ),
-                    title: const Text(
+                    title: Text(
                       "Gunakan Lokasi GPS Saat Ini",
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                      ),
                     ),
-                    subtitle: const Text("Mendeteksi lokasi otomatis via GPS"),
+                    subtitle: Text(
+                      "Mendeteksi lokasi otomatis via GPS",
+                      style: TextStyle(color: subTextColor),
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       _determineGPSPosition();
                     },
                   ),
-                  const Divider(),
+                  Divider(
+                    color: isDark ? const Color(0xFF334155) : Colors.grey[200],
+                  ),
                   const SizedBox(height: 8),
                   Text(
-                    "Pilih Wilayah Sukabumi",
+                    "Pilih Wilayah Nasional",
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[600],
+                      color: subTextColor,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -191,13 +214,26 @@ class _BuatLaporanState extends State<BuatLaporan> {
                   Expanded(
                     child: ListView.builder(
                       physics: const BouncingScrollPhysics(),
-                      itemCount: sukabumiKecamatan.length,
+                      itemCount: wilayahNasional.length,
                       itemBuilder: (context, index) {
-                        final kec = sukabumiKecamatan[index];
+                        final kec = wilayahNasional[index];
                         return ListTile(
-                          title: Text(kec['nama']!),
-                          subtitle: Text("Koordinat: ${kec['koordinat']}"),
-                          trailing: const Icon(Icons.chevron_right, size: 18),
+                          title: Text(
+                            kec['nama']!,
+                            style: TextStyle(
+                              color: textColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subtitle: Text(
+                            "Koordinat: ${kec['koordinat']}",
+                            style: TextStyle(color: subTextColor),
+                          ),
+                          trailing: Icon(
+                            Icons.chevron_right,
+                            size: 18,
+                            color: subTextColor,
+                          ),
                           onTap: () {
                             setState(() {
                               currentLokasi = kec['nama']!;
@@ -225,7 +261,9 @@ class _BuatLaporanState extends State<BuatLaporan> {
       barrierDismissible: false,
       builder: (dialogCtx) {
         dialogContext = dialogCtx;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         return AlertDialog(
+          backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -236,14 +274,23 @@ class _BuatLaporanState extends State<BuatLaporan> {
               children: [
                 CircularProgressIndicator(color: activeTeal),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   "Mencari Sinyal GPS...",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: isDark
+                        ? const Color(0xFFF8FAFC)
+                        : const Color(0xFF0F172A),
+                  ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   "Mendeteksi lokasi asli Anda",
-                  style: TextStyle(color: Colors.grey, fontSize: 13),
+                  style: TextStyle(
+                    color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
@@ -341,27 +388,22 @@ class _BuatLaporanState extends State<BuatLaporan> {
 
       // Fallback if reverse geocoding was empty or failed
       if (resolvedAddress.isEmpty) {
-        // If it is close to Sukabumi area (within ~50km), map it to the closest sub-district
-        if ((lat - -6.9175).abs() < 0.5 && (lon - 106.9275).abs() < 0.5) {
-          Map<String, String> nearestKec = sukabumiKecamatan.first;
-          double minDistance = double.infinity;
-          for (final kec in sukabumiKecamatan) {
-            final parts = kec['koordinat']!.split(',');
-            if (parts.length == 2) {
-              final kLat = double.tryParse(parts[0].trim()) ?? 0.0;
-              final kLon = double.tryParse(parts[1].trim()) ?? 0.0;
-              final double dist =
-                  (lat - kLat) * (lat - kLat) + (lon - kLon) * (lon - kLon);
-              if (dist < minDistance) {
-                minDistance = dist;
-                nearestKec = kec;
-              }
+        Map<String, String> nearestCity = wilayahNasional.first;
+        double minDistance = double.infinity;
+        for (final city in wilayahNasional) {
+          final parts = city['koordinat']!.split(',');
+          if (parts.length == 2) {
+            final cLat = double.tryParse(parts[0].trim()) ?? 0.0;
+            final cLon = double.tryParse(parts[1].trim()) ?? 0.0;
+            final double dist =
+                (lat - cLat) * (lat - cLat) + (lon - cLon) * (lon - cLon);
+            if (dist < minDistance) {
+              minDistance = dist;
+              nearestCity = city;
             }
           }
-          resolvedAddress = nearestKec['nama']!;
-        } else {
-          resolvedAddress = "Lokasi Anda";
         }
+        resolvedAddress = nearestCity['nama']!;
       }
 
       setState(() {
@@ -395,14 +437,21 @@ class _BuatLaporanState extends State<BuatLaporan> {
   }
 
   void _showPhotoSourcePicker() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color sheetBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF0F172A);
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: sheetBgColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
         return Container(
+          color: sheetBgColor,
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -413,7 +462,7 @@ class _BuatLaporanState extends State<BuatLaporan> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: isDark ? const Color(0xFF475569) : Colors.grey[300],
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -424,7 +473,7 @@ class _BuatLaporanState extends State<BuatLaporan> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: textDark,
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 16),
@@ -442,7 +491,9 @@ class _BuatLaporanState extends State<BuatLaporan> {
                           width: 64,
                           height: 64,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF0FDFA),
+                            color: isDark
+                                ? const Color(0xFF0F4C43).withOpacity(0.3)
+                                : const Color(0xFFF0FDFA),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Icon(
@@ -452,9 +503,12 @@ class _BuatLaporanState extends State<BuatLaporan> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           "Ambil Foto",
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                          ),
                         ),
                       ],
                     ),
@@ -470,7 +524,9 @@ class _BuatLaporanState extends State<BuatLaporan> {
                           width: 64,
                           height: 64,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF0FDFA),
+                            color: isDark
+                                ? const Color(0xFF0F4C43).withOpacity(0.3)
+                                : const Color(0xFFF0FDFA),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Icon(
@@ -480,9 +536,12 @@ class _BuatLaporanState extends State<BuatLaporan> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           "Pilih dari Galeri",
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                          ),
                         ),
                       ],
                     ),
@@ -522,10 +581,31 @@ class _BuatLaporanState extends State<BuatLaporan> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isDark
+        ? const Color(0xFF0F172A)
+        : const Color(0xFFF4F8FB);
+    final Color cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF0F172A);
+    final Color subTextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF64748B);
+    final Color borderColor = isDark
+        ? const Color(0xFF334155)
+        : const Color(0xFFE2E8F0);
+    final Color labelColor = isDark
+        ? const Color(0xFFE2E8F0)
+        : const Color(0xFF1E293B);
+    final Color inputFillColor = isDark
+        ? const Color(0xFF0F172A)
+        : const Color(0xFFF8FAFC);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F8FB),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: primaryTeal,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : primaryTeal,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -562,7 +642,9 @@ class _BuatLaporanState extends State<BuatLaporan> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [primaryTeal, activeTeal],
+                        colors: isDark
+                            ? [const Color(0xFF1E293B), const Color(0xFF0F172A)]
+                            : [primaryTeal, activeTeal],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -632,11 +714,14 @@ class _BuatLaporanState extends State<BuatLaporan> {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: cardColor,
                             borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: borderColor),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.02),
+                                color: Colors.black.withOpacity(
+                                  isDark ? 0.3 : 0.02,
+                                ),
                                 blurRadius: 15,
                                 offset: const Offset(0, 8),
                               ),
@@ -654,12 +739,12 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
-                                  const Text(
+                                  Text(
                                     "Kategori Laporan",
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1E293B),
+                                      color: labelColor,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
@@ -679,10 +764,8 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF8FAFC),
-                                  border: Border.all(
-                                    color: const Color(0xFFE2E8F0),
-                                  ),
+                                  color: inputFillColor,
+                                  border: Border.all(color: borderColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: DropdownButtonHideUnderline(
@@ -691,18 +774,20 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                     hint: Text(
                                       "Pilih Kategori...",
                                       style: TextStyle(
-                                        color: Colors.grey[400],
+                                        color: isDark
+                                            ? const Color(0xFF64748B)
+                                            : Colors.grey[400],
                                         fontSize: 13,
                                       ),
                                     ),
                                     isExpanded: true,
-                                    dropdownColor: Colors.white,
+                                    dropdownColor: cardColor,
                                     icon: const Icon(
                                       Icons.keyboard_arrow_down_rounded,
                                       color: Colors.grey,
                                     ),
                                     style: TextStyle(
-                                      color: textDark,
+                                      color: textColor,
                                       fontSize: 13,
                                     ),
                                     items: _daftarKategori.map((
@@ -720,8 +805,9 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                             const SizedBox(width: 10),
                                             Text(
                                               cat["nama"] as String,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 13,
+                                                color: textColor,
                                               ),
                                             ),
                                           ],
@@ -747,12 +833,12 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
-                                  const Text(
+                                  Text(
                                     "Judul Laporan",
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1E293B),
+                                      color: labelColor,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
@@ -770,29 +856,34 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                 controller: judulController,
                                 maxLength: 100,
                                 maxLines: 2,
-                                style: TextStyle(color: textDark, fontSize: 13),
+                                style: TextStyle(
+                                  color: textColor,
+                                  fontSize: 13,
+                                ),
                                 decoration: InputDecoration(
                                   hintText: "Tulis judul laporan singkat...",
                                   hintStyle: TextStyle(
                                     fontSize: 13,
-                                    color: Colors.grey[400],
+                                    color: isDark
+                                        ? const Color(0xFF64748B)
+                                        : Colors.grey[400],
                                   ),
                                   counterText: "$titleLength/100",
                                   counterStyle: TextStyle(
-                                    color: Colors.grey[400],
+                                    color: isDark
+                                        ? const Color(0xFF64748B)
+                                        : Colors.grey[400],
                                     fontSize: 11,
                                   ),
                                   filled: true,
-                                  fillColor: const Color(0xFFF8FAFC),
+                                  fillColor: inputFillColor,
                                   contentPadding: const EdgeInsets.symmetric(
                                     vertical: 14,
                                     horizontal: 16,
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFFE2E8F0),
-                                    ),
+                                    borderSide: BorderSide(color: borderColor),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -814,12 +905,12 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                     size: 22,
                                   ),
                                   const SizedBox(width: 6),
-                                  const Text(
+                                  Text(
                                     "Deskripsi Kejadian",
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1E293B),
+                                      color: labelColor,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
@@ -837,30 +928,35 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                 controller: deskripsiController,
                                 maxLines: 5,
                                 maxLength: 500,
-                                style: TextStyle(color: textDark, fontSize: 13),
+                                style: TextStyle(
+                                  color: textColor,
+                                  fontSize: 13,
+                                ),
                                 decoration: InputDecoration(
                                   hintText:
                                       "Jelaskan kronologi kejadian secara detail...",
                                   hintStyle: TextStyle(
                                     fontSize: 13,
-                                    color: Colors.grey[400],
+                                    color: isDark
+                                        ? const Color(0xFF64748B)
+                                        : Colors.grey[400],
                                   ),
                                   counterText: "$descLength/500",
                                   counterStyle: TextStyle(
-                                    color: Colors.grey[400],
+                                    color: isDark
+                                        ? const Color(0xFF64748B)
+                                        : Colors.grey[400],
                                     fontSize: 11,
                                   ),
                                   filled: true,
-                                  fillColor: const Color(0xFFF8FAFC),
+                                  fillColor: inputFillColor,
                                   contentPadding: const EdgeInsets.symmetric(
                                     vertical: 14,
                                     horizontal: 16,
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFFE2E8F0),
-                                    ),
+                                    borderSide: BorderSide(color: borderColor),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -880,11 +976,14 @@ class _BuatLaporanState extends State<BuatLaporan> {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: cardColor,
                             borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: borderColor),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.02),
+                                color: Colors.black.withOpacity(
+                                  isDark ? 0.3 : 0.02,
+                                ),
                                 blurRadius: 15,
                                 offset: const Offset(0, 8),
                               ),
@@ -905,12 +1004,12 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                         size: 20,
                                       ),
                                       const SizedBox(width: 8),
-                                      const Text(
+                                      Text(
                                         "Lokasi Kejadian",
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
-                                          color: Color(0xFF1E293B),
+                                          color: labelColor,
                                         ),
                                       ),
                                     ],
@@ -924,7 +1023,11 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                         vertical: 6,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFFF0FDFA),
+                                        color: isDark
+                                            ? const Color(
+                                                0xFF0F4C43,
+                                              ).withOpacity(0.3)
+                                            : const Color(0xFFF0FDFA),
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(
                                           color: activeTeal.withOpacity(0.2),
@@ -953,32 +1056,6 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 12),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF8FAFC),
-                                  border: Border(
-                                    left: BorderSide(
-                                      color: activeTeal,
-                                      width: 3,
-                                    ),
-                                  ),
-                                  borderRadius: const BorderRadius.only(
-                                    topRight: Radius.circular(8),
-                                    bottomRight: Radius.circular(8),
-                                  ),
-                                ),
-                                child: Text(
-                                  currentLokasi,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Color(0xFF334155),
-                                    height: 1.4,
-                                  ),
-                                ),
-                              ),
                               const SizedBox(height: 16),
                               // Real Interactive Map
                               ClipRRect(
@@ -997,11 +1074,14 @@ class _BuatLaporanState extends State<BuatLaporan> {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: cardColor,
                             borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: borderColor),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.02),
+                                color: Colors.black.withOpacity(
+                                  isDark ? 0.3 : 0.02,
+                                ),
                                 blurRadius: 15,
                                 offset: const Offset(0, 8),
                               ),
@@ -1018,12 +1098,12 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                     size: 20,
                                   ),
                                   const SizedBox(width: 8),
-                                  const Text(
+                                  Text(
                                     "Foto Bukti Kejadian",
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1E293B),
+                                      color: labelColor,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
@@ -1066,10 +1146,15 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(16),
+                                                border: Border.all(
+                                                  color: borderColor,
+                                                ),
                                                 boxShadow: [
                                                   BoxShadow(
                                                     color: Colors.black
-                                                        .withOpacity(0.05),
+                                                        .withOpacity(
+                                                          isDark ? 0.2 : 0.05,
+                                                        ),
                                                     blurRadius: 6,
                                                     offset: const Offset(0, 3),
                                                   ),
@@ -1149,7 +1234,7 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                               width: 80,
                                               height: 80,
                                               decoration: BoxDecoration(
-                                                color: const Color(0xFFF8FAFC),
+                                                color: inputFillColor,
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                               ),
@@ -1172,7 +1257,7 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                   Text(
                                     "Maksimal 5 foto bukti",
                                     style: TextStyle(
-                                      color: Colors.grey[400],
+                                      color: subTextColor,
                                       fontSize: 11,
                                     ),
                                   ),
@@ -1275,12 +1360,15 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                 'id_ID',
                               ).format(now);
 
-                              final count = await RuasDbHelper.instance.getLaporanCount();
+                              final count = await RuasDbHelper.instance
+                                  .getLaporanCount();
                               final String reportNum =
                                   "#LP${DateFormat('yyMMdd').format(now)}${100 + (count % 900)}";
 
-                              final prefs = await SharedPreferences.getInstance();
-                              final userId = prefs.getInt('current_user_id') ?? 1;
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+                              final userId =
+                                  prefs.getInt('current_user_id') ?? 1;
 
                               // Build LaporanModel object
                               final newReport = LaporanModel(
@@ -1292,11 +1380,14 @@ class _BuatLaporanState extends State<BuatLaporan> {
                                 status: "Diproses",
                                 tanggal: formattedDateStr,
                                 userId: userId,
-                                foto: selectedPhotos.isNotEmpty ? selectedPhotos.first : 'assets/images/kota_1.jpg',
+                                foto: selectedPhotos.isNotEmpty
+                                    ? selectedPhotos.first
+                                    : 'assets/images/kota_1.jpg',
                               );
 
                               // Save to SQLite DB
-                              final insertedId = await RuasDbHelper.instance.createLaporan(newReport);
+                              final insertedId = await RuasDbHelper.instance
+                                  .createLaporan(newReport);
                               final savedReport = LaporanModel(
                                 id: insertedId,
                                 judul: newReport.judul,
@@ -1370,6 +1461,20 @@ class SimulatedMapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color mapBg = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFE2E8F0);
+    final Color infoBg = isDark
+        ? const Color(0xFF1E293B).withOpacity(0.95)
+        : Colors.white.withOpacity(0.95);
+    final Color infoText = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF1E293B);
+    final Color infoBorder = isDark
+        ? const Color(0xFF334155)
+        : Colors.transparent;
+
     final parts = koordinatStr.split(',');
     double lat = -6.8894;
     double lon = 106.7914;
@@ -1383,7 +1488,7 @@ class SimulatedMapWidget extends StatelessWidget {
       height: 180,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFFE2E8F0),
+        color: mapBg,
         borderRadius: BorderRadius.circular(16),
       ),
       child: ClipRRect(
@@ -1424,9 +1529,13 @@ class SimulatedMapWidget extends StatelessWidget {
               left: 12,
               right: 12,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.95),
+                  color: infoBg,
+                  border: Border.all(color: infoBorder),
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: const [
                     BoxShadow(
@@ -1438,15 +1547,21 @@ class SimulatedMapWidget extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.my_location_rounded, color: Color(0xFF0D9488), size: 14),
+                    const Icon(
+                      Icons.my_location_rounded,
+                      color: Color(0xFF0D9488),
+                      size: 14,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        locationName.replaceAll(RegExp(r'\([-0-9.,\s]+\)'), '').trim(),
-                        style: const TextStyle(
+                        locationName
+                            .replaceAll(RegExp(r'\([-0-9.,\s]+\)'), '')
+                            .trim(),
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E293B),
+                          color: infoText,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -1518,6 +1633,14 @@ class DashedUploadArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color areaBg = isDark
+        ? const Color(0xFF0F172A)
+        : const Color(0xFFF8FAFC);
+    final Color textColor = isDark
+        ? const Color(0xFFE2E8F0)
+        : const Color(0xFF334155);
+
     return GestureDetector(
       onTap: onTap,
       child: CustomPaint(
@@ -1530,7 +1653,7 @@ class DashedUploadArea extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 24),
           decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
+            color: areaBg,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -1538,18 +1661,21 @@ class DashedUploadArea extends StatelessWidget {
             children: [
               Icon(Icons.cloud_upload_outlined, color: activeTeal, size: 36),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 "Unggah Foto Bukti",
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF334155),
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 "Tap untuk mengambil foto atau memilih dari galeri",
-                style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isDark ? const Color(0xFF64748B) : Colors.grey[400],
+                ),
               ),
             ],
           ),

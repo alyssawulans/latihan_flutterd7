@@ -63,15 +63,22 @@ class _LaporanListViewState extends State<LaporanListView> {
   @override
   Widget build(BuildContext context) {
     final statusTabs = ['Semua', 'Diproses', 'Selesai', 'Ditolak'];
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF9FBFB);
+    final Color appBarBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark ? const Color(0xFFF8FAFC) : Colors.black87;
+    final Color borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FBFB),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: appBarBgColor,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Daftar Laporan',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -88,9 +95,9 @@ class _LaporanListViewState extends State<LaporanListView> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: cardColor,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.black12),
+                  border: Border.all(color: borderColor),
                 ),
                 child: TextField(
                   onChanged: (val) {
@@ -99,11 +106,13 @@ class _LaporanListViewState extends State<LaporanListView> {
                     });
                     _fetchReports();
                   },
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: textColor),
+                  decoration: InputDecoration(
                     hintText: 'Cari laporan...',
-                    prefixIcon: Icon(Icons.search, color: Color(0xFF0D9488)),
+                    hintStyle: TextStyle(color: isDark ? const Color(0xFF64748B) : Colors.grey),
+                    prefixIcon: const Icon(Icons.search, color: Color(0xFF0D9488)),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
               ),
@@ -126,16 +135,16 @@ class _LaporanListViewState extends State<LaporanListView> {
                       label: Text(status),
                       selected: isSelected,
                       selectedColor: const Color(0xFF0D9488),
-                      backgroundColor: Colors.white,
+                      backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                       labelStyle: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black87,
+                        color: isSelected ? Colors.white : textColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                         side: BorderSide(
-                          color: isSelected ? Colors.transparent : Colors.black12,
+                          color: isSelected ? Colors.transparent : borderColor,
                         ),
                       ),
                       onSelected: (_) => _onStatusTabSelected(status),
@@ -155,11 +164,11 @@ class _LaporanListViewState extends State<LaporanListView> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.description_outlined, size: 64, color: Colors.grey.shade300),
+                              Icon(Icons.description_outlined, size: 64, color: isDark ? const Color(0xFF334155) : Colors.grey.shade300),
                               const SizedBox(height: 16),
                               Text(
                                 'Tidak ada laporan ditemukan',
-                                style: TextStyle(color: Colors.grey.shade500, fontSize: 16),
+                                style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500, fontSize: 16),
                               ),
                             ],
                           ),
@@ -194,6 +203,12 @@ class _LaporanListViewState extends State<LaporanListView> {
   }
 
   Widget _buildReportCard(LaporanModel report) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color cardTextColor = isDark ? const Color(0xFFF8FAFC) : Colors.black87;
+    final Color cardSubTextColor = isDark ? const Color(0xFF94A3B8) : Colors.black45;
+    final Color cardBorderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     Color badgeColor = Colors.orange;
     if (report.status == 'Selesai') {
       badgeColor = Colors.green;
@@ -204,9 +219,10 @@ class _LaporanListViewState extends State<LaporanListView> {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 12),
+      color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Colors.black12),
+        side: BorderSide(color: cardBorderColor),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -234,7 +250,7 @@ class _LaporanListViewState extends State<LaporanListView> {
                         errorBuilder: (context, error, stackTrace) => Container(
                           width: 80,
                           height: 80,
-                          color: Colors.teal.shade50,
+                          color: isDark ? const Color(0xFF334155) : Colors.teal.shade50,
                           child: const Icon(Icons.image, color: Color(0xFF0D9488)),
                         ),
                       )
@@ -247,7 +263,7 @@ class _LaporanListViewState extends State<LaporanListView> {
                             errorBuilder: (context, error, stackTrace) => Container(
                               width: 80,
                               height: 80,
-                              color: Colors.teal.shade50,
+                              color: isDark ? const Color(0xFF334155) : Colors.teal.shade50,
                               child: const Icon(Icons.image, color: Color(0xFF0D9488)),
                             ),
                           )
@@ -260,14 +276,14 @@ class _LaporanListViewState extends State<LaporanListView> {
                                 errorBuilder: (context, error, stackTrace) => Container(
                                   width: 80,
                                   height: 80,
-                                  color: Colors.teal.shade50,
+                                  color: isDark ? const Color(0xFF334155) : Colors.teal.shade50,
                                   child: const Icon(Icons.image, color: Color(0xFF0D9488)),
                                 ),
                               )
                             : Container(
                                 width: 80,
                                 height: 80,
-                                color: Colors.teal.shade50,
+                                color: isDark ? const Color(0xFF334155) : Colors.teal.shade50,
                                 child: const Icon(Icons.photo_library_outlined, color: Color(0xFF0D9488)),
                               ),
               ),
@@ -281,7 +297,7 @@ class _LaporanListViewState extends State<LaporanListView> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.teal.shade50,
+                            color: const Color(0xFF0D9488).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -298,10 +314,10 @@ class _LaporanListViewState extends State<LaporanListView> {
                     const SizedBox(height: 6),
                     Text(
                       report.judul,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: cardTextColor,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -309,14 +325,14 @@ class _LaporanListViewState extends State<LaporanListView> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined, size: 12, color: Colors.black45),
+                        const Icon(Icons.location_on_outlined, size: 12, color: Colors.grey),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             report.lokasi,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Colors.black45,
+                              color: cardSubTextColor,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -330,9 +346,9 @@ class _LaporanListViewState extends State<LaporanListView> {
                       children: [
                         Text(
                           report.tanggal,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: Colors.black38,
+                            color: cardSubTextColor,
                           ),
                         ),
                         Container(

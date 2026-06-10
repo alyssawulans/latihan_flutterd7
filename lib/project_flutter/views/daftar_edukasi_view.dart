@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/edukasi_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/edukasi_detail_view.dart';
-import 'package:latihan_flutterd7/project_flutter/views/edukasi_form_view.dart';
 
 class DaftarEdukasiView extends StatefulWidget {
   final String initialCategory;
@@ -106,20 +105,30 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final Color cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
+    final Color subTextColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final Color borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+    final Color iconColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
+    final Color categoryUnselectedBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFEFF3F6);
+    final Color categoryUnselectedText = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back, color: iconColor),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
         title: Text(
           'Daftar Edukasi',
           style: TextStyle(
-            color: textDark,
+            color: textColor,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -128,7 +137,7 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
           IconButton(
             icon: Icon(
               _isBookmarkedOnly ? Icons.bookmark : Icons.bookmark_border_rounded,
-              color: _isBookmarkedOnly ? activeTeal : const Color(0xFF0F172A),
+              color: _isBookmarkedOnly ? activeTeal : iconColor,
             ),
             onPressed: () {
               setState(() {
@@ -157,12 +166,12 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: cardBg,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFF1F5F9)),
+                  border: Border.all(color: borderColor),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.01),
+                      color: Colors.black.withOpacity(isDark ? 0.2 : 0.01),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -170,6 +179,7 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
                 ),
                 child: TextField(
                   controller: _searchController,
+                  style: TextStyle(color: textColor, fontSize: 14),
                   onChanged: (val) {
                     setState(() {
                       _searchQuery = val;
@@ -178,11 +188,11 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
                   },
                   decoration: InputDecoration(
                     hintText: 'Cari artikel...',
-                    hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                    hintStyle: TextStyle(color: subTextColor, fontSize: 14),
                     prefixIcon: Icon(Icons.search, color: activeTeal, size: 20),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear, size: 18, color: Colors.grey),
+                            icon: Icon(Icons.clear, size: 18, color: subTextColor),
                             onPressed: () {
                               _searchController.clear();
                               setState(() {
@@ -217,14 +227,15 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                         decoration: BoxDecoration(
-                          color: isSelected ? activeTeal : const Color(0xFFEFF3F6),
+                          color: isSelected ? activeTeal : categoryUnselectedBg,
                           borderRadius: BorderRadius.circular(20),
+                          border: isDark && !isSelected ? Border.all(color: borderColor) : null,
                         ),
                         child: Center(
                           child: Text(
                             cat,
                             style: TextStyle(
-                              color: isSelected ? Colors.white : const TextStyle().color,
+                              color: isSelected ? Colors.white : categoryUnselectedText,
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
                             ),
@@ -252,13 +263,13 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
                               Icon(
                                 Icons.menu_book_rounded,
                                 size: 64,
-                                color: Colors.grey.shade300,
+                                color: isDark ? const Color(0xFF334155) : Colors.grey.shade300,
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 'Belum ada artikel edukasi',
                                 style: TextStyle(
-                                  color: Colors.grey.shade500,
+                                  color: subTextColor,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -274,7 +285,7 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
                             itemCount: _articles.length,
                             itemBuilder: (context, index) {
                               final article = _articles[index];
-                              return _buildMockupArticleCard(article);
+                              return _buildMockupArticleCard(article, cardBg, textColor, subTextColor, borderColor, isDark);
                             },
                           ),
                         ),
@@ -282,32 +293,28 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const EdukasiFormView()),
-          ).then((_) => _fetchArticles());
-        },
-        backgroundColor: activeTeal,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 
-  Widget _buildMockupArticleCard(EdukasiModel article) {
+  Widget _buildMockupArticleCard(
+    EdukasiModel article,
+    Color cardBg,
+    Color textColor,
+    Color subTextColor,
+    Color borderColor,
+    bool isDark,
+  ) {
     final readTime = _estimateReadTime(article.konten);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -341,14 +348,14 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
                           errorBuilder: (context, error, stackTrace) => Container(
                             width: 80,
                             height: 80,
-                            color: const Color(0xFFE2F1ED),
+                            color: isDark ? const Color(0xFF0F4C43).withOpacity(0.3) : const Color(0xFFE2F1ED),
                             child: Icon(Icons.school, color: activeTeal, size: 28),
                           ),
                         )
                       : Container(
                           width: 80,
                           height: 80,
-                          color: const Color(0xFFE2F1ED),
+                          color: isDark ? const Color(0xFF0F4C43).withOpacity(0.3) : const Color(0xFFE2F1ED),
                           child: Icon(Icons.school, color: activeTeal, size: 28),
                         ),
                 ),
@@ -363,7 +370,7 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: textDark,
+                          color: textColor,
                           height: 1.3,
                         ),
                         maxLines: 2,
@@ -375,14 +382,14 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
                           Icon(
                             Icons.access_time_rounded,
                             size: 14,
-                            color: Colors.grey.shade400,
+                            color: subTextColor,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '$readTime Menit Membaca',
                             style: TextStyle(
                               fontSize: 11,
-                              color: Colors.grey.shade500,
+                              color: subTextColor,
                               fontWeight: FontWeight.w500,
                             ),
                           ),

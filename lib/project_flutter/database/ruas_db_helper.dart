@@ -97,8 +97,8 @@ class RuasDbHelper {
     await db.insert('laporan', {
       'judul': 'Pembuangan Sampah Sembarangan',
       'kategori': 'Sampah',
-      'lokasi': 'Cibadak, Sukabumi',
-      'koordinat': '-6.8894, 106.7914',
+      'lokasi': 'Jakarta Pusat, DKI Jakarta',
+      'koordinat': '-6.1818, 106.8223',
       'deskripsi': 'Terjadi pembuangan sampah rumah tangga di pinggir jalan dekat sungai. Bau menyengat dan mengganggu lingkungan sekitar.',
       'status': 'Diproses',
       'tanggal': '24 Sep 2023',
@@ -109,8 +109,8 @@ class RuasDbHelper {
     await db.insert('laporan', {
       'judul': 'Pembakaran Sampah',
       'kategori': 'Sampah',
-      'lokasi': 'Selabintana, Sukabumi',
-      'koordinat': '-6.8744, 106.9456',
+      'lokasi': 'Bandung, Jawa Barat',
+      'koordinat': '-6.9175, 107.6191',
       'deskripsi': 'Pembakaran sampah liar dekat pemukiman warga secara berkala, menimbulkan asap tebal dan sesak napas.',
       'status': 'Selesai',
       'tanggal': '23 Sep 2023',
@@ -121,8 +121,8 @@ class RuasDbHelper {
     await db.insert('laporan', {
       'judul': 'Polusi Udara (Kendaraan Asap Tebal)',
       'kategori': 'Udara',
-      'lokasi': 'Cisaat, Sukabumi',
-      'koordinat': '-6.9184, 106.8924',
+      'lokasi': 'Surabaya, Jawa Timur',
+      'koordinat': '-7.2575, 112.7521',
       'deskripsi': 'Truk industri menghasilkan asap hitam pekat saat melintas di jalan raya utama.',
       'status': 'Diproses',
       'tanggal': '22 Sep 2023',

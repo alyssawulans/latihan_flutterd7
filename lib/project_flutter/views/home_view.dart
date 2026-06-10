@@ -5,9 +5,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart' hide TextDirection;
+import 'package:latihan_flutterd7/project_flutter/config/app_settings.dart';
+import 'package:latihan_flutterd7/project_flutter/config/app_translations.dart';
+import 'package:latihan_flutterd7/project_flutter/config/debug_config.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/aqi_station_model.dart';
 import 'package:latihan_flutterd7/project_flutter/models/laporan_model.dart';
+import 'package:latihan_flutterd7/project_flutter/views/database_viewer_view.dart';
 import 'package:latihan_flutterd7/project_flutter/views/detail_laporan.dart';
 import 'package:latihan_flutterd7/project_flutter/views/main_navigation_shell.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -62,6 +66,24 @@ class _HomeViewState extends State<HomeView> {
     return dates;
   }
 
+  AqiStation _findNearestStation(double lat, double lon) {
+    AqiStation closestStation = AqiStation.defaultStations.first;
+    double minDistance = double.infinity;
+    for (final station in AqiStation.defaultStations) {
+      final double distance = Geolocator.distanceBetween(
+        lat,
+        lon,
+        station.position.latitude,
+        station.position.longitude,
+      );
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestStation = station;
+      }
+    }
+    return closestStation;
+  }
+
   Future<void> _fetchGPSLocation() async {
     try {
       LocationPermission permission = await Geolocator.checkPermission();
@@ -81,22 +103,8 @@ class _HomeViewState extends State<HomeView> {
         final double lat = position.latitude;
         final double lon = position.longitude;
 
-        // Cari stasiun pemantau AQI terdekat dari koordinat GPS ini
-        AqiStation? closestStation;
-        double minDistance = double.infinity;
-
-        for (final station in AqiStation.defaultStations) {
-          final double distance = Geolocator.distanceBetween(
-            lat,
-            lon,
-            station.position.latitude,
-            station.position.longitude,
-          );
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestStation = station;
-          }
-        }
+        // Cari stasiun pemantau AQI terdekat dari koordinat GPS ini menggunakan helper
+        final closestStation = _findNearestStation(lat, lon);
 
         String resolvedAddress = "";
 
@@ -149,13 +157,11 @@ class _HomeViewState extends State<HomeView> {
           setState(() {
             if (resolvedAddress.isNotEmpty) {
               _currentLocationName = resolvedAddress;
-            } else if (closestStation != null) {
+            } else {
               _currentLocationName =
                   '${closestStation.name}, ${closestStation.region}';
             }
-            if (closestStation != null) {
-              _nearestStation = closestStation;
-            }
+            _nearestStation = closestStation;
           });
         }
       }
@@ -196,10 +202,8 @@ class _HomeViewState extends State<HomeView> {
         _laporanCount = lCount;
         _edukasiCount = eCount;
         _recentLaporan = recent;
-        _nearestStation ??= AqiStation.defaultStations.firstWhere(
-          (s) => s.name == 'Sukabumi',
-          orElse: () => AqiStation.defaultStations.first,
-        );
+        // Cari stasiun terdekat ke default lokasi 'Cibadak, Sukabumi' (lat -6.8916, lon 106.7876)
+        _nearestStation ??= _findNearestStation(-6.8916, 106.7876);
         _isLoading = false;
       });
     }
@@ -234,8 +238,26 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final settings = AppSettingsController.instance.settingsNotifier.value;
+    final lang = settings.languageCode;
+
+    final Color bgColor = isDark
+        ? const Color(0xFF0F172A)
+        : const Color(0xFFF8FAFC);
+    final Color cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF0F172A);
+    final Color subTextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF64748B);
+    final Color borderColor = isDark
+        ? const Color(0xFF334155)
+        : const Color(0xFFF1F5F9);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: Color(0xFF0D9488)),
@@ -278,7 +300,7 @@ class _HomeViewState extends State<HomeView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${_getGreeting()}, \n$_userName 👋',
+                                      '${_getGreeting(lang)}, \n$_userName 👋',
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
@@ -289,7 +311,7 @@ class _HomeViewState extends State<HomeView> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      _getDynamicQuote(),
+                                      _getDynamicQuote(lang),
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -322,23 +344,31 @@ class _HomeViewState extends State<HomeView> {
                           ),
                           const SizedBox(height: 16),
                           // Sub Location Indicator inside header
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                color: Colors.white.withValues(alpha: 0.9),
-                                size: 14,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                '$_currentLocationName • ${DateFormat('dd MMM yyyy', 'id_ID').format(DateTime.now())}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  fontWeight: FontWeight.w500,
+                          // Diposisikan agar selaras secara vertikal dengan konten di dalam kartu AQI (margin 24 + padding 20 = 44)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.location_on,
+                                  color: Colors.white,
+                                  size: 14,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    '$_currentLocationName  •  ${DateFormat('dd MMM yyyy', 'id_ID').format(DateTime.now())}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white.withValues(alpha: 0.9),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -351,12 +381,14 @@ class _HomeViewState extends State<HomeView> {
                         margin: const EdgeInsets.symmetric(horizontal: 24),
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: cardColor,
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: const Color(0xFFF1F5F9)),
+                          border: Border.all(color: borderColor),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
+                              color: isDark
+                                  ? Colors.black.withValues(alpha: 0.3)
+                                  : Colors.black.withValues(alpha: 0.04),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -373,49 +405,89 @@ class _HomeViewState extends State<HomeView> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
-                                        'AQI Saat Ini',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF64748B),
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            AppTranslations.translate(
+                                              'current_aqi',
+                                              lang,
+                                            ),
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: subTextColor,
+                                            ),
+                                          ),
+                                          if (_nearestStation != null) ...[
+                                            const SizedBox(width: 6),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 6,
+                                                vertical: 2,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? const Color(0xFF334155)
+                                                    : const Color(0xFFE2E8F0),
+                                                borderRadius: BorderRadius.circular(6),
+                                              ),
+                                              child: Text(
+                                                _nearestStation!.name,
+                                                style: TextStyle(
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: isDark
+                                                      ? const Color(0xFFE2E8F0)
+                                                      : const Color(0xFF475569),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ],
                                       ),
                                       const SizedBox(height: 8),
-                                      Row(
+                                      // AQI value + status chip — pakai Wrap agar tidak overflow
+                                      // saat status 'Tidak Sehat' (teks panjang)
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 6,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.baseline,
-                                        textBaseline: TextBaseline.alphabetic,
+                                            WrapCrossAlignment.center,
                                         children: [
                                           Text(
                                             '${_nearestStation?.aqi ?? 32}',
                                             style: TextStyle(
-                                              fontSize: 44,
+                                              fontSize: 40,
                                               fontWeight: FontWeight.w900,
                                               color:
                                                   _nearestStation?.color ??
                                                   const Color(0xFF10B981),
                                             ),
                                           ),
-                                          const SizedBox(width: 8),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  _nearestStation?.color ??
-                                                  const Color(0xFF10B981),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Text(
-                                              _nearestStation?.status ?? 'Baik',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
+                                          // Status chip dikasih maxWidth agar tidak overflow
+                                          ConstrainedBox(
+                                            constraints: const BoxConstraints(maxWidth: 110),
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 10,
+                                                vertical: 5,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    _nearestStation?.color ??
+                                                    const Color(0xFF10B981),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Text(
+                                                _nearestStation?.status ?? 'Baik',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -425,35 +497,41 @@ class _HomeViewState extends State<HomeView> {
                                       Text(
                                         _nearestStation?.description ??
                                             'Kualitas udara baik untuk aktivitas luar ruangan.',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12,
-                                          color: Color(0xFF475569),
+                                          color: textColor,
                                           height: 1.4,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 16),
-                                // Right Side Illustration/Photo
+                                const SizedBox(width: 12),
+                                // Gambar ilustrasi — ukuran dikecilkan agar
+                                // kolom kiri punya cukup ruang untuk chip status
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(16),
                                   child: Image.asset(
                                     'assets/images/project_akhir/bag_2.png',
-                                    width: 150,
-                                    height: 150,
-                                    fit: BoxFit.fitWidth,
-                                    alignment: AlignmentGeometry.bottomCenter,
+                                    width: 100,
+                                    height: 110,
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.bottomCenter,
                                     errorBuilder:
                                         (context, error, stackTrace) =>
                                             Container(
-                                              width: 110,
+                                              width: 90,
                                               height: 90,
-                                              color: const Color(0xFFE2F1ED),
-                                              child: const Icon(
+                                              decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? const Color(0xFF1E293B)
+                                                    : const Color(0xFFE2F1ED),
+                                                borderRadius: BorderRadius.circular(16),
+                                              ),
+                                              child: Icon(
                                                 Icons.apartment_rounded,
-                                                color: Color(0xFF0D9488),
-                                                size: 36,
+                                                color: activeTeal,
+                                                size: 32,
                                               ),
                                             ),
                                   ),
@@ -461,7 +539,7 @@ class _HomeViewState extends State<HomeView> {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                            Divider(height: 1, color: borderColor),
                             const SizedBox(height: 16),
                             // Metrics details row grid
                             Row(
@@ -490,9 +568,9 @@ class _HomeViewState extends State<HomeView> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                            Divider(height: 1, color: borderColor),
                             const SizedBox(height: 16),
-                            _buildHealthRecommendations(),
+                            _buildHealthRecommendations(lang, subTextColor),
                           ],
                         ),
                       ),
@@ -505,11 +583,11 @@ class _HomeViewState extends State<HomeView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Ringkasan',
+                            AppTranslations.translate('summary', lang),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: textDark,
+                              color: textColor,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -523,9 +601,14 @@ class _HomeViewState extends State<HomeView> {
                             childAspectRatio: 1.45,
                             children: [
                               _buildRedesignedStatCard(
-                                title: 'Laporan Saya',
+                                title: AppTranslations.translate(
+                                  'my_reports',
+                                  lang,
+                                ),
                                 value: '$_laporanCount',
-                                desc: 'Ajuan laporan Anda',
+                                desc: lang == 'id'
+                                    ? 'Ajuan laporan Anda'
+                                    : 'Your submitted reports',
                                 icon: Icons.description_outlined,
                                 color: const Color(0xFFFFF7ED),
                                 iconColor: const Color(0xFFEA580C),
@@ -543,9 +626,14 @@ class _HomeViewState extends State<HomeView> {
                                 },
                               ),
                               _buildRedesignedStatCard(
-                                title: 'Edukasi',
+                                title: AppTranslations.translate(
+                                  'nav_education',
+                                  lang,
+                                ),
                                 value: '$_edukasiCount',
-                                desc: 'Artikel kebersihan',
+                                desc: lang == 'id'
+                                    ? 'Artikel kebersihan'
+                                    : 'Cleanliness articles',
                                 icon: Icons.menu_book_outlined,
                                 color: const Color(0xFFEFF6F5),
                                 iconColor: activeTeal,
@@ -563,9 +651,14 @@ class _HomeViewState extends State<HomeView> {
                                 },
                               ),
                               _buildRedesignedStatCard(
-                                title: 'Peta Lokasi',
+                                title: AppTranslations.translate(
+                                  'location_map',
+                                  lang,
+                                ),
                                 value: '${AqiStation.defaultStations.length}',
-                                desc: 'Titik pantau AQI',
+                                desc: lang == 'id'
+                                    ? 'Titik pantau AQI'
+                                    : 'AQI monitoring points',
                                 icon: Icons.map_outlined,
                                 color: const Color(0xFFEFF6FF),
                                 iconColor: const Color(0xFF2563EB),
@@ -583,10 +676,14 @@ class _HomeViewState extends State<HomeView> {
                                 },
                               ),
                               _buildRedesignedStatCard(
-                                title: 'AQI Rerata',
+                                title: AppTranslations.translate(
+                                  'average_aqi',
+                                  lang,
+                                ),
                                 value: '${_nearestStation?.aqi ?? 32}',
-                                desc:
-                                    'Tingkat ${_nearestStation?.name ?? "Sukabumi"}',
+                                desc: lang == 'id'
+                                    ? 'Tingkat ${_nearestStation?.name ?? "Jakarta"}'
+                                    : '${_nearestStation?.name ?? "Jakarta"} Level',
                                 icon: Icons.air_outlined,
                                 color:
                                     (_nearestStation?.color ??
@@ -627,11 +724,11 @@ class _HomeViewState extends State<HomeView> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Laporan Terbaru',
+                            AppTranslations.translate('recent_reports', lang),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: textDark,
+                              color: textColor,
                             ),
                           ),
                           TextButton(
@@ -646,7 +743,7 @@ class _HomeViewState extends State<HomeView> {
                               );
                             },
                             child: Text(
-                              'Lihat Semua',
+                              AppTranslations.translate('view_all', lang),
                               style: TextStyle(
                                 color: activeTeal,
                                 fontWeight: FontWeight.bold,
@@ -666,23 +763,26 @@ class _HomeViewState extends State<HomeView> {
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 32),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: cardColor,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: const Color(0xFFF1F5F9),
-                                ),
+                                border: Border.all(color: borderColor),
                               ),
                               child: Column(
                                 children: [
                                   Icon(
                                     Icons.description_outlined,
-                                    color: Colors.grey[300],
+                                    color: isDark
+                                        ? Colors.white24
+                                        : Colors.grey[300],
                                     size: 44,
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Belum ada laporan masuk',
-                                    style: TextStyle(color: Colors.grey[400]),
+                                    AppTranslations.translate(
+                                      'belum_ada_laporan',
+                                      lang,
+                                    ),
+                                    style: TextStyle(color: subTextColor),
                                   ),
                                 ],
                               ),
@@ -703,46 +803,65 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
             ),
+      floatingActionButton: DebugConfig.showDatabaseViewer
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 90.0),
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DatabaseViewerView(),
+                    ),
+                  );
+                },
+                backgroundColor: const Color(0xFF0D9488),
+                shape: const CircleBorder(),
+                elevation: 4,
+                child: const Icon(Icons.storage, color: Colors.white),
+              ),
+            )
+          : null,
     );
   }
 
-  String _getGreeting() {
+  String _getGreeting(String lang) {
     final hour = DateTime.now().hour;
     if (hour < 11) {
-      return 'Selamat Pagi';
+      return AppTranslations.translate('greeting_morning', lang);
     } else if (hour < 15) {
-      return 'Selamat Siang';
+      return AppTranslations.translate('greeting_afternoon', lang);
     } else if (hour < 18) {
-      return 'Selamat Sore';
+      return AppTranslations.translate('greeting_evening', lang);
     } else {
-      return 'Selamat Malam';
+      return AppTranslations.translate('greeting_night', lang);
     }
   }
 
-  String _getDynamicQuote() {
+  String _getDynamicQuote(String lang) {
     final quotes = [
-      'Mari jaga lingkungan kita tetap bersih & asri!',
-      'Udara bersih adalah hak bersama, yuk kurangi emisi!',
-      'Udara hari ini sangat baik untuk bersepeda atau berjalan kaki.',
-      'Gunakan transportasi umum demi langit biru $_cityName.',
-      'Matikan mesin kendaraan saat sedang berhenti lama.',
-      'Menanam satu pohon hari ini memberikan napas untuk masa depan.',
+      AppTranslations.translate('quotes_1', lang),
+      AppTranslations.translate('quotes_2', lang),
+      AppTranslations.translate('quotes_3', lang),
+      AppTranslations.translate('quotes_4', lang).replaceAll('Anda', _cityName),
+      AppTranslations.translate('quotes_5', lang),
+      AppTranslations.translate('quotes_6', lang),
     ];
     final day = DateTime.now().day;
     return quotes[day % quotes.length];
   }
 
-  Widget _buildHealthRecommendations() {
+  Widget _buildHealthRecommendations(String lang, Color labelColor) {
     if (_nearestStation == null) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Rekomendasi Aktivitas & Kesehatan',
+        Text(
+          AppTranslations.translate('health_recommendations', lang),
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF64748B),
+            color: labelColor,
           ),
         ),
         const SizedBox(height: 12),
@@ -751,25 +870,25 @@ class _HomeViewState extends State<HomeView> {
           children: [
             _buildHealthItem(
               Icons.child_care_rounded,
-              'Anak-anak',
+              AppTranslations.translate('kids', lang),
               _nearestStation!.getRecommendation('Anak-anak'),
               _nearestStation!.getRecommendationColor('Anak-anak'),
             ),
             _buildHealthItem(
               Icons.elderly_rounded,
-              'Lansia',
+              AppTranslations.translate('elderly', lang),
               _nearestStation!.getRecommendation('Lansia'),
               _nearestStation!.getRecommendationColor('Lansia'),
             ),
             _buildHealthItem(
               Icons.masks_rounded,
-              'Sensitif',
+              AppTranslations.translate('sensitive', lang),
               _nearestStation!.getRecommendation('Sensitif'),
               _nearestStation!.getRecommendationColor('Sensitif'),
             ),
             _buildHealthItem(
               Icons.directions_run_rounded,
-              'Olahraga',
+              AppTranslations.translate('sports', lang),
               _nearestStation!.getRecommendation('Olahraga'),
               _nearestStation!.getRecommendationColor('Olahraga'),
             ),
@@ -785,6 +904,10 @@ class _HomeViewState extends State<HomeView> {
     String status,
     Color color,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final labelColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF475569);
     return Expanded(
       child: Column(
         children: [
@@ -802,10 +925,10 @@ class _HomeViewState extends State<HomeView> {
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF475569),
+              color: labelColor,
             ),
           ),
           const SizedBox(height: 2),
@@ -825,25 +948,30 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildMiniParam(IconData icon, String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final valueColor = isDark
+        ? const Color(0xFFE2E8F0)
+        : const Color(0xFF1A2E44);
+    final labelColor = isDark ? const Color(0xFF94A3B8) : Colors.grey;
     return Column(
       children: [
         Icon(icon, color: activeTeal, size: 18),
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 9,
-            color: Colors.grey,
+            color: labelColor,
             fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF1A2E44),
+            color: valueColor,
           ),
         ),
       ],
@@ -859,21 +987,29 @@ class _HomeViewState extends State<HomeView> {
     required Color iconColor,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final cardBorder = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+    final valueTxtColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B);
+    final titleTxtColor = isDark ? const Color(0xFFE2E8F0) : const Color(0xFF1E293B);
+    final descTxtColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final chevronColor = isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardBg,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
+          border: Border.all(color: cardBorder),
           gradient: LinearGradient(
-            colors: [Colors.white, color.withValues(alpha: 0.15)],
+            colors: [cardBg, Color.alphaBlend(color.withValues(alpha: 0.15), cardBg)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -919,16 +1055,16 @@ class _HomeViewState extends State<HomeView> {
                         children: [
                           Text(
                             value,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w900,
-                              color: Color(0xFF1E293B),
+                              color: valueTxtColor,
                             ),
                           ),
                           const SizedBox(width: 4),
-                          const Icon(
+                          Icon(
                             Icons.chevron_right_rounded,
-                            color: Color(0xFFCBD5E1),
+                            color: chevronColor,
                             size: 20,
                           ),
                         ],
@@ -941,10 +1077,10 @@ class _HomeViewState extends State<HomeView> {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E293B),
+                          color: titleTxtColor,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -952,9 +1088,9 @@ class _HomeViewState extends State<HomeView> {
                       const SizedBox(height: 2),
                       Text(
                         desc,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 9,
-                          color: Color(0xFF64748B),
+                          color: descTxtColor,
                           fontWeight: FontWeight.w500,
                         ),
                         maxLines: 1,
@@ -972,6 +1108,18 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildRedesignedReportItem(LaporanModel report) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF0F172A);
+    final subTextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF64748B);
+    final borderColor = isDark
+        ? const Color(0xFF334155)
+        : const Color(0xFFF1F5F9);
+
     Color statusColor;
     Color gradientEndColor;
     switch (report.status.toLowerCase()) {
@@ -990,14 +1138,18 @@ class _HomeViewState extends State<HomeView> {
         break;
     }
 
+    final blendEndColor = isDark
+        ? Color.alphaBlend(statusColor.withValues(alpha: 0.08), cardColor)
+        : gradientEndColor;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: borderColor),
         gradient: LinearGradient(
-          colors: [Colors.white, gradientEndColor],
+          colors: [cardColor, blendEndColor],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
@@ -1053,7 +1205,10 @@ class _HomeViewState extends State<HomeView> {
                       height: 80,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white, width: 2),
+                        border: Border.all(
+                          color: isDark ? borderColor : Colors.white,
+                          width: 2,
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.06),
@@ -1070,10 +1225,14 @@ class _HomeViewState extends State<HomeView> {
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(
-                                      color: const Color(0xFFE6F4F1),
-                                      child: const Icon(
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFE6F4F1),
+                                      child: Icon(
                                         Icons.image,
-                                        color: Color(0xFF0D9488),
+                                        color: isDark
+                                            ? subTextColor
+                                            : const Color(0xFF0D9488),
                                       ),
                                     ),
                               )
@@ -1083,10 +1242,14 @@ class _HomeViewState extends State<HomeView> {
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(
-                                      color: const Color(0xFFE6F4F1),
-                                      child: const Icon(
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFE6F4F1),
+                                      child: Icon(
                                         Icons.image,
-                                        color: Color(0xFF0D9488),
+                                        color: isDark
+                                            ? subTextColor
+                                            : const Color(0xFF0D9488),
                                       ),
                                     ),
                               )
@@ -1096,18 +1259,26 @@ class _HomeViewState extends State<HomeView> {
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(
-                                      color: const Color(0xFFE6F4F1),
-                                      child: const Icon(
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFE6F4F1),
+                                      child: Icon(
                                         Icons.image,
-                                        color: Color(0xFF0D9488),
+                                        color: isDark
+                                            ? subTextColor
+                                            : const Color(0xFF0D9488),
                                       ),
                                     ),
                               )
                             : Container(
-                                color: const Color(0xFFE6F4F1),
-                                child: const Icon(
+                                color: isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFE6F4F1),
+                                child: Icon(
                                   Icons.photo_library_outlined,
-                                  color: Color(0xFF0D9488),
+                                  color: isDark
+                                      ? subTextColor
+                                      : const Color(0xFF0D9488),
                                 ),
                               ),
                       ),
@@ -1124,10 +1295,10 @@ class _HomeViewState extends State<HomeView> {
                             // Title
                             Text(
                               report.judul,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF1E293B),
+                                color: textColor,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -1139,15 +1310,17 @@ class _HomeViewState extends State<HomeView> {
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF1F5F9),
+                                color: isDark
+                                    ? const Color(0xFF334155)
+                                    : const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.location_on_outlined,
-                                    color: Color(0xFF64748B),
+                                    color: subTextColor,
                                     size: 11,
                                   ),
                                   const SizedBox(width: 4),
@@ -1156,9 +1329,9 @@ class _HomeViewState extends State<HomeView> {
                                       report.lokasi,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 10,
-                                        color: Color(0xFF64748B),
+                                        color: subTextColor,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -1172,9 +1345,9 @@ class _HomeViewState extends State<HomeView> {
                               children: [
                                 Text(
                                   report.tanggal,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 10,
-                                    color: Color(0xFF94A3B8),
+                                    color: subTextColor,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -1218,10 +1391,12 @@ class _HomeViewState extends State<HomeView> {
                     ),
                     const SizedBox(width: 6),
                     // Far-right Arrow Chevron Icon
-                    const Icon(
+                    Icon(
                       Icons.chevron_right_rounded,
                       size: 18,
-                      color: Color(0xFFCBD5E1),
+                      color: isDark
+                          ? const Color(0xFF475569)
+                          : const Color(0xFFCBD5E1),
                     ),
                   ],
                 ),
@@ -1235,6 +1410,12 @@ class _HomeViewState extends State<HomeView> {
 
   Widget _buildAktivitasDanTips() {
     final aqi = _nearestStation?.aqi ?? 32;
+    final settings = AppSettingsController.instance.settingsNotifier.value;
+    final lang = settings.languageCode;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color textColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF0F172A);
 
     // Define Left Card properties based on AQI
     String activityTitle;
@@ -1256,74 +1437,138 @@ class _HomeViewState extends State<HomeView> {
 
     if (aqi <= 50) {
       // Good AQI
-      activityTitle = 'Bersepeda';
-      activitySubtitle =
-          'Kualitas udara sangat bersih, mari aktif bersepeda di luar ruangan.';
+      activityTitle = lang == 'id' ? 'Bersepeda' : 'Cycling';
+      activitySubtitle = lang == 'id'
+          ? 'Kualitas udara sangat bersih, mari aktif bersepeda di luar ruangan.'
+          : 'Air quality is very clean, let\'s actively cycle outdoors.';
       activityImage = 'assets/images/project_akhir/aktivitas_1.png';
-      activityBorderColor = const Color(0xFFDCFCE7);
-      activityBgStartColor = const Color(0xFFF0FDF4);
-      activityBgEndColor = const Color(0xFFDCFCE7);
-      activityAccentColor = const Color(0xFF166534);
+      activityBorderColor = isDark
+          ? const Color(0xFF14532D)
+          : const Color(0xFFDCFCE7);
+      activityBgStartColor = isDark
+          ? const Color(0xFF064E3B)
+          : const Color(0xFFF0FDF4);
+      activityBgEndColor = isDark
+          ? const Color(0xFF14532D)
+          : const Color(0xFFDCFCE7);
+      activityAccentColor = isDark
+          ? const Color(0xFF4ADE80)
+          : const Color(0xFF166534);
 
-      tipTitle = 'Buka Jendela';
-      tipSubtitle =
-          'Buka ventilasi rumah untuk sirkulasi udara alami yang segar.';
+      tipTitle = lang == 'id' ? 'Buka Jendela' : 'Open Windows';
+      tipSubtitle = lang == 'id'
+          ? 'Buka ventilasi rumah untuk sirkulasi udara alami yang segar.'
+          : 'Open home ventilation for fresh natural air circulation.';
       tipImage = 'assets/images/project_akhir/aktivitas_9.png';
-      tipBorderColor = const Color(0xFFCCFBF1);
-      tipBgStartColor = const Color(0xFFF0FDFA);
-      tipBgEndColor = const Color(0xFFCCFBF1);
-      tipAccentColor = const Color(0xFF0F766E);
+      tipBorderColor = isDark
+          ? const Color(0xFF0F766E)
+          : const Color(0xFFCCFBF1);
+      tipBgStartColor = isDark
+          ? const Color(0xFF115E59)
+          : const Color(0xFFF0FDFA);
+      tipBgEndColor = isDark
+          ? const Color(0xFF0F766E)
+          : const Color(0xFFCCFBF1);
+      tipAccentColor = isDark
+          ? const Color(0xFF2DD4BF)
+          : const Color(0xFF0F766E);
     } else if (aqi <= 100) {
       // Moderate AQI
-      activityTitle = 'Jalan Santai';
-      activitySubtitle =
-          'Kualitas udara sedang, aman untuk beraktivitas luar ruangan santai.';
+      activityTitle = lang == 'id' ? 'Jalan Santai' : 'Leisure Walk';
+      activitySubtitle = lang == 'id'
+          ? 'Kualitas udara sedang, aman untuk beraktivitas luar ruangan santai.'
+          : 'Air quality is moderate, safe for relaxed outdoor activities.';
       activityImage = 'assets/images/project_akhir/aktivitas_3.png';
-      activityBorderColor = const Color(0xFFFEF3C7);
-      activityBgStartColor = const Color(0xFFFFFDF2);
-      activityBgEndColor = const Color(0xFFFEF3C7);
-      activityAccentColor = const Color(0xFF92400E);
+      activityBorderColor = isDark
+          ? const Color(0xFF78350F)
+          : const Color(0xFFFEF3C7);
+      activityBgStartColor = isDark
+          ? const Color(0xFF78350F).withValues(alpha: 0.5)
+          : const Color(0xFFFFFDF2);
+      activityBgEndColor = isDark
+          ? const Color(0xFF78350F)
+          : const Color(0xFFFEF3C7);
+      activityAccentColor = isDark
+          ? const Color(0xFFFBBF24)
+          : const Color(0xFF92400E);
 
-      tipTitle = 'Transportasi Umum';
-      tipSubtitle =
-          'Kurangi emisi polusi dengan menggunakan angkutan umum atau jalan kaki.';
+      tipTitle = lang == 'id' ? 'Transportasi Umum' : 'Public Transit';
+      tipSubtitle = lang == 'id'
+          ? 'Kurangi emisi polusi dengan menggunakan angkutan umum atau jalan kaki.'
+          : 'Reduce pollution emissions by using public transit or walking.';
       tipImage = 'assets/images/project_akhir/aktivitas_2.png';
-      tipBorderColor = const Color(0xFFCCFBF1);
-      tipBgStartColor = const Color(0xFFF0FDFA);
-      tipBgEndColor = const Color(0xFFCCFBF1);
-      tipAccentColor = const Color(0xFF0F766E);
+      tipBorderColor = isDark
+          ? const Color(0xFF0F766E)
+          : const Color(0xFFCCFBF1);
+      tipBgStartColor = isDark
+          ? const Color(0xFF115E59)
+          : const Color(0xFFF0FDFA);
+      tipBgEndColor = isDark
+          ? const Color(0xFF0F766E)
+          : const Color(0xFFCCFBF1);
+      tipAccentColor = isDark
+          ? const Color(0xFF2DD4BF)
+          : const Color(0xFF0F766E);
     } else {
       // Unhealthy / Poor AQI (>100)
       activityTitle = 'Air Purifier';
-      activitySubtitle =
-          'Kualitas udara kurang baik. Gunakan Air Purifier di dalam rumah.';
+      activitySubtitle = lang == 'id'
+          ? 'Kualitas udara kurang baik. Gunakan Air Purifier di dalam rumah.'
+          : 'Air quality is poor. Use an Air Purifier inside the house.';
       activityImage = 'assets/images/project_akhir/aktivitas_8.png';
-      activityBorderColor = const Color(0xFFFEE2E2);
-      activityBgStartColor = const Color(0xFFFEF2F2);
-      activityBgEndColor = const Color(0xFFFEE2E2);
-      activityAccentColor = const Color(0xFF991B1B);
+      activityBorderColor = isDark
+          ? const Color(0xFF7F1D1D)
+          : const Color(0xFFFEE2E2);
+      activityBgStartColor = isDark
+          ? const Color(0xFF7F1D1D).withValues(alpha: 0.5)
+          : const Color(0xFFFEF2F2);
+      activityBgEndColor = isDark
+          ? const Color(0xFF7F1D1D)
+          : const Color(0xFFFEE2E2);
+      activityAccentColor = isDark
+          ? const Color(0xFFFCA5A5)
+          : const Color(0xFF991B1B);
 
-      tipTitle = 'Gunakan Masker';
-      tipSubtitle =
-          'Paparan polusi udara tinggi. Gunakan masker medis/N95 jika harus keluar ruangan.';
+      tipTitle = lang == 'id' ? 'Gunakan Masker' : 'Wear a Mask';
+      tipSubtitle = lang == 'id'
+          ? 'Paparan polusi udara tinggi. Gunakan masker medis/N95 jika harus keluar ruangan.'
+          : 'High exposure to air pollution. Wear a medical/N95 mask if you must go outdoors.';
       tipImage = 'assets/images/project_akhir/aktivitas_7.png';
-      tipBorderColor = const Color(0xFFFEE2E2);
-      tipBgStartColor = const Color(0xFFFEF2F2);
-      tipBgEndColor = const Color(0xFFFEE2E2);
-      tipAccentColor = const Color(0xFF991B1B);
+      tipBorderColor = isDark
+          ? const Color(0xFF7F1D1D)
+          : const Color(0xFFFEE2E2);
+      tipBgStartColor = isDark
+          ? const Color(0xFF7F1D1D).withValues(alpha: 0.5)
+          : const Color(0xFFFEF2F2);
+      tipBgEndColor = isDark
+          ? const Color(0xFF7F1D1D)
+          : const Color(0xFFFEE2E2);
+      tipAccentColor = isDark
+          ? const Color(0xFFFCA5A5)
+          : const Color(0xFF991B1B);
     }
+
+    final boxColor = isDark
+        ? const Color(0xFF1E293B).withValues(alpha: 0.9)
+        : Colors.white.withValues(alpha: 0.9);
+    final cardTitleColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF1E293B);
+    final cardSubColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF475569);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Aktivitas & Tips',
+          Text(
+            lang == 'id' ? 'Aktivitas & Tips' : 'Activities & Tips',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF0F172A),
+              color: textColor,
             ),
           ),
           const SizedBox(height: 12),
@@ -1358,10 +1603,12 @@ class _HomeViewState extends State<HomeView> {
                         child: Container(
                           padding: const EdgeInsets.all(10.0),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: boxColor,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.5),
+                              color: isDark
+                                  ? const Color(0xFF334155)
+                                  : Colors.white.withValues(alpha: 0.5),
                               width: 1,
                             ),
                             boxShadow: [
@@ -1377,7 +1624,9 @@ class _HomeViewState extends State<HomeView> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Aktivitas Disarankan',
+                                lang == 'id'
+                                    ? 'Aktivitas Disarankan'
+                                    : 'Suggested Activity',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -1387,10 +1636,10 @@ class _HomeViewState extends State<HomeView> {
                               const SizedBox(height: 4),
                               Text(
                                 activityTitle,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1E293B),
+                                  color: cardTitleColor,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -1398,9 +1647,9 @@ class _HomeViewState extends State<HomeView> {
                               const SizedBox(height: 4),
                               Text(
                                 activitySubtitle,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 9,
-                                  color: Color(0xFF475569),
+                                  color: cardSubColor,
                                   fontWeight: FontWeight.w600,
                                   height: 1.2,
                                 ),
@@ -1445,10 +1694,12 @@ class _HomeViewState extends State<HomeView> {
                         child: Container(
                           padding: const EdgeInsets.all(10.0),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: boxColor,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.5),
+                              color: isDark
+                                  ? const Color(0xFF334155)
+                                  : Colors.white.withValues(alpha: 0.5),
                               width: 1,
                             ),
                             boxShadow: [
@@ -1464,7 +1715,7 @@ class _HomeViewState extends State<HomeView> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Tips Hari Ini',
+                                lang == 'id' ? 'Tips Hari Ini' : 'Today\'s Tip',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -1474,10 +1725,10 @@ class _HomeViewState extends State<HomeView> {
                               const SizedBox(height: 4),
                               Text(
                                 tipTitle,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1E293B),
+                                  color: cardTitleColor,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -1485,9 +1736,9 @@ class _HomeViewState extends State<HomeView> {
                               const SizedBox(height: 4),
                               Text(
                                 tipSubtitle,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 9,
-                                  color: Color(0xFF475569),
+                                  color: cardSubColor,
                                   fontWeight: FontWeight.w600,
                                   height: 1.2,
                                 ),
@@ -1525,16 +1776,30 @@ class AqiLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final settings = AppSettingsController.instance.settingsNotifier.value;
+    final lang = settings.languageCode;
+
+    final Color cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color borderColor = isDark
+        ? const Color(0xFF334155)
+        : const Color(0xFFF1F5F9);
+    final Color textColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF1A2E44);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.02),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -1543,12 +1808,12 @@ class AqiLineChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Grafik AQI 7 Hari Terakhir',
+          Text(
+            AppTranslations.translate('grafik_aqi_7_days', lang),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A2E44),
+              color: textColor,
             ),
           ),
           const SizedBox(height: 12),
@@ -1560,6 +1825,7 @@ class AqiLineChart extends StatelessWidget {
                 values: values,
                 dates: dates,
                 chartColor: chartColor,
+                isDark: isDark,
               ),
             ),
           ),
@@ -1571,13 +1837,28 @@ class AqiLineChart extends StatelessWidget {
               runSpacing: 8,
               alignment: WrapAlignment.center,
               children: [
-                _buildLegendItem(const Color(0xFF10B981), 'Baik (0-50)'),
-                _buildLegendItem(const Color(0xFFFBBF24), 'Sedang (51-100)'),
+                _buildLegendItem(
+                  const Color(0xFF10B981),
+                  lang == 'id' ? 'Baik (0-50)' : 'Good (0-50)',
+                  isDark,
+                ),
+                _buildLegendItem(
+                  const Color(0xFFFBBF24),
+                  lang == 'id' ? 'Sedang (51-100)' : 'Moderate (51-100)',
+                  isDark,
+                ),
                 _buildLegendItem(
                   const Color(0xFFF97316),
-                  'Sangat Sedang (101-150)',
+                  lang == 'id'
+                      ? 'Sangat Sedang (101-150)'
+                      : 'Unhealthy Sensitive (101-150)',
+                  isDark,
                 ),
-                _buildLegendItem(const Color(0xFFEF4444), 'Tidak Sehat (>150)'),
+                _buildLegendItem(
+                  const Color(0xFFEF4444),
+                  lang == 'id' ? 'Tidak Sehat (>150)' : 'Unhealthy (>150)',
+                  isDark,
+                ),
               ],
             ),
           ),
@@ -1586,7 +1867,7 @@ class AqiLineChart extends StatelessWidget {
     );
   }
 
-  Widget _buildLegendItem(Color color, String text) {
+  Widget _buildLegendItem(Color color, String text, bool isDark) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -1598,9 +1879,9 @@ class AqiLineChart extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 10,
-            color: Color(0xFF64748B),
+            color: isDark ? Colors.white70 : const Color(0xFF64748B),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -1613,11 +1894,13 @@ class _AqiChartPainter extends CustomPainter {
   final List<int> values;
   final List<String> dates;
   final Color chartColor;
+  final bool isDark;
 
   _AqiChartPainter({
     required this.values,
     required this.dates,
     required this.chartColor,
+    required this.isDark,
   });
 
   @override
@@ -1697,7 +1980,7 @@ class _AqiChartPainter extends CustomPainter {
       ..color = chartColor
       ..style = PaintingStyle.fill;
     final dotInnerPaint = Paint()
-      ..color = Colors.white
+      ..color = isDark ? const Color(0xFF1E293B) : Colors.white
       ..style = PaintingStyle.fill;
 
     for (int i = 0; i < points.length; i++) {
@@ -1705,15 +1988,15 @@ class _AqiChartPainter extends CustomPainter {
 
       // Draw outer circle
       canvas.drawCircle(offset, 5.0, dotPaint);
-      // Draw inner white circle
+      // Draw inner circle
       canvas.drawCircle(offset, 2.5, dotInnerPaint);
 
       // Draw value text above node
       final valuePainter = TextPainter(
         text: TextSpan(
           text: '${values[i]}',
-          style: const TextStyle(
-            color: Color(0xFF1B2E44),
+          style: TextStyle(
+            color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF1B2E44),
             fontSize: 11,
             fontWeight: FontWeight.bold,
           ),
@@ -1753,6 +2036,7 @@ class _AqiChartPainter extends CustomPainter {
   bool shouldRepaint(covariant _AqiChartPainter oldDelegate) {
     return oldDelegate.values != values ||
         oldDelegate.dates != dates ||
-        oldDelegate.chartColor != chartColor;
+        oldDelegate.chartColor != chartColor ||
+        oldDelegate.isDark != isDark;
   }
 }

@@ -158,6 +158,19 @@ class _ProfilViewState extends State<ProfilView> {
   }
 
   Color _getBadgeDetailBgColor(String tier) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    if (isDark) {
+      switch (tier) {
+        case 'Gold':
+          return const Color(0xFFD97706).withOpacity(0.15);
+        case 'Silver':
+          return const Color(0xFF475569).withOpacity(0.15);
+        case 'Bronze':
+          return const Color(0xFFB45309).withOpacity(0.15);
+        default:
+          return const Color(0xFF1E293B);
+      }
+    }
     switch (tier) {
       case 'Gold':
         return const Color(0xFFFFFBEB);
@@ -171,6 +184,19 @@ class _ProfilViewState extends State<ProfilView> {
   }
 
   Color _getBadgeDetailBorderColor(String tier) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    if (isDark) {
+      switch (tier) {
+        case 'Gold':
+          return const Color(0xFFFDE68A).withOpacity(0.3);
+        case 'Silver':
+          return const Color(0xFFE2E8F0).withOpacity(0.3);
+        case 'Bronze':
+          return const Color(0xFFFED7AA).withOpacity(0.3);
+        default:
+          return const Color(0xFF334155);
+      }
+    }
     switch (tier) {
       case 'Gold':
         return const Color(0xFFFDE68A);
@@ -788,12 +814,13 @@ class _ProfilViewState extends State<ProfilView> {
   }
 
   void _showAllBadgesInfo() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         clipBehavior: Clip.antiAlias,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -823,13 +850,18 @@ class _ProfilViewState extends State<ProfilView> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: textDark,
+                      color: isDark ? const Color(0xFFF8FAFC) : textDark,
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     'Lencana yang dapat Anda buka dengan berpartisipasi menjaga lingkungan:',
-                    style: TextStyle(color: Color(0xFF64748B), fontSize: 12),
+                    style: TextStyle(
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
+                      fontSize: 12,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   _buildBadgeDetailItem(
@@ -978,7 +1010,9 @@ class _ProfilViewState extends State<ProfilView> {
                       title,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: textDark,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFFF8FAFC)
+                            : textDark,
                         fontSize: 13,
                       ),
                     ),
@@ -1007,8 +1041,10 @@ class _ProfilViewState extends State<ProfilView> {
                 const SizedBox(height: 4),
                 Text(
                   desc,
-                  style: const TextStyle(
-                    color: Color(0xFF475569),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF475569),
                     fontSize: 11,
                     height: 1.3,
                   ),
@@ -1147,23 +1183,42 @@ class _ProfilViewState extends State<ProfilView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isDark
+        ? const Color(0xFF0F172A)
+        : const Color(0xFFF8FAFC);
+    final Color appBarBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color cardBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF0F172A);
+    final Color subTextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF64748B);
+    final Color borderColor = isDark
+        ? const Color(0xFF334155)
+        : const Color(0xFFF1F5F9);
+    final Color dividerColor = isDark
+        ? const Color(0xFF334155)
+        : const Color(0xFFF1F5F9);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: appBarBgColor,
         elevation: 0,
         centerTitle: true,
         title: Text(
           'Profil',
           style: TextStyle(
-            color: textDark,
+            color: textColor,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings_outlined, color: textDark),
+            icon: Icon(Icons.settings_outlined, color: textColor),
             onPressed: () {
               Navigator.push(
                 context,
@@ -1190,12 +1245,14 @@ class _ProfilViewState extends State<ProfilView> {
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: cardBgColor,
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: const Color(0xFFF1F5F9)),
+                        border: Border.all(color: borderColor),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.02),
+                            color: isDark
+                                ? Colors.black.withOpacity(0.3)
+                                : Colors.black.withValues(alpha: 0.02),
                             blurRadius: 16,
                             offset: const Offset(0, 8),
                           ),
@@ -1205,12 +1262,12 @@ class _ProfilViewState extends State<ProfilView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Profil Saya',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF0F172A),
+                              color: textColor,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -1223,7 +1280,9 @@ class _ProfilViewState extends State<ProfilView> {
                                     onTap: _showImageSourcePicker,
                                     child: CircleAvatar(
                                       radius: 38,
-                                      backgroundColor: const Color(0xFFE2F1ED),
+                                      backgroundColor: isDark
+                                          ? const Color(0xFF0F4C43)
+                                          : const Color(0xFFE2F1ED),
                                       child: ClipOval(
                                         child: _buildProfileImage(),
                                       ),
@@ -1285,9 +1344,9 @@ class _ProfilViewState extends State<ProfilView> {
                                     const SizedBox(height: 4),
                                     Text(
                                       _userEmail,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
-                                        color: Color(0xFF64748B),
+                                        color: subTextColor,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -1340,7 +1399,7 @@ class _ProfilViewState extends State<ProfilView> {
                             ],
                           ),
                           const SizedBox(height: 20),
-                          const Divider(color: Color(0xFFF1F5F9), height: 1),
+                          Divider(color: dividerColor, height: 1),
                           const SizedBox(height: 16),
                           // Stats row
                           Row(
@@ -1376,7 +1435,7 @@ class _ProfilViewState extends State<ProfilView> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: textDark,
+                            color: textColor,
                           ),
                         ),
                         TextButton(
@@ -1418,12 +1477,14 @@ class _ProfilViewState extends State<ProfilView> {
                     // 3. Menu List Options
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: cardBgColor,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFF1F5F9)),
+                        border: Border.all(color: borderColor),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.01),
+                            color: isDark
+                                ? Colors.black.withOpacity(0.3)
+                                : Colors.black.withValues(alpha: 0.01),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -1436,7 +1497,7 @@ class _ProfilViewState extends State<ProfilView> {
                             'Edit Profil',
                             onTap: _showEditProfileDialog,
                           ),
-                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          Divider(height: 1, color: dividerColor),
                           _buildMenuTile(
                             Icons.notifications_none_rounded,
                             'Notifikasi',
@@ -1450,258 +1511,285 @@ class _ProfilViewState extends State<ProfilView> {
                               );
                             },
                           ),
-                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          Divider(height: 1, color: dividerColor),
                           _buildMenuTile(
                             Icons.lock_outline_rounded,
                             'Ubah Kata Sandi',
                             onTap: _changePassword,
                           ),
-                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          Divider(height: 1, color: dividerColor),
                           _buildMenuTile(
                             Icons.info_outline_rounded,
                             'Tentang Aplikasi',
                             onTap: () {
                               showDialog(
                                 context: context,
-                                builder: (context) => Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(28),
-                                  ),
-                                  clipBehavior: Clip.antiAlias,
-                                  backgroundColor: Colors.white,
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        // Header Gradient Banner with decorative shapes
-                                        Container(
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [activeTeal, primaryTeal],
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                            ),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 28,
-                                          ),
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  Image.asset(
-                                                    'assets/images/logo_ruas.png',
-                                                    height: 72,
-                                                    errorBuilder:
-                                                        (
-                                                          context,
-                                                          error,
-                                                          stackTrace,
-                                                        ) => Container(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                12,
-                                                              ),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                color: Colors
-                                                                    .white
-                                                                    .withOpacity(
-                                                                      0.2,
-                                                                    ),
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                              ),
-                                                          child: const Icon(
-                                                            Icons.air_rounded,
-                                                            color: Colors.white,
-                                                            size: 48,
-                                                          ),
-                                                        ),
-                                                  ),
-                                                  const SizedBox(height: 12),
-                                                  const Text(
-                                                    'RUAS',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 24,
-                                                      fontWeight:
-                                                          FontWeight.w900,
-                                                      letterSpacing: 1.5,
-                                                    ),
-                                                  ),
-                                                  const Text(
-                                                    'Ruang Napas Untuk Semua',
-                                                    style: TextStyle(
-                                                      color: Colors.white70,
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
+                                builder: (context) {
+                                  final isDark =
+                                      Theme.of(context).brightness ==
+                                      Brightness.dark;
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(28),
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    backgroundColor: isDark
+                                        ? const Color(0xFF1E293B)
+                                        : Colors.white,
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // Header Gradient Banner with decorative shapes
+                                          Container(
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  activeTeal,
+                                                  primaryTeal,
                                                 ],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(24.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              // Description Card
-                                              Container(
-                                                padding: const EdgeInsets.all(
-                                                  14,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: const Color(
-                                                    0xFFEFF6F5,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(16),
-                                                  border: Border.all(
-                                                    color: const Color(
-                                                      0xFFCCECE7,
-                                                    ),
-                                                  ),
-                                                ),
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 28,
+                                            ),
+                                            child: Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                Column(
                                                   children: [
-                                                    Icon(
-                                                      Icons.spa_rounded,
-                                                      color: activeTeal,
-                                                      size: 20,
+                                                    Image.asset(
+                                                      'assets/images/logo_ruas.png',
+                                                      height: 72,
+                                                      errorBuilder:
+                                                          (
+                                                            context,
+                                                            error,
+                                                            stackTrace,
+                                                          ) => Container(
+                                                            padding:
+                                                                const EdgeInsets.all(
+                                                                  12,
+                                                                ),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withOpacity(
+                                                                        0.2,
+                                                                      ),
+                                                                  shape: BoxShape
+                                                                      .circle,
+                                                                ),
+                                                            child: const Icon(
+                                                              Icons.air_rounded,
+                                                              color:
+                                                                  Colors.white,
+                                                              size: 48,
+                                                            ),
+                                                          ),
                                                     ),
-                                                    const SizedBox(width: 8),
-                                                    Expanded(
-                                                      child: Text(
-                                                        'RUAS adalah platform pemantauan kualitas udara (AQI), pelaporan kebersihan lingkungan, dan media edukasi interaktif untuk mewujudkan masyarakat Indonesia yang sehat dan bersih.',
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          height: 1.5,
-                                                          color: textDark,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                        ),
+                                                    const SizedBox(height: 12),
+                                                    const Text(
+                                                      'RUAS',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 24,
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                        letterSpacing: 1.5,
+                                                      ),
+                                                    ),
+                                                    const Text(
+                                                      'Ruang Napas Untuk Semua',
+                                                      style: TextStyle(
+                                                        color: Colors.white70,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w500,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                                              const SizedBox(height: 20),
-                                              Text(
-                                                'Fitur Utama Aplikasi',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: activeTeal,
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(24.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                // Description Card
+                                                Container(
+                                                  padding: const EdgeInsets.all(
+                                                    14,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: isDark
+                                                        ? const Color(
+                                                            0xFF0D9488,
+                                                          ).withOpacity(0.15)
+                                                        : const Color(
+                                                            0xFFEFF6F5,
+                                                          ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          16,
+                                                        ),
+                                                    border: Border.all(
+                                                      color: isDark
+                                                          ? const Color(
+                                                              0xFF0D9488,
+                                                            ).withOpacity(0.3)
+                                                          : const Color(
+                                                              0xFFCCECE7,
+                                                            ),
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.spa_rounded,
+                                                        color: activeTeal,
+                                                        size: 20,
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      Expanded(
+                                                        child: Text(
+                                                          'RUAS adalah platform pemantauan kualitas udara (AQI), pelaporan kebersihan lingkungan, dan media edukasi interaktif untuk mewujudkan masyarakat Indonesia yang sehat dan bersih.',
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            height: 1.5,
+                                                            color: isDark
+                                                                ? const Color(
+                                                                    0xFFF8FAFC,
+                                                                  )
+                                                                : textDark,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                              const SizedBox(height: 12),
-                                              // Feature Rows inline
-                                              _buildFeatureRow(
-                                                Icons.map_rounded,
-                                                const Color(0xFFE0F2FE),
-                                                Colors.blue,
-                                                'Peta AQI Nasional',
-                                                'Pantau indeks standar pencemar udara terupdate di wilayah Indonesia.',
-                                              ),
-                                              const SizedBox(height: 10),
-                                              _buildFeatureRow(
-                                                Icons.campaign_rounded,
-                                                const Color(0xFFFEF3C7),
-                                                Colors.amber[800]!,
-                                                'Laporan Masyarakat',
-                                                'Laporkan titik polusi udara dan sampah secara real-time.',
-                                              ),
-                                              const SizedBox(height: 10),
-                                              _buildFeatureRow(
-                                                Icons.menu_book_rounded,
-                                                const Color(0xFFEFF6F5),
-                                                primaryTeal,
-                                                'Edukasi Interaktif',
-                                                'Pelajari kiat-kiat kebersihan dan dampak kualitas udara bagi kesehatan.',
-                                              ),
-                                              const SizedBox(height: 10),
-                                              _buildFeatureRow(
-                                                Icons.quiz_rounded,
-                                                const Color(0xFFFCE7F3),
-                                                Colors.pink,
-                                                'Kuis & Tantangan',
-                                                'Uji pengetahuan lingkunganmu untuk mendapatkan reward pencapaian.',
-                                              ),
-                                              const SizedBox(height: 24),
-                                              // App Metadata
-                                              Center(
-                                                child: Column(
-                                                  children: [
-                                                    const Text(
-                                                      'Versi 1.0.0 (Tugas 13 Final Project)',
+                                                const SizedBox(height: 20),
+                                                Text(
+                                                  'Fitur Utama Aplikasi',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: activeTeal,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 12),
+                                                // Feature Rows inline
+                                                _buildFeatureRow(
+                                                  Icons.map_rounded,
+                                                  const Color(0xFFE0F2FE),
+                                                  Colors.blue,
+                                                  'Peta AQI Nasional',
+                                                  'Pantau indeks standar pencemar udara terupdate di wilayah Indonesia.',
+                                                ),
+                                                const SizedBox(height: 10),
+                                                _buildFeatureRow(
+                                                  Icons.campaign_rounded,
+                                                  const Color(0xFFFEF3C7),
+                                                  Colors.amber[800]!,
+                                                  'Laporan Masyarakat',
+                                                  'Laporkan titik polusi udara dan sampah secara real-time.',
+                                                ),
+                                                const SizedBox(height: 10),
+                                                _buildFeatureRow(
+                                                  Icons.menu_book_rounded,
+                                                  const Color(0xFFEFF6F5),
+                                                  primaryTeal,
+                                                  'Edukasi Interaktif',
+                                                  'Pelajari kiat-kiat kebersihan dan dampak kualitas udara bagi kesehatan.',
+                                                ),
+                                                const SizedBox(height: 10),
+                                                _buildFeatureRow(
+                                                  Icons.quiz_rounded,
+                                                  const Color(0xFFFCE7F3),
+                                                  Colors.pink,
+                                                  'Kuis & Tantangan',
+                                                  'Uji pengetahuan lingkunganmu untuk mendapatkan reward pencapaian.',
+                                                ),
+                                                const SizedBox(height: 24),
+                                                // App Metadata
+                                                Center(
+                                                  child: Column(
+                                                    children: [
+                                                      const Text(
+                                                        'Versi 1.0.0 (Tugas 13 Final Project)',
+                                                        style: TextStyle(
+                                                          fontSize: 11,
+                                                          color: Colors.grey,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        'Dikembangkan dengan 💚 oleh Tim RUAS',
+                                                        style: TextStyle(
+                                                          fontSize: 11,
+                                                          color: activeTeal,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 20),
+                                                // Close Button
+                                                SizedBox(
+                                                  width: double.infinity,
+                                                  child: ElevatedButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor:
+                                                          activeTeal,
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      elevation: 0,
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            vertical: 14,
+                                                          ),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              16,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    child: const Text(
+                                                      'Tutup',
                                                       style: TextStyle(
-                                                        fontSize: 11,
-                                                        color: Colors.grey,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                     ),
-                                                    const SizedBox(height: 4),
-                                                    Text(
-                                                      'Dikembangkan dengan 💚 oleh Tim RUAS',
-                                                      style: TextStyle(
-                                                        fontSize: 11,
-                                                        color: activeTeal,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(height: 20),
-                                              // Close Button
-                                              SizedBox(
-                                                width: double.infinity,
-                                                child: ElevatedButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(context),
-                                                  style: ElevatedButton.styleFrom(
-                                                    backgroundColor: activeTeal,
-                                                    foregroundColor:
-                                                        Colors.white,
-                                                    elevation: 0,
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          vertical: 14,
-                                                        ),
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            16,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                  child: const Text(
-                                                    'Tutup',
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ),
+                                  );
+                                },
                               );
                             },
                           ),
@@ -1739,29 +1827,35 @@ class _ProfilViewState extends State<ProfilView> {
   }
 
   Widget _buildMockupDivider() {
-    return Container(width: 1, height: 32, color: const Color(0xFFE2E8F0));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: 1,
+      height: 32,
+      color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+    );
   }
 
   Widget _buildMockupStatCol(String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: Column(
         children: [
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF64748B),
+              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
             ),
           ),
           const SizedBox(height: 6),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF0F172A),
+              color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
             ),
           ),
         ],
@@ -1878,10 +1972,12 @@ class _ProfilViewState extends State<ProfilView> {
         const SizedBox(height: 8),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1E293B),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFFF8FAFC)
+                : const Color(0xFF1E293B),
           ),
         ),
         Text(
@@ -1889,7 +1985,11 @@ class _ProfilViewState extends State<ProfilView> {
           style: TextStyle(
             fontSize: 9,
             fontWeight: FontWeight.w500,
-            color: isLocked ? const Color(0xFF94A3B8) : tierColor,
+            color: isLocked
+                ? (Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF64748B)
+                      : const Color(0xFF94A3B8))
+                : tierColor,
           ),
         ),
       ],
@@ -1950,15 +2050,19 @@ class _ProfilViewState extends State<ProfilView> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: textDark,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFFF8FAFC)
+                      : textDark,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 desc,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
-                  color: Colors.grey,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF94A3B8)
+                      : Colors.grey,
                   height: 1.3,
                 ),
               ),

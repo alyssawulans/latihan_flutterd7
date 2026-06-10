@@ -118,9 +118,30 @@ class _EdukasiListViewState extends State<EdukasiListView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isDark
+        ? const Color(0xFF0F172A)
+        : const Color(0xFFF8FAFC);
+    final Color appBarBgColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFF4F8FB);
+    final Color cardBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF0F172A);
+    final Color subTextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF64748B);
+    final Color borderColor = isDark
+        ? const Color(0xFF334155)
+        : const Color(0xFFF1F5F9);
+    final Color iconColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF1A2E44);
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF4F8FB),
+        backgroundColor: appBarBgColor,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Padding(
@@ -134,7 +155,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
           ),
         ),
       ),
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: Color(0xFF0D9488)),
@@ -166,17 +187,17 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
-                                    color: textDark,
+                                    color: textColor,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 4),
-                                const Text(
+                                Text(
                                   'Apa yang ingin kamu pelajari hari ini?',
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: Color(0xFF64748B),
+                                    color: subTextColor,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -203,12 +224,14 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                             vertical: 14,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: cardBgColor,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: const Color(0xFFF1F5F9)),
+                            border: Border.all(color: borderColor),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.01),
+                                color: isDark
+                                    ? Colors.black.withOpacity(0.3)
+                                    : Colors.black.withValues(alpha: 0.01),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -218,10 +241,10 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                             children: [
                               Icon(Icons.search, color: activeTeal, size: 20),
                               const SizedBox(width: 12),
-                              const Text(
+                              Text(
                                 'Cari artikel, topik, atau kategori...',
                                 style: TextStyle(
-                                  color: Color(0xFF94A3B8),
+                                  color: subTextColor,
                                   fontSize: 14,
                                 ),
                               ),
@@ -263,8 +286,13 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? activeTeal
-                                        : const Color(0xFFEFF3F6),
+                                        : (isDark
+                                              ? const Color(0xFF1E293B)
+                                              : const Color(0xFFEFF3F6)),
                                     borderRadius: BorderRadius.circular(20),
+                                    border: isSelected
+                                        ? null
+                                        : Border.all(color: borderColor),
                                   ),
                                   child: Center(
                                     child: Text(
@@ -272,7 +300,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                                       style: TextStyle(
                                         color: isSelected
                                             ? Colors.white
-                                            : const TextStyle().color,
+                                            : textColor,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 13,
                                       ),
@@ -346,12 +374,14 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          const Text(
+                                          Text(
                                             'Apa itu PM2.5?',
                                             style: TextStyle(
                                               fontSize: 22,
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.white,
+                                              color: isDark
+                                                  ? const Color(0xFFF8FAFC)
+                                                  : Colors.white,
                                             ),
                                           ),
                                           const SizedBox(height: 8),
@@ -430,30 +460,42 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                           _buildQuickNavButton(
                             label: 'Artikel\nPopuler',
                             icon: Icons.article_rounded,
-                            bgColor: const Color(0xFFEFF6FF),
-                            iconColor: const Color(0xFF2563EB),
+                            bgColor: isDark
+                                ? const Color(0xFF2563EB).withOpacity(0.15)
+                                : const Color(0xFFEFF6FF),
+                            iconColor: const Color(0xFF3B82F6),
                             onTap: () => _showArtikelBottomSheet(context),
+                            isDark: isDark,
                           ),
                           _buildQuickNavButton(
                             label: 'Video\nEdukasi',
                             icon: Icons.play_circle_fill_rounded,
-                            bgColor: const Color(0xFFFDF2F8),
-                            iconColor: const Color(0xFFDB2777),
+                            bgColor: isDark
+                                ? const Color(0xFFDB2777).withOpacity(0.15)
+                                : const Color(0xFFFDF2F8),
+                            iconColor: const Color(0xFFF472B6),
                             onTap: () => _showVideoBottomSheet(context),
+                            isDark: isDark,
                           ),
                           _buildQuickNavButton(
                             label: 'Infografis\nEdukasi',
                             icon: Icons.pie_chart_rounded,
-                            bgColor: const Color(0xFFECFDF5),
-                            iconColor: const Color(0xFF059669),
+                            bgColor: isDark
+                                ? const Color(0xFF059669).withOpacity(0.15)
+                                : const Color(0xFFECFDF5),
+                            iconColor: const Color(0xFF34D399),
                             onTap: () => _showInfografisBottomSheet(context),
+                            isDark: isDark,
                           ),
                           _buildQuickNavButton(
                             label: 'Kuis\nEdukasi',
                             icon: Icons.emoji_events_rounded,
-                            bgColor: const Color(0xFFFFF7ED),
-                            iconColor: const Color(0xFFD97706),
+                            bgColor: isDark
+                                ? const Color(0xFFD97706).withOpacity(0.15)
+                                : const Color(0xFFFFF7ED),
+                            iconColor: const Color(0xFFFB923C),
                             onTap: () => _showKuisDialog(context),
+                            isDark: isDark,
                           ),
                         ],
                       ),
@@ -465,19 +507,23 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: textDark,
+                          color: textColor,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFECFDF5), // Soft pastel green
+                          color: isDark
+                              ? const Color(0xFF0D9488).withOpacity(0.15)
+                              : const Color(0xFFECFDF5), // Soft pastel green
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: const Color(
-                              0xFFA7F3D0,
-                            ).withValues(alpha: 0.5),
+                            color: isDark
+                                ? const Color(0xFF0D9488).withOpacity(0.3)
+                                : const Color(
+                                    0xFFA7F3D0,
+                                  ).withValues(alpha: 0.5),
                           ),
                         ),
                         child: Padding(
@@ -490,7 +536,9 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
-                                    color: primaryTeal,
+                                    color: isDark
+                                        ? const Color(0xFF2DD4BF)
+                                        : primaryTeal,
                                     height: 1.5,
                                   ),
                                 ),
@@ -528,6 +576,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
     required Color bgColor,
     required Color iconColor,
     required VoidCallback onTap,
+    required bool isDark,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -546,7 +595,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
-              color: textDark,
+              color: isDark ? const Color(0xFFF8FAFC) : textDark,
               height: 1.3,
             ),
           ),
@@ -556,9 +605,17 @@ class _EdukasiListViewState extends State<EdukasiListView> {
   }
 
   void _showArtikelBottomSheet(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bottomSheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color handleColor = isDark
+        ? const Color(0xFF334155)
+        : Colors.grey[300]!;
+    final Color txtColor = isDark ? const Color(0xFFF8FAFC) : textDark;
+    final Color subTxtColor = isDark ? const Color(0xFF94A3B8) : Colors.grey;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: bottomSheetBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -573,7 +630,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                 width: 48,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: handleColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -584,13 +641,13 @@ class _EdukasiListViewState extends State<EdukasiListView> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: textDark,
+                color: txtColor,
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Pelajari artikel populer mengenai lingkungan dan polusi udara berikut:',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
+              style: TextStyle(color: subTxtColor, fontSize: 13),
             ),
             const SizedBox(height: 16),
             _buildArtikelRowItem(
@@ -616,10 +673,17 @@ class _EdukasiListViewState extends State<EdukasiListView> {
     required String source,
     required String url,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color innerItemBg = isDark
+        ? const Color(0xFF0F172A)
+        : const Color(0xFFF8FAFC);
+    final Color txtColor = isDark ? const Color(0xFFF8FAFC) : textDark;
+    final Color subTxtColor = isDark ? const Color(0xFF94A3B8) : Colors.grey;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: innerItemBg,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Material(
@@ -635,12 +699,16 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFF6FF),
+                    color: isDark
+                        ? const Color(0xFF2563EB).withOpacity(0.15)
+                        : const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.article_rounded,
-                    color: Color(0xFF2563EB),
+                    color: isDark
+                        ? const Color(0xFF3B82F6)
+                        : const Color(0xFF2563EB),
                     size: 24,
                   ),
                 ),
@@ -654,7 +722,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: textDark,
+                          color: txtColor,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -662,19 +730,12 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                       const SizedBox(height: 4),
                       Text(
                         source,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 11, color: subTxtColor),
                       ),
                     ],
                   ),
                 ),
-                const Icon(
-                  Icons.open_in_new_rounded,
-                  color: Colors.grey,
-                  size: 16,
-                ),
+                Icon(Icons.open_in_new_rounded, color: subTxtColor, size: 16),
               ],
             ),
           ),
@@ -685,9 +746,17 @@ class _EdukasiListViewState extends State<EdukasiListView> {
 
   // Modern bottom sheet for video playlists
   void _showVideoBottomSheet(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bottomSheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color handleColor = isDark
+        ? const Color(0xFF334155)
+        : Colors.grey[300]!;
+    final Color txtColor = isDark ? const Color(0xFFF8FAFC) : textDark;
+    final Color subTxtColor = isDark ? const Color(0xFF94A3B8) : Colors.grey;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: bottomSheetBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -702,7 +771,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                 width: 48,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: handleColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -713,13 +782,13 @@ class _EdukasiListViewState extends State<EdukasiListView> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: textDark,
+                color: txtColor,
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Simak video edukasi lingkungan pilihan terbaik berikut:',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
+              style: TextStyle(color: subTxtColor, fontSize: 13),
             ),
             const SizedBox(height: 16),
             _buildVideoRowItem(
@@ -752,10 +821,17 @@ class _EdukasiListViewState extends State<EdukasiListView> {
     required String channel,
     required String url,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color innerItemBg = isDark
+        ? const Color(0xFF0F172A)
+        : const Color(0xFFF8FAFC);
+    final Color txtColor = isDark ? const Color(0xFFF8FAFC) : textDark;
+    final Color subTxtColor = isDark ? const Color(0xFF94A3B8) : Colors.grey;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: innerItemBg,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Material(
@@ -771,12 +847,16 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFDF2F8),
+                    color: isDark
+                        ? const Color(0xFFDB2777).withOpacity(0.15)
+                        : const Color(0xFFFDF2F8),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.play_arrow_rounded,
-                    color: Color(0xFFDB2777),
+                    color: isDark
+                        ? const Color(0xFFF472B6)
+                        : const Color(0xFFDB2777),
                     size: 28,
                   ),
                 ),
@@ -790,7 +870,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: textDark,
+                          color: txtColor,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -798,19 +878,12 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                       const SizedBox(height: 4),
                       Text(
                         '$channel • $duration',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 11, color: subTxtColor),
                       ),
                     ],
                   ),
                 ),
-                const Icon(
-                  Icons.open_in_new_rounded,
-                  color: Colors.grey,
-                  size: 16,
-                ),
+                Icon(Icons.open_in_new_rounded, color: subTxtColor, size: 16),
               ],
             ),
           ),
@@ -821,9 +894,17 @@ class _EdukasiListViewState extends State<EdukasiListView> {
 
   // Modern bottom sheet for Infographics
   void _showInfografisBottomSheet(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bottomSheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color handleColor = isDark
+        ? const Color(0xFF334155)
+        : Colors.grey[300]!;
+    final Color txtColor = isDark ? const Color(0xFFF8FAFC) : textDark;
+    final Color subTxtColor = isDark ? const Color(0xFF94A3B8) : Colors.grey;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: bottomSheetBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -838,7 +919,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                 width: 48,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: handleColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -849,13 +930,13 @@ class _EdukasiListViewState extends State<EdukasiListView> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: textDark,
+                color: txtColor,
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Pelajari materi lebih cepat melalui visual infografis:',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
+              style: TextStyle(color: subTxtColor, fontSize: 13),
             ),
             const SizedBox(height: 16),
             _buildInfografisRowItem(
@@ -884,10 +965,17 @@ class _EdukasiListViewState extends State<EdukasiListView> {
     required String size,
     required String imagePath,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color innerItemBg = isDark
+        ? const Color(0xFF0F172A)
+        : const Color(0xFFF8FAFC);
+    final Color txtColor = isDark ? const Color(0xFFF8FAFC) : textDark;
+    final Color subTxtColor = isDark ? const Color(0xFF94A3B8) : Colors.grey;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: innerItemBg,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Material(
@@ -912,12 +1000,16 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFECFDF5),
+                    color: isDark
+                        ? const Color(0xFF059669).withOpacity(0.15)
+                        : const Color(0xFFECFDF5),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.insert_chart_outlined_rounded,
-                    color: Color(0xFF059669),
+                    color: isDark
+                        ? const Color(0xFF34D399)
+                        : const Color(0xFF059669),
                     size: 24,
                   ),
                 ),
@@ -931,7 +1023,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: textDark,
+                          color: txtColor,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -939,15 +1031,12 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                       const SizedBox(height: 4),
                       Text(
                         'Format: $size • Tap untuk memperbesar',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 11, color: subTxtColor),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.zoom_in_rounded, color: Colors.grey, size: 20),
+                Icon(Icons.zoom_in_rounded, color: subTxtColor, size: 20),
               ],
             ),
           ),
@@ -993,6 +1082,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
       context: context,
       barrierDismissible: false,
       builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         return StatefulBuilder(
           builder: (context, setDialogState) {
             final qData = questions[currentQuestion];
@@ -1003,7 +1093,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                 borderRadius: BorderRadius.circular(28),
               ),
               clipBehavior: Clip.antiAlias,
-              backgroundColor: Colors.white,
+              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -1075,7 +1165,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: textDark,
+                            color: isDark ? const Color(0xFFF8FAFC) : textDark,
                             height: 1.4,
                           ),
                         ),
@@ -1087,8 +1177,12 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                           final isSelected = index == selectedOptionIndex;
 
                           // Dynamic styling based on selected state
-                          Color itemBorderColor = const Color(0xFFE2E8F0);
-                          Color itemBgColor = const Color(0xFFF8FAFC);
+                          Color itemBorderColor = isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFE2E8F0);
+                          Color itemBgColor = isDark
+                              ? const Color(0xFF0F172A)
+                              : const Color(0xFFF8FAFC);
                           Color prefixBgColor = activeTeal.withOpacity(0.1);
                           Color prefixTextColor = activeTeal;
                           Widget? trailingIcon;
@@ -1096,7 +1190,9 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                           if (hasSubmitted) {
                             if (isCorrect) {
                               itemBorderColor = const Color(0xFF10B981);
-                              itemBgColor = const Color(0xFFECFDF5);
+                              itemBgColor = isDark
+                                  ? const Color(0xFF10B981).withOpacity(0.15)
+                                  : const Color(0xFFECFDF5);
                               prefixBgColor = const Color(0xFF10B981);
                               prefixTextColor = Colors.white;
                               trailingIcon = const Icon(
@@ -1106,7 +1202,9 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                               );
                             } else if (isSelected) {
                               itemBorderColor = const Color(0xFFEF4444);
-                              itemBgColor = const Color(0xFFFEF2F2);
+                              itemBgColor = isDark
+                                  ? const Color(0xFFEF4444).withOpacity(0.15)
+                                  : const Color(0xFFFEF2F2);
                               prefixBgColor = const Color(0xFFEF4444);
                               prefixTextColor = Colors.white;
                               trailingIcon = const Icon(
@@ -1117,7 +1215,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                             }
                           } else if (isSelected) {
                             itemBorderColor = activeTeal;
-                            itemBgColor = activeTeal.withOpacity(0.05);
+                            itemBgColor = activeTeal.withOpacity(0.15);
                             prefixBgColor = activeTeal;
                             prefixTextColor = Colors.white;
                           }
@@ -1127,7 +1225,9 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                             width: double.infinity,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                foregroundColor: textDark,
+                                foregroundColor: isDark
+                                    ? const Color(0xFFF8FAFC)
+                                    : textDark,
                                 backgroundColor: itemBgColor,
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(
@@ -1271,13 +1371,14 @@ class _EdukasiListViewState extends State<EdukasiListView> {
       medalIcon = Icons.stars_rounded;
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         clipBehavior: Clip.antiAlias,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1337,7 +1438,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w900,
-                          color: textDark,
+                          color: isDark ? const Color(0xFFF8FAFC) : textDark,
                         ),
                       ),
                     ],
@@ -1347,7 +1448,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                     feedbackDesc,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: textDark,
+                      color: isDark ? const Color(0xFF94A3B8) : textDark,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       height: 1.4,
@@ -1361,9 +1462,15 @@ class _EdukasiListViewState extends State<EdukasiListView> {
                       vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
+                      color: isDark
+                          ? const Color(0xFF0F172A)
+                          : const Color(0xFFF8FAFC),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFE2E8F0),
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,

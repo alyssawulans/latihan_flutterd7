@@ -1,0 +1,170 @@
+﻿Analyzing latihan_flutterd7...                                  
+
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\button_navi.dart:91:35 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\day_12\tugas5flutter.dart:197:21 - avoid_print
+   info - Don't invoke 'print' in production code - lib\day_12\tugas5flutter.dart:238:19 - avoid_print
+   info - Don't invoke 'print' in production code - lib\day_12\tugas5flutter.dart:244:19 - avoid_print
+   info - Don't invoke 'print' in production code - lib\day_12\tugas5flutter.dart:250:19 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_12\tugas5flutter.dart:262:44 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\day_13\login_screen.dart:111:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_13\login_screen.dart:113:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_13\login_screen.dart:149:29 - curly_braces_in_flow_control_structures
+   info - Don't invoke 'print' in production code - lib\day_13\login_screen.dart:183:31 - avoid_print
+   info - Statements in an if should be enclosed in a block - lib\day_13\register_screen.dart:165:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_13\register_screen.dart:186:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_13\register_screen.dart:188:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_13\register_screen.dart:225:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_13\register_screen.dart:227:29 - curly_braces_in_flow_control_structures
+   info - Don't invoke 'print' in production code - lib\day_13\register_screen.dart:248:31 - avoid_print
+   info - Don't use 'BuildContext's across async gaps - lib\day_13\tugas6flutter.dart:55:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\day_13\tugas6flutter.dart:57:17 - use_build_context_synchronously
+   info - Don't invoke 'print' in production code - lib\day_13\tugas6flutter.dart:314:31 - avoid_print
+   info - The type name 'halamanBeranda' isn't an UpperCamelCase identifier - lib\day_14\halaman_dashboard.dart:3:7 - camel_case_types
+   info - The type name '_halamanBerandaState' isn't an UpperCamelCase identifier - lib\day_14\halaman_dashboard.dart:10:7 - camel_case_types
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_14\tugas7flutter1.dart:66:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_14\tugas7flutter1.dart:263:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_14\tugas7flutter1.dart:289:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_14\tugas7flutter1.dart:304:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_14\tugas7flutter1.dart:357:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_14\tugas7flutter1.dart:542:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_14\tugas7flutter1.dart:721:36 - deprecated_member_use
+warning - The declaration '_logoFallback' isn't referenced - lib\day_14\tugas7flutter1.dart:759:10 - unused_element
+warning - The declaration 'asset' isn't referenced - lib\day_14\tugas7flutter1.dart:1046:17 - unused_element
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\contoh.dart:426:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\contoh2.dart:140:35 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\day_15\contoh2.dart:319:17 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\contoh2.dart:492:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\contoh2.dart:567:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\contoh2.dart:661:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\contoh2.dart:705:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\form_pendaftaran_tab.dart:359:59 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\form_pendaftaran_tab.dart:432:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\form_pendaftaran_tab.dart:481:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\form_pendaftaran_tab.dart:525:29 - deprecated_member_use
+   info - An uninitialized field should have an explicit type annotation - lib\day_15\tentang_tab.dart:4:9 - prefer_typing_uninitialized_variables
+   info - Missing type annotation - lib\day_15\tentang_tab.dart:4:9 - strict_top_level_inference
+warning - The value of the field '_formKey' isn't used - lib\day_15\tugas7flutter.dart:20:9 - unused_field
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\tugas7flutter.dart:153:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\tugas7flutter.dart:175:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\tugas7flutter.dart:518:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\tugas7flutter.dart:591:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\tugas7flutter.dart:683:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_15\tugas7flutter.dart:727:29 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\day_17\tugas10flutter.dart:217:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_17\tugas10flutter.dart:239:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_17\tugas10flutter.dart:241:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_17\tugas10flutter.dart:297:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_17\tugas10flutter.dart:299:29 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\day_17\tugas10flutter.dart:321:29 - curly_braces_in_flow_control_structures
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_17\tugas9flutter.dart:151:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\day_17\tugas9flutter.dart:297:55 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\day_19\views\splash.dart:24:5 - avoid_print
+   info - The file name 'tugas1Flutter.dart' isn't a lower_case_with_underscores identifier - lib\day_7\tugas1Flutter.dart:1:1 - file_names
+   info - Unnecessary escape in string literal - lib\day_8\widget.dart:29:53 - unnecessary_string_escapes
+   info - Unnecessary escape in string literal - lib\day_8\widget.dart:29:60 - unnecessary_string_escapes
+   info - Unnecessary escape in string literal - lib\day_8\widget.dart:29:67 - unnecessary_string_escapes
+   info - Missing type annotation - lib\extension\navigator.dart:66:13 - strict_top_level_inference
+   info - 'textScaleFactor' is deprecated and shouldn't be used. Use textScaler instead. Use of textScaleFactor was deprecated in preparation for the upcoming nonlinear text scaling support. This feature was deprecated after v3.12.0-2.0.pre - lib\main.dart:47:17 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\project_flutter\models\list_riwayat.dart:75:17 - avoid_print
+warning - Unused import: 'package:latihan_flutterd7/project_flutter/views/riwayat_laporan.dart' - lib\project_flutter\views\buat_laporan.dart:17:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:172:65 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:471:69 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:499:69 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:635:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:647:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:677:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:927:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:967:81 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:970:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:1048:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:1117:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:1187:65 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:1253:52 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\project_flutter\views\buat_laporan.dart:1360:33 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:1420:59 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:1420:92 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\buat_laporan.dart:1581:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\daftar_edukasi_view.dart:174:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\daftar_edukasi_view.dart:317:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\daftar_edukasi_view.dart:351:69 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\daftar_edukasi_view.dart:358:67 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\database_viewer_view.dart:383:37 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\database_viewer_view.dart:411:50 - deprecated_member_use
+warning - Unused import: 'package:latihan_flutterd7/project_flutter/views/riwayat_laporan.dart' - lib\project_flutter\views\detail_laporan.dart:7:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\detail_laporan.dart:214:63 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\detail_laporan.dart:273:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\detail_laporan.dart:343:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\detail_laporan.dart:592:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\detail_laporan.dart:620:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_detail_view.dart:48:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_detail_view.dart:101:86 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\project_flutter\views\edukasi_form_view.dart:156:19 - deprecated_member_use
+warning - The value of the local variable 'iconColor' isn't used - lib\project_flutter\views\edukasi_list_view.dart:128:17 - unused_local_variable
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:220:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:447:71 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:455:71 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:463:71 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:471:71 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:494:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:499:59 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:670:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:817:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:969:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:1090:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:1147:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:1154:78 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:1164:78 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\edukasi_list_view.dart:1175:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\home_view.dart:1350:63 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\home_view.dart:1371:63 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\home_view.dart:1381:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\home_view.dart:1619:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\konfirmasi_laporan.dart:95:49 - deprecated_member_use
+   info - 'desiredAccuracy' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings - lib\project_flutter\views\laporan_add_view.dart:58:11 - deprecated_member_use
+   info - 'timeLimit' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings - lib\project_flutter\views\laporan_add_view.dart:59:11 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\project_flutter\views\laporan_add_view.dart:306:19 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\laporan_beranda.dart:178:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\laporan_beranda.dart:318:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\laporan_beranda.dart:436:64 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\laporan_detail_view.dart:190:52 - deprecated_member_use
+   info - 'desiredAccuracy' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings - lib\project_flutter\views\laporan_edit_view.dart:70:11 - deprecated_member_use
+   info - 'timeLimit' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings - lib\project_flutter\views\laporan_edit_view.dart:71:11 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\project_flutter\views\laporan_edit_view.dart:275:19 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\project_flutter\views\laporan_edit_view.dart:306:19 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\laporan_list_view.dart:300:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\laporan_list_view.dart:357:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\main_navigation_shell.dart:93:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\main_navigation_shell.dart:93:78 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\main_navigation_shell.dart:138:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\maps_view.dart:279:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\maps_view.dart:284:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\maps_view.dart:418:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\maps_view.dart:607:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\maps_view.dart:662:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\maps_view.dart:662:74 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\maps_view.dart:698:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\maps_view.dart:754:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\maps_view.dart:1008:26 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\onboarding_view.dart:201:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\onboarding_view.dart:301:53 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\project_flutter\views\pengaturan_view.dart:419:49 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\project_flutter\views\pengaturan_view.dart:420:56 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:165:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:167:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:169:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:191:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:193:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:195:42 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\project_flutter\views\profil_view.dart:441:51 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\project_flutter\views\profil_view.dart:443:58 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\project_flutter\views\profil_view.dart:657:49 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\project_flutter\views\profil_view.dart:658:56 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\project_flutter\views\profil_view.dart:1128:42 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:1234:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:1462:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:1549:70 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:1600:81 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\profil_view.dart:1606:83 - deprecated_member_use
+warning - The value of the local variable 'dividerColor' isn't used - lib\project_flutter\views\register_view.dart:505:17 - unused_local_variable
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\project_flutter\views\riwayat_laporan.dart:165:37 - deprecated_member_use
+

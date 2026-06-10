@@ -28,8 +28,18 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final Color cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final Color textColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
+    final Color subTextColor = isDark ? const Color(0xFF94A3B8) : Colors.grey[500]!;
+    final Color detailLabelColor = isDark ? const Color(0xFF64748B) : Colors.grey[400]!;
+    final Color borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final Color buttonTextColor = isDark ? const Color(0xFF2DD4BF) : primaryTeal;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       body: Column(
         children: [
           Expanded(
@@ -44,10 +54,6 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                     SizedBox(
                       width: 180,
                       height: 180,
-                      // decoration: const BoxDecoration(
-                      //   color: Color(0xFFE6F4F1),
-                      //   shape: BoxShape.circle,
-                      // ),
                       child: Image.asset(
                         "assets/images/project_akhir/success.png",
                       ),
@@ -58,7 +64,7 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: textDark,
+                        color: textColor,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -68,7 +74,7 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                         "Terima kasih atas partisipasi Anda dalam menjaga lingkungan. Laporan Anda akan kami tindak lanjuti.",
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey[500],
+                          color: subTextColor,
                           height: 1.4,
                         ),
                         textAlign: TextAlign.center,
@@ -81,11 +87,12 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                       margin: const EdgeInsets.symmetric(horizontal: 24),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: cardColor,
                         borderRadius: BorderRadius.circular(16),
+                        border: isDark ? Border.all(color: borderColor) : null,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.02),
+                            color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -99,7 +106,7 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                               "Nomor Laporan",
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey[400],
+                                color: detailLabelColor,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -113,7 +120,7 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
-                                  color: textDark,
+                                  color: textColor,
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -139,13 +146,13 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                             ],
                           ),
                           const SizedBox(height: 20),
-                          const Divider(),
+                          Divider(color: borderColor),
                           const SizedBox(height: 12),
                           Text(
                             "Tanggal",
                             style: TextStyle(
                               fontSize: 11,
-                              color: Colors.grey[400],
+                              color: detailLabelColor,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -153,7 +160,7 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                             widget.tanggal,
                             style: TextStyle(
                               fontSize: 14,
-                              color: textDark,
+                              color: textColor,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -162,7 +169,7 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                             "Kategori",
                             style: TextStyle(
                               fontSize: 11,
-                              color: Colors.grey[400],
+                              color: detailLabelColor,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -170,7 +177,7 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                             widget.kategori,
                             style: TextStyle(
                               fontSize: 14,
-                              color: textDark,
+                              color: textColor,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -189,7 +196,7 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                             height: 46,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryTeal,
+                                backgroundColor: isDark ? activeTeal : primaryTeal,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -220,7 +227,7 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                             height: 46,
                             child: OutlinedButton(
                               style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: Colors.grey[300]!),
+                                side: BorderSide(color: borderColor),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -239,7 +246,7 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: primaryTeal,
+                                  color: buttonTextColor,
                                 ),
                               ),
                             ),

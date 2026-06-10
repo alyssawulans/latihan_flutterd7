@@ -354,32 +354,50 @@ class _HomeScreenDay20State extends State<HomeScreenDay20> {
 
             // Tombol SQLite Viewer
             Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  icon: const Icon(
-                    Icons.storage_rounded,
-                    color: Color(0xFF1A2E44),
-                  ),
-                  label: const Text(
-                    "Lihat Database (SQLite Viewer)",
-                    style: TextStyle(
-                      color: Color(0xFF1A2E44),
-                      fontWeight: FontWeight.bold,
+              // Ganti padding bawah menjadi lebih besar (misal 80) agar tidak mepet/tertutup bottom nav
+              padding: const EdgeInsets.only(
+                left: 20.0,
+                right: 20.0,
+                top: 20.0,
+                bottom: 80.0,
+              ),
+              child: Transform.translate(
+                offset: const Offset(
+                  0,
+                  -60,
+                ), // Menggeser tombol ke atas sejauh 60 piksel secara paksa
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 55,
+
+                    child: OutlinedButton.icon(
+                      icon: const Icon(
+                        Icons.storage_rounded,
+                        color: Color(0xFF1A2E44),
+                      ),
+                      label: const Text(
+                        "Lihat Database (SQLite Viewer)",
+                        style: TextStyle(
+                          color: Color(0xFF1A2E44),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        // Padding vertikal di dalam tombol biar text & icon pas di tengah
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        side: const BorderSide(
+                          color: Color(0xFF1A2E44),
+                          width: 1.5,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () => context.push(DatabaseList()),
                     ),
                   ),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: const BorderSide(
-                      color: Color(0xFF1A2E44),
-                      width: 1.5,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () => context.push(DatabaseList()),
                 ),
               ),
             ),
