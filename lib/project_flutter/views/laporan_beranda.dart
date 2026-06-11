@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:latihan_flutterd7/project_flutter/config/app_settings.dart';
 import 'package:latihan_flutterd7/project_flutter/config/app_translations.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
@@ -22,26 +23,37 @@ class _LaporanBerandaState extends State<LaporanBeranda> {
   final Color activeTeal = const Color(0xFF0D9488);
   final Color textDark = const Color(0xFF0F172A);
 
-  /// [_laporanFuture] menyimpan Future untuk memuat data laporan dari SQLite.
-  /// Digunakan oleh FutureBuilder agar UI tetap responsif saat data dimuat.
   late Future<List<LaporanModel>> _laporanFuture;
+  String _userRole = 'user';
+  int _userId = 1;
+  bool _isLoadingUser = true;
 
   @override
   void initState() {
     super.initState();
-    // Inisialisasi future saat widget pertama kali dibuat
-    _laporanFuture = _fetchLaporans();
+    _loadUserAndFetchLaporans();
   }
 
-  /// Mengambil semua data laporan dari database SQLite secara async.
-  /// Mengembalikan List LaporanModel yang digunakan
-  /// oleh FutureBuilder untuk membangun UI secara reaktif.
+  Future<void> _loadUserAndFetchLaporans() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _userRole = prefs.getString('current_user_role') ?? 'user';
+        _userId = prefs.getInt('current_user_id') ?? 1;
+        _isLoadingUser = false;
+        _laporanFuture = _fetchLaporans();
+      });
+    }
+  }
+
   Future<List<LaporanModel>> _fetchLaporans() async {
-    return await RuasDbHelper.instance.getLaporans();
+    if (_userRole == 'admin') {
+      return await RuasDbHelper.instance.getLaporans();
+    } else {
+      return await RuasDbHelper.instance.getLaporans(userId: _userId);
+    }
   }
 
-  /// Me-refresh data laporan dengan membuat Future baru.
-  /// Dipanggil setelah operasi Create, Update, atau Delete selesai.
   void _refreshLaporans() {
     setState(() {
       _laporanFuture = _fetchLaporans();
@@ -116,6 +128,14 @@ class _LaporanBerandaState extends State<LaporanBeranda> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingUser) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF0D9488)),
+        ),
+      );
+    }
+
     // Deteksi tema gelap/terang untuk penyesuaian warna komponen
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final settings = AppSettingsController.instance.settingsNotifier.value;
@@ -188,7 +208,9 @@ class _LaporanBerandaState extends State<LaporanBeranda> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppTranslations.translate('report_banner_title', lang),
+                    _userRole == 'admin'
+                        ? "Panel Pengelolaan Laporan"
+                        : AppTranslations.translate('report_banner_title', lang),
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -198,53 +220,57 @@ class _LaporanBerandaState extends State<LaporanBeranda> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    AppTranslations.translate('report_banner_desc', lang),
+                    _userRole == 'admin'
+                        ? "Selamat datang di Panel Admin RUAS. Anda memiliki wewenang untuk meninjau, menyetujui, atau menolak setiap laporan isu lingkungan yang masuk."
+                        : AppTranslations.translate('report_banner_desc', lang),
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.white.withValues(alpha: 0.85),
                       height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: primaryTeal,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                    ),
-                    onPressed: () {
-                      // Navigasi ke halaman Buat Laporan, lalu refresh data setelah kembali
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const BuatLaporan(),
+                  if (_userRole != 'admin') ...[
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: primaryTeal,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      ).then((_) {
-                        _refreshLaporans();
-                      });
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.add, color: primaryTeal, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          AppTranslations.translate('create_report_btn', lang),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                      onPressed: () {
+                        // Navigasi ke halaman Buat Laporan, lalu refresh data setelah kembali
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const BuatLaporan(),
                           ),
-                        ),
-                      ],
+                        ).then((_) {
+                          _refreshLaporans();
+                        });
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.add, color: primaryTeal, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            AppTranslations.translate('create_report_btn', lang),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

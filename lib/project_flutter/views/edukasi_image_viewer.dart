@@ -15,7 +15,8 @@ class EdukasiImageViewer extends StatefulWidget {
 }
 
 class _EdukasiImageViewerState extends State<EdukasiImageViewer> {
-  final TransformationController _transformationController = TransformationController();
+  final TransformationController _transformationController =
+      TransformationController();
   TapDownDetails? _doubleTapDetails;
 
   void _handleDoubleTap() {
@@ -24,11 +25,19 @@ class _EdukasiImageViewerState extends State<EdukasiImageViewer> {
     } else {
       final position = _doubleTapDetails?.localPosition;
       if (position != null) {
-        final translation = Matrix4.translationValues(-position.dx * 1.5, -position.dy * 1.5, 0.0);
+        final translation = Matrix4.translationValues(
+          -position.dx * 1.5,
+          -position.dy * 1.5,
+          0.0,
+        );
         final scale = Matrix4.diagonal3Values(2.5, 2.5, 1.0);
         _transformationController.value = translation * scale;
       } else {
-        _transformationController.value = Matrix4.diagonal3Values(2.5, 2.5, 1.0);
+        _transformationController.value = Matrix4.diagonal3Values(
+          2.5,
+          2.5,
+          1.0,
+        );
       }
     }
   }
@@ -47,7 +56,10 @@ class _EdukasiImageViewerState extends State<EdukasiImageViewer> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -124,7 +136,9 @@ class _EdukasiImageViewerState extends State<EdukasiImageViewer> {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               decoration: BoxDecoration(
                 color: const Color(0xFF161B26),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.3),
@@ -136,13 +150,17 @@ class _EdukasiImageViewerState extends State<EdukasiImageViewer> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.pinch_rounded, color: Colors.teal.shade300, size: 20),
+                  Icon(
+                    Icons.pinch_rounded,
+                    color: Colors.teal.shade300,
+                    size: 20,
+                  ),
                   const SizedBox(width: 10),
                   const Text(
                     'Cubit untuk memperbesar • Ketuk dua kali untuk reset',
                     style: TextStyle(
                       color: Color(0xFF94A3B8),
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

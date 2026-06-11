@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/laporan_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/detail_laporan.dart';
@@ -55,20 +56,36 @@ class _RiwayatLaporanState extends State<RiwayatLaporan> {
   final Color activeTeal = const Color(0xFF0D9488);
   final Color textDark = const Color(0xFF0F172A);
 
-  /// [_laporanFuture] menyimpan Future hasil query SQLite untuk semua laporan.
-  /// FutureBuilder menggunakan ini untuk membangun UI secara reaktif.
   late Future<List<LaporanModel>> _laporanFuture;
+  String _userRole = 'user';
+  int _userId = 1;
+  bool _isLoadingUser = true;
 
   @override
   void initState() {
     super.initState();
-    // Muat data laporan saat halaman pertama dibuka
-    _laporanFuture = _fetchAllLaporans();
+    _loadUserAndFetchLaporans();
+  }
+
+  Future<void> _loadUserAndFetchLaporans() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _userRole = prefs.getString('current_user_role') ?? 'user';
+        _userId = prefs.getInt('current_user_id') ?? 1;
+        _isLoadingUser = false;
+        _laporanFuture = _fetchAllLaporans();
+      });
+    }
   }
 
   /// Mengambil seluruh data laporan dari database SQLite secara async.
   Future<List<LaporanModel>> _fetchAllLaporans() async {
-    return await RuasDbHelper.instance.getLaporans();
+    if (_userRole == 'admin') {
+      return await RuasDbHelper.instance.getLaporans();
+    } else {
+      return await RuasDbHelper.instance.getLaporans(userId: _userId);
+    }
   }
 
   /// Me-refresh seluruh data laporan setelah ada perubahan (edit/delete).
@@ -337,6 +354,13 @@ class _RiwayatLaporanState extends State<RiwayatLaporan> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingUser) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF0D9488)),
+        ),
+      );
+    }
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final Color bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
     final Color appBarBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;

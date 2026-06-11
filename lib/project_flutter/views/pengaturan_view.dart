@@ -5,6 +5,7 @@ import 'package:latihan_flutterd7/project_flutter/config/debug_config.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/views/database_viewer_view.dart';
 import 'package:latihan_flutterd7/project_flutter/views/splash_view.dart';
+import 'package:latihan_flutterd7/project_flutter/views/admin_register_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PengaturanView extends StatefulWidget {
@@ -22,6 +23,7 @@ class _PengaturanViewState extends State<PengaturanView> {
   String _userEmail = 'andi.pratama@gmail.com';
   String _userPhone = '081234567890';
   String _joinDate = '24 Sep 2023';
+  String _userRole = 'user';
 
   final Color primaryTeal = const Color(0xFF0F4C43);
   final Color activeTeal = const Color(0xFF0D9488);
@@ -43,6 +45,7 @@ class _PengaturanViewState extends State<PengaturanView> {
         _userEmail = user.email;
         _userPhone = user.nomorTelp;
         _joinDate = user.tanggalDaftar;
+        _userRole = user.role;
       });
     }
   }
@@ -704,6 +707,15 @@ class _PengaturanViewState extends State<PengaturanView> {
     }
   }
 
+  void _navigateToRegisterAdmin() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AdminRegisterView(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<AppSettings>(
@@ -805,6 +817,15 @@ class _PengaturanViewState extends State<PengaturanView> {
                         textColor,
                         onTap: _showPrivacyInfo,
                       ),
+                      if (_userRole == 'admin') ...[
+                        Divider(height: 1, color: borderColor),
+                        _buildMenuTile(
+                          Icons.admin_panel_settings_outlined,
+                          "Daftarkan Admin Baru",
+                          textColor,
+                          onTap: _navigateToRegisterAdmin,
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -1081,7 +1102,7 @@ class _PengaturanViewState extends State<PengaturanView> {
                   ),
                   child: Column(
                     children: [
-                      if (DebugConfig.showDatabaseViewer) ...[
+                      if (DebugConfig.showDatabaseViewer && _userRole == 'admin') ...[
                         _buildMenuTile(
                           Icons.storage_rounded,
                           'SQLite Database Viewer',

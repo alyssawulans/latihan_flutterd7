@@ -7,6 +7,7 @@ class UserModel {
   final String tanggalDaftar;
   final String tempatLahir;
   final String tanggalLahir;
+  final String role;
 
   UserModel({
     this.id,
@@ -17,6 +18,7 @@ class UserModel {
     required this.tanggalDaftar,
     this.tempatLahir = '',
     this.tanggalLahir = '',
+    this.role = 'user',
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class UserModel {
       'tanggal_daftar': tanggalDaftar,
       'tempat_lahir': tempatLahir,
       'tanggal_lahir': tanggalLahir,
+      'role': role,
     };
   }
 
@@ -42,6 +45,7 @@ class UserModel {
       tanggalDaftar: map['tanggal_daftar'] ?? '',
       tempatLahir: map['tempat_lahir'] ?? '',
       tanggalLahir: map['tanggal_lahir'] ?? '',
+      role: map['role'] ?? 'user',
     );
   }
 }

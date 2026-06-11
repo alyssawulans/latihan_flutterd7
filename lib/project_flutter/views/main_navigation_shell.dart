@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:latihan_flutterd7/project_flutter/config/app_settings.dart';
 import 'package:latihan_flutterd7/project_flutter/config/app_translations.dart';
 import 'package:latihan_flutterd7/project_flutter/views/edukasi_list_view.dart';
@@ -17,11 +18,20 @@ class MainNavigationShell extends StatefulWidget {
 
 class _MainNavigationShellState extends State<MainNavigationShell> {
   late int _currentIndex;
+  String _userRole = 'user';
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.initialTab;
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userRole = prefs.getString('current_user_role') ?? 'user';
+    });
   }
 
   // List of views to switch between
@@ -78,9 +88,17 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     final settings = AppSettingsController.instance.settingsNotifier.value;
     final lang = settings.languageCode;
 
-    return Scaffold(
-      extendBody: true, // Crucial for floating bottom bar transparent areas
-      body: IndexedStack(index: _currentIndex, children: _views),
+    return PopScope(
+      canPop: _currentIndex == 0,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+        setState(() {
+          _currentIndex = 0;
+        });
+      },
+      child: Scaffold(
+        extendBody: true, // Crucial for floating bottom bar transparent areas
+        body: IndexedStack(index: _currentIndex, children: _views),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
         child: Container(
@@ -141,7 +159,11 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.add, color: Colors.white, size: 30),
+                  child: Icon(
+                    _userRole == 'admin' ? Icons.assignment : Icons.add,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                 ),
               ),
               // Edukasi
@@ -168,6 +190,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

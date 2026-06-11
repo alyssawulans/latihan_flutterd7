@@ -22,7 +22,7 @@ class RuasDbHelper {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
@@ -32,6 +32,25 @@ class RuasDbHelper {
     if (oldVersion < 2) {
       await db.execute('ALTER TABLE users ADD COLUMN tempat_lahir TEXT');
       await db.execute('ALTER TABLE users ADD COLUMN tanggal_lahir TEXT');
+    }
+    if (oldVersion < 3) {
+      try {
+        await db.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'");
+      } catch (_) {}
+      
+      try {
+        final adminExists = await db.rawQuery("SELECT id FROM users WHERE email = 'admin.ruas@gmail.com'");
+        if (adminExists.isEmpty) {
+          await db.insert('users', {
+            'nama': 'Admin RUAS',
+            'email': 'admin.ruas@gmail.com',
+            'nomor_telp': '081234567891',
+            'password': 'admin123',
+            'tanggal_daftar': '24 Sep 2023',
+            'role': 'admin',
+          });
+        }
+      } catch (_) {}
     }
   }
 
@@ -46,7 +65,8 @@ class RuasDbHelper {
         password TEXT NOT NULL,
         tanggal_daftar TEXT NOT NULL,
         tempat_lahir TEXT,
-        tanggal_lahir TEXT
+        tanggal_lahir TEXT,
+        role TEXT NOT NULL DEFAULT 'user'
       )
     ''');
 
@@ -91,6 +111,17 @@ class RuasDbHelper {
       'nomor_telp': '081234567890',
       'password': 'password123',
       'tanggal_daftar': '24 Sep 2023',
+      'role': 'user',
+    });
+
+    // Seed default admin
+    await db.insert('users', {
+      'nama': 'Admin RUAS',
+      'email': 'admin.ruas@gmail.com',
+      'nomor_telp': '081234567891',
+      'password': 'admin123',
+      'tanggal_daftar': '24 Sep 2023',
+      'role': 'admin',
     });
 
     // Seed 3 reports for this user

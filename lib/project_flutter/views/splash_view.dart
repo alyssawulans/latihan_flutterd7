@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:latihan_flutterd7/project_flutter/views/login_view.dart';
 import 'package:latihan_flutterd7/project_flutter/views/main_navigation_shell.dart';
 import 'package:latihan_flutterd7/project_flutter/views/onboarding_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,7 +64,7 @@ class _SplashViewState extends State<SplashView> {
         // Already completed onboarding, go to Login
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => OnboardingView()),
+          MaterialPageRoute(builder: (context) => LoginView()),
         );
       } else {
         // Show onboarding

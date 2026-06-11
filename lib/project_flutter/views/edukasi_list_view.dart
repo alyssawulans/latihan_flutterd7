@@ -4,6 +4,7 @@ import 'package:latihan_flutterd7/project_flutter/models/edukasi_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/daftar_edukasi_view.dart';
 import 'package:latihan_flutterd7/project_flutter/views/edukasi_detail_view.dart';
 import 'package:latihan_flutterd7/project_flutter/views/edukasi_image_viewer.dart';
+import 'package:latihan_flutterd7/project_flutter/views/edukasi_form_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -16,6 +17,7 @@ class EdukasiListView extends StatefulWidget {
 
 class _EdukasiListViewState extends State<EdukasiListView> {
   String _userName = 'Andi Pratama';
+  String _userRole = 'user';
   EdukasiModel? _featuredArticle;
   bool _isLoading = true;
 
@@ -66,6 +68,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
     // Load username
     final prefs = await SharedPreferences.getInstance();
     final name = prefs.getString('current_user_name') ?? 'Andi Pratama';
+    final role = prefs.getString('current_user_role') ?? 'user';
 
     // Find featured article (e.g. PM2.5 article or the first available)
     final articles = await RuasDbHelper.instance.getEdukasis();
@@ -85,6 +88,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
     if (mounted) {
       setState(() {
         _userName = name;
+        _userRole = role;
         _featuredArticle = pm25Article;
         _isLoading = false;
       });
@@ -94,7 +98,7 @@ class _EdukasiListViewState extends State<EdukasiListView> {
   Future<void> _launchURL(String urlString) async {
     final Uri url = Uri.parse(urlString);
     try {
-      if (!await launchUrl(url, mode: LaunchMode.inAppWebView)) {
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -140,6 +144,18 @@ class _EdukasiListViewState extends State<EdukasiListView> {
         : const Color(0xFF1A2E44);
 
     return Scaffold(
+      floatingActionButton: _userRole == 'admin'
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EdukasiFormView()),
+                ).then((_) => _loadDashboardData());
+              },
+              backgroundColor: activeTeal,
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
       appBar: AppBar(
         backgroundColor: appBarBgColor,
         elevation: 0,

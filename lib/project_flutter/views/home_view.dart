@@ -25,6 +25,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   String _userName = 'Andi Pratama';
+  String _userRole = 'user';
   int _laporanCount = 0;
   int _edukasiCount = 0;
   List<LaporanModel> _recentLaporan = [];
@@ -187,6 +188,7 @@ class _HomeViewState extends State<HomeView> {
 
     final prefs = await SharedPreferences.getInstance();
     final name = prefs.getString('current_user_name') ?? 'Andi Pratama';
+    final role = prefs.getString('current_user_role') ?? 'user';
 
     // Get statistics
     final lCount = await RuasDbHelper.instance.getLaporanCount();
@@ -199,6 +201,7 @@ class _HomeViewState extends State<HomeView> {
     if (mounted) {
       setState(() {
         _userName = name;
+        _userRole = role;
         _laporanCount = lCount;
         _edukasiCount = eCount;
         _recentLaporan = recent;
@@ -803,7 +806,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
             ),
-      floatingActionButton: DebugConfig.showDatabaseViewer
+      floatingActionButton: (DebugConfig.showDatabaseViewer && _userRole == 'admin')
           ? Padding(
               padding: const EdgeInsets.only(bottom: 90.0),
               child: FloatingActionButton(

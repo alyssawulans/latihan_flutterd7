@@ -477,6 +477,7 @@ class _RegisterViewState extends State<RegisterView> {
       tanggalDaftar: formattedDate,
       tempatLahir: tempatLahirController.text.trim(),
       tanggalLahir: tanggalLahirController.text.trim(),
+      role: 'user',
     );
 
     final result = await RuasDbHelper.instance.registerUser(user);

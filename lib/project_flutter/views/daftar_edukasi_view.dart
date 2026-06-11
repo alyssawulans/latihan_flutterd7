@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/edukasi_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/edukasi_detail_view.dart';
+import 'package:latihan_flutterd7/project_flutter/views/edukasi_form_view.dart';
 
 class DaftarEdukasiView extends StatefulWidget {
   final String initialCategory;
@@ -38,13 +40,25 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
   final Color activeTeal = const Color(0xFF0D9488);
   final Color textDark = const Color(0xFF0F172A);
 
+  String _userRole = 'user';
+
   @override
   void initState() {
     super.initState();
     _selectedCategory = widget.initialCategory;
     _searchQuery = widget.initialSearchQuery;
     _searchController.text = _searchQuery;
+    _loadUserRole();
     _fetchArticles();
+  }
+
+  Future<void> _loadUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _userRole = prefs.getString('current_user_role') ?? 'user';
+      });
+    }
   }
 
   @override
@@ -116,6 +130,18 @@ class _DaftarEdukasiViewState extends State<DaftarEdukasiView> {
     final Color categoryUnselectedText = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
 
     return Scaffold(
+      floatingActionButton: _userRole == 'admin'
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EdukasiFormView()),
+                ).then((_) => _fetchArticles());
+              },
+              backgroundColor: activeTeal,
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
       backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,

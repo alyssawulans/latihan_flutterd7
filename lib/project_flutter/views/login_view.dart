@@ -1,9 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
-import 'package:latihan_flutterd7/project_flutter/views/register_view.dart';
 import 'package:latihan_flutterd7/project_flutter/views/main_navigation_shell.dart';
+import 'package:latihan_flutterd7/project_flutter/views/register_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -40,7 +41,10 @@ class _LoginViewState extends State<LoginView> {
           ),
           elevation: 8,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 28.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 28.0,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -48,7 +52,9 @@ class _LoginViewState extends State<LoginView> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF0F2625) : const Color(0xFFE6F4F1), // Soft teal background
+                    color: isDark
+                        ? const Color(0xFF0F2625)
+                        : const Color(0xFFE6F4F1), // Soft teal background
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -75,7 +81,9 @@ class _LoginViewState extends State<LoginView> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
                     height: 1.5,
                   ),
                 ),
@@ -89,7 +97,9 @@ class _LoginViewState extends State<LoginView> {
                       Navigator.of(context).pop();
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const MainNavigationShell()),
+                        MaterialPageRoute(
+                          builder: (context) => const MainNavigationShell(),
+                        ),
                         (route) => false,
                       );
                     },
@@ -131,7 +141,10 @@ class _LoginViewState extends State<LoginView> {
           ),
           elevation: 8,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 28.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 28.0,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -139,7 +152,9 @@ class _LoginViewState extends State<LoginView> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF3B1E1E) : const Color(0xFFFEE2E2), // Soft red background
+                    color: isDark
+                        ? const Color(0xFF3B1E1E)
+                        : const Color(0xFFFEE2E2), // Soft red background
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -166,7 +181,9 @@ class _LoginViewState extends State<LoginView> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
                     height: 1.5,
                   ),
                 ),
@@ -227,13 +244,16 @@ class _LoginViewState extends State<LoginView> {
       await prefs.setInt('current_user_id', user.id!);
       await prefs.setString('current_user_name', user.nama);
       await prefs.setString('current_user_email', user.email);
+      await prefs.setString('current_user_role', user.role);
 
       if (mounted) {
         _showSuccessDialog(user.nama);
       }
     } else {
       if (mounted) {
-        _showErrorDialog('Email atau Kata Sandi yang Anda masukkan salah. Silakan coba lagi.');
+        _showErrorDialog(
+          'Email atau Kata Sandi yang Anda masukkan salah. Silakan coba lagi.',
+        );
       }
     }
   }
@@ -250,15 +270,33 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
+  void _fillDemoAdminAccount() {
+    emailController.text = "admin.ruas@gmail.com";
+    passwordController.text = "admin123";
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Akun demo Admin berhasil diisi!'),
+        backgroundColor: Colors.teal,
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final Color bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF4F8FB);
+    final Color bgColor = isDark
+        ? const Color(0xFF0F172A)
+        : const Color(0xFFF4F8FB);
     final Color cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
-    final Color textColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF1A2E44);
+    final Color textColor = isDark
+        ? const Color(0xFFF8FAFC)
+        : const Color(0xFF1A2E44);
     final Color subTextColor = isDark ? const Color(0xFF94A3B8) : Colors.grey;
-    final Color dividerColor = isDark ? const Color(0xFF334155) : Colors.grey[300]!;
+    final Color dividerColor = isDark
+        ? const Color(0xFF334155)
+        : Colors.grey[300]!;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -317,7 +355,9 @@ class _LoginViewState extends State<LoginView> {
                     decoration: BoxDecoration(
                       color: cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: isDark ? Border.all(color: const Color(0xFF334155)) : null,
+                      border: isDark
+                          ? Border.all(color: const Color(0xFF334155))
+                          : null,
                       boxShadow: [
                         BoxShadow(
                           blurRadius: 10,
@@ -372,23 +412,24 @@ class _LoginViewState extends State<LoginView> {
                           obscureText: obscurePassword,
                           obscuringCharacter: "*",
                           style: TextStyle(color: textColor),
-                          decoration: _buildInputDecoration(
-                            "Masukkan Kata Sandi Anda",
-                            Icons.lock_outline_rounded,
-                            isDark,
-                          ).copyWith(
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                                color: Colors.grey,
+                          decoration:
+                              _buildInputDecoration(
+                                "Masukkan Kata Sandi Anda",
+                                Icons.lock_outline_rounded,
+                                isDark,
+                              ).copyWith(
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    obscurePassword
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () => setState(
+                                    () => obscurePassword = !obscurePassword,
+                                  ),
+                                ),
                               ),
-                              onPressed: () => setState(
-                                () => obscurePassword = !obscurePassword,
-                              ),
-                            ),
-                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Kata Sandi tidak boleh kosong";
@@ -402,7 +443,9 @@ class _LoginViewState extends State<LoginView> {
                             onPressed: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Fitur lupa kata sandi belum tersedia.'),
+                                  content: Text(
+                                    'Fitur lupa kata sandi belum tersedia.',
+                                  ),
                                 ),
                               );
                             },
@@ -422,17 +465,20 @@ class _LoginViewState extends State<LoginView> {
                           height: 54,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: isDark ? const Color(0xFF0F4C43) : const Color(0xFF1A2E44),
+                              backgroundColor: isDark
+                                  ? const Color(0xFF0F4C43)
+                                  : const Color(0xFF1A2E44),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               elevation: 0,
                             ),
                             onPressed: _isLoading
                                 ? null
                                 : () {
-                                    if (_loginFormKey.currentState!.validate()) {
+                                    if (_loginFormKey.currentState!
+                                        .validate()) {
                                       _login();
                                     }
                                   },
@@ -440,7 +486,10 @@ class _LoginViewState extends State<LoginView> {
                                 ? const SizedBox(
                                     height: 20,
                                     width: 20,
-                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : const Text(
                                     "Masuk Sekarang",
@@ -451,32 +500,65 @@ class _LoginViewState extends State<LoginView> {
                                   ),
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        // Demo filler button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: OutlinedButton.icon(
-                            onPressed: _fillDemoAccount,
-                            icon: const Icon(Icons.flash_on, size: 18),
-                            label: const Text('Gunakan Akun Demo (Andi)'),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: isDark ? const Color(0xFF818CF8) : Colors.indigo,
-                              side: BorderSide(color: isDark ? const Color(0xFF4338CA) : Colors.indigo),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                        if (kDebugMode) ...[
+                          const SizedBox(height: 12),
+                          // Demo filler button
+                          Row(
+                            children: [
+                              // Expanded(
+                              //   child: SizedBox(
+                              //     height: 50,
+                              //     child: OutlinedButton.icon(
+                              //       onPressed: _fillDemoAccount,
+                              //       icon: const Icon(Icons.person_outline, size: 16),
+                              //       label: const Text('Demo User'),
+                              //       style: OutlinedButton.styleFrom(
+                              //         foregroundColor: isDark ? const Color(0xFF818CF8) : Colors.indigo,
+                              //         side: BorderSide(color: isDark ? const Color(0xFF4338CA) : Colors.indigo),
+                              //         shape: RoundedRectangleBorder(
+                              //           borderRadius: BorderRadius.circular(12),
+                              //         ),
+                              //         padding: EdgeInsets.zero,
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 50,
+                                  child: OutlinedButton.icon(
+                                    onPressed: _fillDemoAdminAccount,
+                                    icon: const Icon(
+                                      Icons.admin_panel_settings_outlined,
+                                      size: 16,
+                                    ),
+                                    label: const Text('Demo Admin'),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: isDark
+                                          ? const Color(0xFF0D9488)
+                                          : const Color(0xFF0F4C43),
+                                      side: BorderSide(
+                                        color: isDark
+                                            ? const Color(0xFF0D9488)
+                                            : const Color(0xFF0F4C43),
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      padding: EdgeInsets.zero,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                        ),
+                        ],
                         const SizedBox(height: 20),
                         Row(
                           children: [
                             Expanded(
-                              child: Divider(
-                                color: dividerColor,
-                                thickness: 1,
-                              ),
+                              child: Divider(color: dividerColor, thickness: 1),
                             ),
                             const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 10),
@@ -489,10 +571,7 @@ class _LoginViewState extends State<LoginView> {
                               ),
                             ),
                             Expanded(
-                              child: Divider(
-                                color: dividerColor,
-                                thickness: 1,
-                              ),
+                              child: Divider(color: dividerColor, thickness: 1),
                             ),
                           ],
                         ),
@@ -524,7 +603,9 @@ class _LoginViewState extends State<LoginView> {
                             ..onTap = () {
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => const RegisterView()),
+                                MaterialPageRoute(
+                                  builder: (context) => const RegisterView(),
+                                ),
                               );
                             },
                           text: " Daftar Sekarang",
@@ -547,10 +628,17 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  InputDecoration _buildInputDecoration(String hint, IconData prefixIcon, bool isDark) {
+  InputDecoration _buildInputDecoration(
+    String hint,
+    IconData prefixIcon,
+    bool isDark,
+  ) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(fontSize: 13, color: isDark ? const Color(0xFF64748B) : Colors.grey),
+      hintStyle: TextStyle(
+        fontSize: 13,
+        color: isDark ? const Color(0xFF64748B) : Colors.grey,
+      ),
       filled: true,
       fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAF9),
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -570,7 +658,10 @@ class _LoginViewState extends State<LoginView> {
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Colors.red, width: 1.5),
       ),
-      prefixIcon: Icon(prefixIcon, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF1A2E44)),
+      prefixIcon: Icon(
+        prefixIcon,
+        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF1A2E44),
+      ),
     );
   }
 
@@ -583,7 +674,9 @@ class _LoginViewState extends State<LoginView> {
     return OutlinedButton.icon(
       style: OutlinedButton.styleFrom(
         minimumSize: const Size.fromHeight(54),
-        side: BorderSide(color: isDark ? const Color(0xFF334155) : Colors.grey[300]!),
+        side: BorderSide(
+          color: isDark ? const Color(0xFF334155) : Colors.grey[300]!,
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       onPressed: () {},

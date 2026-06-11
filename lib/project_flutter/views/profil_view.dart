@@ -226,12 +226,14 @@ class _ProfilViewState extends State<ProfilView> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final dialogBg = isDark ? const Color(0xFF1E293B) : Colors.white;
           return Dialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
             clipBehavior: Clip.antiAlias,
-            backgroundColor: Colors.white,
+            backgroundColor: dialogBg,
             child: SingleChildScrollView(
               physics: BouncingScrollPhysics(),
               child: Column(
@@ -263,14 +265,14 @@ class _ProfilViewState extends State<ProfilView> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: textDark,
+                            color: isDark ? const Color(0xFFF8FAFC) : textDark,
                           ),
                         ),
                         const SizedBox(height: 6),
-                        const Text(
+                        Text(
                           'Perbarui informasi pribadi Anda untuk melengkapi profil dan meningkatkan lencana.',
                           style: TextStyle(
-                            color: Color(0xFF64748B),
+                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                             fontSize: 12,
                             height: 1.4,
                           ),
@@ -312,11 +314,18 @@ class _ProfilViewState extends State<ProfilView> {
                               builder: (context, child) {
                                 return Theme(
                                   data: Theme.of(context).copyWith(
-                                    colorScheme: ColorScheme.light(
-                                      primary: activeTeal,
-                                      onPrimary: Colors.white,
-                                      onSurface: textDark,
-                                    ),
+                                    colorScheme: isDark
+                                        ? ColorScheme.dark(
+                                            primary: activeTeal,
+                                            onPrimary: Colors.white,
+                                            surface: const Color(0xFF1E293B),
+                                            onSurface: Colors.white,
+                                          )
+                                        : ColorScheme.light(
+                                            primary: activeTeal,
+                                            onPrimary: Colors.white,
+                                            onSurface: textDark,
+                                          ),
                                   ),
                                   child: child!,
                                 );
@@ -333,10 +342,10 @@ class _ProfilViewState extends State<ProfilView> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF8FAFC),
+                              color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: const Color(0xFFE2E8F0),
+                                color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                               ),
                             ),
                             padding: const EdgeInsets.symmetric(
@@ -370,7 +379,7 @@ class _ProfilViewState extends State<ProfilView> {
                                             : 'Pilih Tanggal Lahir',
                                         style: TextStyle(
                                           color: selectedTanggalLahir.isNotEmpty
-                                              ? textDark
+                                              ? (isDark ? const Color(0xFFF8FAFC) : textDark)
                                               : const Color(0xFF94A3B8),
                                           fontSize: 13,
                                           fontWeight: FontWeight.bold,
@@ -390,10 +399,10 @@ class _ProfilViewState extends State<ProfilView> {
                               child: OutlinedButton(
                                 onPressed: () => Navigator.pop(context),
                                 style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(
-                                    color: Color(0xFFCBD5E1),
+                                  side: BorderSide(
+                                    color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
                                   ),
-                                  foregroundColor: const Color(0xFF64748B),
+                                  foregroundColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 14,
                                   ),
@@ -487,20 +496,27 @@ class _ProfilViewState extends State<ProfilView> {
     IconData icon, {
     TextInputType keyboardType = TextInputType.text,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color fieldBgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final Color fieldBorderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final Color textValueColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
+    final Color labelColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: fieldBgColor,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: fieldBorderColor),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
+        style: TextStyle(color: textValueColor),
         decoration: InputDecoration(
           icon: Icon(icon, color: Colors.grey, size: 20),
           labelText: label,
-          labelStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
+          labelStyle: TextStyle(color: labelColor, fontSize: 13),
           border: InputBorder.none,
         ),
       ),
@@ -515,12 +531,14 @@ class _ProfilViewState extends State<ProfilView> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final dialogBg = isDark ? const Color(0xFF1E293B) : Colors.white;
           return Dialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
             clipBehavior: Clip.antiAlias,
-            backgroundColor: Colors.white,
+            backgroundColor: dialogBg,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -551,14 +569,14 @@ class _ProfilViewState extends State<ProfilView> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: textDark,
+                          color: isDark ? const Color(0xFFF8FAFC) : textDark,
                         ),
                       ),
                       const SizedBox(height: 6),
-                      const Text(
+                      Text(
                         'Masukkan kata sandi baru Anda di bawah ini untuk memperbarui keamanan akun.',
                         style: TextStyle(
-                          color: Color(0xFF64748B),
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                           fontSize: 12,
                           height: 1.4,
                         ),
@@ -566,23 +584,28 @@ class _ProfilViewState extends State<ProfilView> {
                       const SizedBox(height: 18),
                       Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
+                          color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                          border: Border.all(
+                            color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                          ),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         child: TextField(
                           controller: passwordController,
                           obscureText: obscurePassword,
+                          style: TextStyle(
+                            color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                          ),
                           decoration: InputDecoration(
                             labelText: 'Kata Sandi Baru',
-                            labelStyle: const TextStyle(
-                              color: Color(0xFF64748B),
+                            labelStyle: TextStyle(
+                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                               fontSize: 13,
                             ),
                             hintText: 'Minimal 6 karakter',
-                            hintStyle: const TextStyle(
-                              color: Color(0xFF94A3B8),
+                            hintStyle: TextStyle(
+                              color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
                               fontSize: 12,
                             ),
                             border: InputBorder.none,
@@ -610,10 +633,10 @@ class _ProfilViewState extends State<ProfilView> {
                             child: OutlinedButton(
                               onPressed: () => Navigator.pop(context),
                               style: OutlinedButton.styleFrom(
-                                side: const BorderSide(
-                                  color: Color(0xFFCBD5E1),
+                                side: BorderSide(
+                                  color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
                                 ),
-                                foregroundColor: const Color(0xFF64748B),
+                                foregroundColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 14,
                                 ),
@@ -700,12 +723,14 @@ class _ProfilViewState extends State<ProfilView> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final dialogBg = isDark ? const Color(0xFF1E293B) : Colors.white;
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
           clipBehavior: Clip.antiAlias,
-          backgroundColor: Colors.white,
+          backgroundColor: dialogBg,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -730,21 +755,21 @@ class _ProfilViewState extends State<ProfilView> {
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       "Keluar Aplikasi",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
+                        color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF1E293B),
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const Text(
+                    Text(
                       "Apakah Anda yakin ingin keluar dari akun RUAS Anda?",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
-                        color: Color(0xFF64748B),
+                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                         height: 1.5,
                       ),
                     ),
@@ -755,8 +780,10 @@ class _ProfilViewState extends State<ProfilView> {
                           child: OutlinedButton(
                             onPressed: () => Navigator.pop(context, false),
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xFFCBD5E1)),
-                              foregroundColor: const Color(0xFF64748B),
+                              side: BorderSide(
+                                color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                              ),
+                              foregroundColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
@@ -1336,7 +1363,7 @@ class _ProfilViewState extends State<ProfilView> {
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: textDark,
+                                        color: textColor,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -1885,6 +1912,7 @@ class _ProfilViewState extends State<ProfilView> {
         tierColor = Colors.grey;
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
         Stack(
@@ -1896,12 +1924,12 @@ class _ProfilViewState extends State<ProfilView> {
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: isLocked
-                    ? const Color(0xFFF1F5F9)
+                    ? (isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9))
                     : tierColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: isLocked
-                      ? const Color(0xFFE2E8F0)
+                      ? (isDark ? const Color(0xFF475569) : const Color(0xFFE2E8F0))
                       : tierColor.withValues(alpha: 0.5),
                   width: isLocked ? 1 : 2.5,
                 ),
@@ -2003,6 +2031,8 @@ class _ProfilViewState extends State<ProfilView> {
     Color? textColor,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color effectiveTextColor = textColor ?? (isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A));
     return ListTile(
       leading: Icon(icon, color: iconColor ?? activeTeal, size: 22),
       title: Text(
@@ -2010,7 +2040,7 @@ class _ProfilViewState extends State<ProfilView> {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: textColor ?? textDark,
+          color: effectiveTextColor,
         ),
       ),
       trailing: const Icon(
@@ -2035,7 +2065,9 @@ class _ProfilViewState extends State<ProfilView> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: bgColor,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? iconColor.withOpacity(0.15)
+                : bgColor,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: iconColor, size: 18),

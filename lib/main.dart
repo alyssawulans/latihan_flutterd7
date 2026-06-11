@@ -44,8 +44,8 @@ class MyApp extends StatelessWidget {
             final mediaQueryData = MediaQuery.of(context);
             return MediaQuery(
               data: mediaQueryData.copyWith(
-                textScaleFactor: null,
                 textScaler: TextScaler.linear(settings.fontSizeMultiplier),
+                // textScaler: TextScaler.linear(null),
               ),
               child: child!,
             );

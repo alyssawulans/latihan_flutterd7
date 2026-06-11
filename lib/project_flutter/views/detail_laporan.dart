@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/laporan_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/laporan_edit_view.dart';
@@ -20,11 +21,54 @@ class _DetailLaporanState extends State<DetailLaporan> {
   final Color textDark = const Color(0xFF0F172A);
 
   late LaporanModel _currentReport;
+  String _userRole = 'user';
+  bool _isLoadingUser = true;
 
   @override
   void initState() {
     super.initState();
     _currentReport = widget.report;
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _userRole = prefs.getString('current_user_role') ?? 'user';
+        _isLoadingUser = false;
+      });
+    }
+  }
+
+  Future<void> _updateReportStatus(String newStatus) async {
+    final updatedReport = LaporanModel(
+      id: _currentReport.id,
+      judul: _currentReport.judul,
+      kategori: _currentReport.kategori,
+      lokasi: _currentReport.lokasi,
+      koordinat: _currentReport.koordinat,
+      deskripsi: _currentReport.deskripsi,
+      status: newStatus,
+      tanggal: _currentReport.tanggal,
+      userId: _currentReport.userId,
+      foto: _currentReport.foto,
+    );
+
+    await RuasDbHelper.instance.updateLaporan(updatedReport);
+
+    if (mounted) {
+      setState(() {
+        _currentReport = updatedReport;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Laporan berhasil ditandai sebagai $newStatus"),
+          backgroundColor: newStatus == 'Selesai' ? const Color(0xFF0D9488) : Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   // Getters to act as wrapper mapping LaporanModel to the UI fields
@@ -202,6 +246,14 @@ class _DetailLaporanState extends State<DetailLaporan> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingUser) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF0D9488)),
+        ),
+      );
+    }
+
     final report = this;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final Color bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
@@ -233,23 +285,24 @@ class _DetailLaporanState extends State<DetailLaporan> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.edit_outlined, color: activeTeal),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LaporanEditView(laporan: _currentReport),
-                ),
-              ).then((updated) {
-                if (updated != null && updated is LaporanModel) {
-                  setState(() {
-                    _currentReport = updated;
-                  });
-                }
-              });
-            },
-          ),
+          if (_userRole != 'admin')
+            IconButton(
+              icon: Icon(Icons.edit_outlined, color: activeTeal),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LaporanEditView(laporan: _currentReport),
+                  ),
+                ).then((updated) {
+                  if (updated != null && updated is LaporanModel) {
+                    setState(() {
+                      _currentReport = updated;
+                    });
+                  }
+                });
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.delete_outline, color: Colors.red),
             onPressed: _deleteReport,
@@ -661,6 +714,73 @@ class _DetailLaporanState extends State<DetailLaporan> {
           ),
         ),
       ),
+      bottomNavigationBar: (_userRole == 'admin' && _currentReport.status.toLowerCase() == 'diproses')
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0, top: 10.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: () => _updateReportStatus('Ditolak'),
+                          icon: const Icon(Icons.cancel_outlined, color: Colors.red),
+                          label: const Text(
+                            "Tolak Laporan",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.red),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Container(
+                        height: 52,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF0F4C43), Color(0xFF0D9488)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: ElevatedButton.icon(
+                          onPressed: () => _updateReportStatus('Selesai'),
+                          icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+                          label: const Text(
+                            "Setujui Laporan",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : null,
     );
   }
 }

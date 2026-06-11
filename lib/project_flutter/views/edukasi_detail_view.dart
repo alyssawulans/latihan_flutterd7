@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:latihan_flutterd7/project_flutter/database/ruas_db_helper.dart';
 import 'package:latihan_flutterd7/project_flutter/models/edukasi_model.dart';
+import 'package:latihan_flutterd7/project_flutter/views/edukasi_form_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EdukasiDetailView extends StatefulWidget {
@@ -12,12 +14,23 @@ class EdukasiDetailView extends StatefulWidget {
 
 class _EdukasiDetailViewState extends State<EdukasiDetailView> {
   late EdukasiModel _currentArticle;
+  String _userRole = 'user';
 
   @override
   void initState() {
     super.initState();
     _currentArticle = widget.article;
     _markArticleAsRead();
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _userRole = prefs.getString('current_user_role') ?? 'user';
+      });
+    }
   }
 
   Future<void> _markArticleAsRead() async {
@@ -33,6 +46,45 @@ class _EdukasiDetailViewState extends State<EdukasiDetailView> {
         await prefs.setStringList(readKey, readList);
       }
     } catch (_) {}
+  }
+
+  Future<void> _deleteArticle() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Hapus Artikel',
+          style: TextStyle(color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A)),
+        ),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus artikel edukasi ini?',
+          style: TextStyle(color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF334155)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Batal', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.black54)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Hapus', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && _currentArticle.id != null) {
+      await RuasDbHelper.instance.deleteEdukasi(_currentArticle.id!);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Artikel berhasil dihapus'), backgroundColor: Colors.red),
+        );
+        Navigator.pop(context); // Go back
+      }
+    }
   }
 
 
@@ -60,6 +112,31 @@ class _EdukasiDetailViewState extends State<EdukasiDetailView> {
           'Detail Edukasi',
           style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold),
         ),
+        actions: [
+          if (_userRole == 'admin') ...[
+            IconButton(
+              icon: Icon(Icons.edit_outlined, color: isDark ? Colors.white : Colors.black87),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EdukasiFormView(article: _currentArticle),
+                  ),
+                ).then((updated) {
+                  if (updated != null && updated is EdukasiModel) {
+                    setState(() {
+                      _currentArticle = updated;
+                    });
+                  }
+                });
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              onPressed: _deleteArticle,
+            ),
+          ]
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
