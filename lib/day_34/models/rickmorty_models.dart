@@ -59,13 +59,13 @@ class Result {
   @JsonKey(name: "name")
   String name;
   @JsonKey(name: "status")
-  Status status;
+  String status;
   @JsonKey(name: "species")
-  Species species;
+  String species;
   @JsonKey(name: "type")
   String type;
   @JsonKey(name: "gender")
-  Gender gender;
+  String gender;
   @JsonKey(name: "origin")
   Location origin;
   @JsonKey(name: "location")
@@ -99,21 +99,6 @@ class Result {
   Map<String, dynamic> toJson() => _$ResultToJson(this);
 }
 
-enum Gender {
-  @JsonValue("Female")
-  FEMALE,
-  @JsonValue("Male")
-  MALE,
-  @JsonValue("unknown")
-  UNKNOWN,
-}
-
-final genderValues = EnumValues({
-  "Female": Gender.FEMALE,
-  "Male": Gender.MALE,
-  "unknown": Gender.UNKNOWN,
-});
-
 @JsonSerializable()
 class Location {
   @JsonKey(name: "name")
@@ -127,43 +112,4 @@ class Location {
       _$LocationFromJson(json);
 
   Map<String, dynamic> toJson() => _$LocationToJson(this);
-}
-
-enum Species {
-  @JsonValue("Alien")
-  ALIEN,
-  @JsonValue("Human")
-  HUMAN,
-}
-
-final speciesValues = EnumValues({
-  "Alien": Species.ALIEN,
-  "Human": Species.HUMAN,
-});
-
-enum Status {
-  @JsonValue("Alive")
-  ALIVE,
-  @JsonValue("Dead")
-  DEAD,
-  @JsonValue("unknown")
-  UNKNOWN,
-}
-
-final statusValues = EnumValues({
-  "Alive": Status.ALIVE,
-  "Dead": Status.DEAD,
-  "unknown": Status.UNKNOWN,
-});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }

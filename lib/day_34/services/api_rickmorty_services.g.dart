@@ -22,9 +22,20 @@ class _ApiRickmortyService implements ApiRickmortyService {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<RickmortyModels> getAllPosts() async {
+  Future<RickmortyModels> getCharacters({
+    String? name,
+    String? status,
+    String? species,
+    int? page,
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'name': name,
+      r'status': status,
+      r'species': species,
+      r'page': page,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<RickmortyModels>(

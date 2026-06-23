@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:latihan_flutterd7/day_34/views/rickmorty_screen.dart';
+import 'package:latihan_flutterd7/day_34/views/rickmorty_splash_screen.dart';
+import 'package:latihan_flutterd7/day_34/views/rickmorty_menu_screen.dart';
 import 'package:latihan_flutterd7/project_flutter/config/app_settings.dart';
 
 void main() async {
@@ -51,7 +53,10 @@ class MyApp extends StatelessWidget {
             );
           },
           initialRoute: "/",
-          routes: {'/': (context) => const RickmortyScreen()},
+          routes: {
+            '/': (context) => const RickmortySplashScreen(),
+            '/home': (context) => const RickmortyMenuScreen(),
+          },
         );
       },
     );

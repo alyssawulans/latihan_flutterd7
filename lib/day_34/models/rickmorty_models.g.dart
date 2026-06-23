@@ -34,10 +34,10 @@ Map<String, dynamic> _$InfoToJson(Info instance) => <String, dynamic>{
 Result _$ResultFromJson(Map<String, dynamic> json) => Result(
   id: (json['id'] as num).toInt(),
   name: json['name'] as String,
-  status: $enumDecode(_$StatusEnumMap, json['status']),
-  species: $enumDecode(_$SpeciesEnumMap, json['species']),
+  status: json['status'] as String,
+  species: json['species'] as String,
   type: json['type'] as String,
-  gender: $enumDecode(_$GenderEnumMap, json['gender']),
+  gender: json['gender'] as String,
   origin: Location.fromJson(json['origin'] as Map<String, dynamic>),
   location: Location.fromJson(json['location'] as Map<String, dynamic>),
   image: json['image'] as String,
@@ -49,30 +49,16 @@ Result _$ResultFromJson(Map<String, dynamic> json) => Result(
 Map<String, dynamic> _$ResultToJson(Result instance) => <String, dynamic>{
   'id': instance.id,
   'name': instance.name,
-  'status': _$StatusEnumMap[instance.status]!,
-  'species': _$SpeciesEnumMap[instance.species]!,
+  'status': instance.status,
+  'species': instance.species,
   'type': instance.type,
-  'gender': _$GenderEnumMap[instance.gender]!,
+  'gender': instance.gender,
   'origin': instance.origin,
   'location': instance.location,
   'image': instance.image,
   'episode': instance.episode,
   'url': instance.url,
   'created': instance.created.toIso8601String(),
-};
-
-const _$StatusEnumMap = {
-  Status.ALIVE: 'Alive',
-  Status.DEAD: 'Dead',
-  Status.UNKNOWN: 'unknown',
-};
-
-const _$SpeciesEnumMap = {Species.ALIEN: 'Alien', Species.HUMAN: 'Human'};
-
-const _$GenderEnumMap = {
-  Gender.FEMALE: 'Female',
-  Gender.MALE: 'Male',
-  Gender.UNKNOWN: 'unknown',
 };
 
 Location _$LocationFromJson(Map<String, dynamic> json) =>

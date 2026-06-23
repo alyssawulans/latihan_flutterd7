@@ -9,5 +9,10 @@ abstract class ApiRickmortyService {
   factory ApiRickmortyService(Dio dio, {String baseUrl}) = _ApiRickmortyService;
 
   @GET('/character')
-  Future<RickmortyModels> getAllPosts();
+  Future<RickmortyModels> getCharacters({
+    @Query("name") String? name,
+    @Query("status") String? status,
+    @Query("species") String? species,
+    @Query("page") int? page,
+  });
 }
