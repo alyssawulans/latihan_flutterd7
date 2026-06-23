@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:latihan_flutterd7/day_34/views/rickmorty_screen.dart';
 import 'package:latihan_flutterd7/project_flutter/config/app_settings.dart';
-import 'package:latihan_flutterd7/project_flutter/views/splash_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
             );
           },
           initialRoute: "/",
-          routes: {'/': (context) => const SplashView()},
+          routes: {'/': (context) => const RickmortyScreen()},
         );
       },
     );

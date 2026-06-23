@@ -189,13 +189,24 @@ class _HomeViewState extends State<HomeView> {
     final prefs = await SharedPreferences.getInstance();
     final name = prefs.getString('current_user_name') ?? 'Andi Pratama';
     final role = prefs.getString('current_user_role') ?? 'user';
+    final userId = prefs.getInt('current_user_id') ?? 1;
 
     // Get statistics
-    final lCount = await RuasDbHelper.instance.getLaporanCount();
+    final int lCount;
+    if (role == 'admin') {
+      lCount = await RuasDbHelper.instance.getLaporanCount();
+    } else {
+      lCount = await RuasDbHelper.instance.getLaporanCount(userId: userId);
+    }
     final eCount = await RuasDbHelper.instance.getEdukasiCount();
 
     // Get recent reports
-    final allReports = await RuasDbHelper.instance.getLaporans();
+    final List<LaporanModel> allReports;
+    if (role == 'admin') {
+      allReports = await RuasDbHelper.instance.getLaporans();
+    } else {
+      allReports = await RuasDbHelper.instance.getLaporans(userId: userId);
+    }
     final recent = allReports.take(3).toList();
 
     if (mounted) {

@@ -29,27 +29,34 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   cupertino_icons: ^1.0.8
+  dio: ^5.9.2
+  floating_bottom_bar: ^0.0.4
   flutter:
     sdk: flutter
-  image_picker: ^1.2.2
+  flutter_map: ^8.3.0
   geolocator: ^13.0.2
+  image_picker: ^1.2.2
   intl: ^0.20.2
+  json_annotation: ^4.12.0
+  latlong2: ^0.9.1
   path: ^1.9.1
+  retrofit: ^4.9.2
   shared_preferences: ^2.5.5
+  slang: ^4.16.0
+  slang_flutter: ^4.16.0
   sqflite: ^2.4.2+1
   sqlite_viewer2: ^2.0.0
-  flutter_map: ^8.3.0
-  latlong2: ^0.9.1
   url_launcher: ^6.3.0
-  floating_bottom_bar: ^0.0.4
-  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
-  flutter_lints: ^6.0.0
+  build_runner: ^2.15.0
   flutter_launcher_icons: "^0.14.4"
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-
+  json_serializable: ^6.14.0
+  retrofit_generator: ^10.2.7
+  slang_build_runner: ^4.14.0
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true

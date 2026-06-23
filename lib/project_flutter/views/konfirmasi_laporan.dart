@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/project_flutter/models/laporan_model.dart';
 import 'package:latihan_flutterd7/project_flutter/views/detail_laporan.dart';
 import 'package:latihan_flutterd7/project_flutter/views/laporan_beranda.dart';
+import 'package:latihan_flutterd7/project_flutter/views/main_navigation_shell.dart';
 
 class KonfirmasiLaporan extends StatefulWidget {
   final String nomorLaporan;
@@ -203,7 +204,8 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                                 elevation: 0,
                               ),
                               onPressed: () {
-                                Navigator.pushReplacement(
+                                Navigator.pop(context);
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
@@ -233,12 +235,13 @@ class _KonfirmasiLaporanState extends State<KonfirmasiLaporan> {
                                 ),
                               ),
                               onPressed: () {
-                                Navigator.pushReplacement(
+                                Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        const LaporanBeranda(),
+                                        const MainNavigationShell(initialTab: 0),
                                   ),
+                                  (route) => false,
                                 );
                               },
                               child: Text(

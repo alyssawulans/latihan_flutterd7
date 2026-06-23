@@ -527,6 +527,7 @@ class _LoginViewState extends State<LoginView> {
                               Expanded(
                                 child: SizedBox(
                                   height: 50,
+
                                   child: OutlinedButton.icon(
                                     onPressed: _fillDemoAdminAccount,
                                     icon: const Icon(
