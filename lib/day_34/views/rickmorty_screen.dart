@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:latihan_flutterd7/day_34/models/rickmorty_models.dart';
 import 'package:latihan_flutterd7/day_34/services/api_rickmorty_services.dart';
 import 'package:latihan_flutterd7/day_34/services/dio_client.dart';
@@ -23,7 +22,7 @@ class RickmortyScreen extends StatefulWidget {
 
   @override
   State<RickmortyScreen> createState() => _RickmortyScreenState();
-} // RickmortyScreen
+}
 
 class _RickmortyScreenState extends State<RickmortyScreen> {
   late final ApiRickmortyService _apiRickmortyService;
@@ -124,23 +123,19 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
   Widget build(BuildContext context) {
     const cardBgColor = Color(0xFF1C2333);
     const mutedTextColor = Color(0xFF8B92CC);
-    const neonGreen = Color(0xFF62FF8F);
+    const neonGreen = Color(0xFFc4d849);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF10131A),
+      backgroundColor: const Color(0xFF000503),
       appBar: AppBar(
+        flexibleSpace: Image.asset(
+          "assets/images/appbag.png",
+          fit: BoxFit.cover,
+        ),
+
         backgroundColor: const Color(0xFF10131A),
         elevation: 0,
-        title: Text(
-          widget.filterTitle ?? 'Rick & Morty',
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 0.5,
-          ), // TextStyle
-        ), // Text
+
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(
@@ -161,9 +156,9 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                 _isGridView = !_isGridView;
               });
             },
-          ), // IconButton
+          ),
         ], // actions
-      ), // AppBar
+      ),
       body: Column(
         children: [
           // Search Box
@@ -175,19 +170,20 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
             child: Container(
               decoration: BoxDecoration(
                 color: cardBgColor,
-                borderRadius: BorderRadius.circular(16),
+
+                borderRadius: BorderRadius.circular(24),
                 border: Border.all(
                   color: neonGreen.withOpacity(0.15),
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: neonGreen.withOpacity(0.04),
+                    color: neonGreen.withOpacity(0.5),
                     blurRadius: 10,
                     spreadRadius: 1,
                   ),
                 ],
-              ), // BoxDecoration
+              ),
               child: TextField(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
@@ -200,6 +196,7 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                   hintStyle: TextStyle(
                     color: mutedTextColor.withOpacity(0.6),
                     fontFamily: 'Poppins',
+                    fontSize: 13,
                   ),
                   prefixIcon: Icon(
                     Icons.search,
@@ -213,14 +210,15 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                       : null,
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
+                    horizontal: 14,
+                    vertical: 10,
                   ),
-                ), // InputDecoration
-              ), // TextField
-            ), // Container
-          ), // Padding
-          // Filters Horizontal Scroll Row
+                ),
+              ),
+            ),
+          ),
+
+          // Pencarian ke samping
           Container(
             height: 48,
             margin: const EdgeInsets.only(bottom: 12),
@@ -240,14 +238,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                     _loadCharacters();
                   },
                   child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 6,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 2,
-                    ),
+                    margin: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: isSelected ? neonGreen : cardBgColor,
@@ -268,23 +260,22 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
-                        color: isSelected
-                            ? const Color(0xFF10131A)
-                            : Colors.white,
-                      ), // TextStyle
-                    ), // Text
-                  ), // Container
-                ); // GestureDetector
+                        color: isSelected ? Color(0xFF10131A) : Colors.white,
+                      ),
+                    ),
+                  ),
+                );
               },
-            ), // ListView.builder
-          ), // Container
-          // Character List View builder with FutureBuilder
+            ),
+          ),
+
+          // Buat List Karakter ke bawah
           Expanded(
             child: FutureBuilder<RickmortyModels>(
               future: _rickmortyFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _buildSkeletonList();
+                  return _buildLoadList();
                 }
 
                 if (snapshot.hasError) {
@@ -309,6 +300,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
 
                 final characters = snapshot.data!.results;
 
+                //BUAT GRID BUILDER
+
                 if (_isGridView) {
                   return RefreshIndicator(
                     color: neonGreen,
@@ -323,7 +316,7 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                       ),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
+                            crossAxisCount: 3,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
                             childAspectRatio: 0.75,
@@ -397,7 +390,7 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                                       ),
                                     ),
                                   ),
-                                  // Removed Favorite Button overlay
+
                                   Positioned(
                                     top: 6,
                                     left: 6,
@@ -484,6 +477,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                   );
                 }
 
+                //BUAT LIST VIEW BUILDER
+
                 return RefreshIndicator(
                   color: neonGreen,
                   backgroundColor: cardBgColor,
@@ -491,10 +486,7 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                     _loadCharacters();
                   },
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 4,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     itemCount: characters.length,
                     itemBuilder: (context, index) {
                       final char = characters[index];
@@ -506,6 +498,7 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
 
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
+
                         decoration: BoxDecoration(
                           color: cardBgColor,
                           borderRadius: BorderRadius.circular(16),
@@ -537,6 +530,7 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                                     width: 80,
                                     height: 80,
                                     fit: BoxFit.cover,
+
                                     loadingBuilder: (context, child, progress) {
                                       if (progress == null) return child;
                                       return Container(
@@ -579,28 +573,46 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                                       const SizedBox(height: 4),
 
                                       // Status row
-                                      Row(
-                                        children: [
-                                          Container(
-                                            width: 8,
-                                            height: 8,
-                                            decoration: BoxDecoration(
-                                              color: statusColor,
-                                              shape: BoxShape.circle,
-                                            ), // BoxDecoration
-                                          ), // Container
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            char.status,
-                                            style: TextStyle(
-                                              fontFamily: 'Poppins',
-                                              color: statusColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 11,
-                                            ), // TextStyle
-                                          ), // Text
-                                        ], // children
-                                      ), // Row
+                                      Container(
+                                        height: 20,
+                                        width: 85,
+                                        padding: EdgeInsets.only(),
+
+                                        decoration: BoxDecoration(
+                                          border: BoxBorder.all(),
+                                          color: statusColor.withOpacity(0.4),
+
+                                          borderRadius: BorderRadius.circular(
+                                            24,
+                                          ),
+                                        ),
+
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: 8,
+                                              height: 8,
+                                              decoration: BoxDecoration(
+                                                color: statusColor,
+                                                shape: BoxShape.circle,
+                                              ), // BoxDecoration
+                                            ), // Container
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              char.status,
+                                              style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                color: statusColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 11,
+                                              ), // TextStyle
+                                            ), // Text
+                                          ], // children
+                                        ),
+                                      ),
+
                                       const SizedBox(height: 6),
 
                                       // Species & Gender
@@ -632,6 +644,11 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                                     ], // children
                                   ),
                                 ),
+                                Icon(
+                                  Icons.arrow_right,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
                               ], // children
                             ),
                           ),
@@ -648,8 +665,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
     );
   } // build
 
-  // Skeleton Loader Widget (Loading State)
-  Widget _buildSkeletonList() {
+  // Loading Tunggu
+  Widget _buildLoadList() {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       itemCount: 6,
@@ -726,9 +743,9 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
         ); // Container
       },
     ); // ListView.builder
-  } // _buildSkeletonList
+  } // _buildLoadList
 
-  // Empty Search Screen Widget with Lottie
+  // Ketika di Search Kosong
   Widget _buildEmptySearchState() {
     const neonGreen = Color(0xFF62FF8F);
     const mutedTextColor = Color(0xFF8B92CC);
@@ -738,10 +755,11 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Lottie.network(
-              'https://lottie.host/d19391e4-3990-4822-b5e0-631d87e0b5f1/S6lX8p9J2v.json',
-              width: 200,
-              height: 200,
+            Lottie.asset(
+              "assets/animations/lottie_2.json",
+
+              width: 400,
+              height: 400,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
@@ -762,7 +780,7 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                 ); // Container
               },
             ), // Lottie.network
-            const SizedBox(height: 24),
+
             const Text(
               'Character not found',
               style: TextStyle(
@@ -781,14 +799,14 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                 fontSize: 14,
                 color: mutedTextColor,
               ), // TextStyle
-            ), // Text
-          ], // children
-        ), // Column
-      ), // Padding
-    ); // Center
-  } // _buildEmptySearchState
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-  // No Internet Widget with Lottie
+  // Ketika Tidak Ada Internet
   Widget _buildNoInternetState() {
     const neonGreen = Color(0xFF62FF8F);
     const mutedTextColor = Color(0xFF8B92CC);
@@ -798,10 +816,10 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Lottie.network(
-              'https://lottie.host/b0429f5f-9e79-45e3-8557-de65796245ec/UoR5Zc68w1.json',
-              width: 220,
-              height: 220,
+            Lottie.asset(
+              "assets/animations/lottie_1.json",
+              width: 300,
+              height: 300,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
@@ -818,8 +836,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                     Icons.wifi_off_outlined,
                     size: 80,
                     color: Colors.redAccent,
-                  ), // Icon
-                ); // Container
+                  ),
+                );
               },
             ), // Lottie.network
             const SizedBox(height: 24),
@@ -864,11 +882,11 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ), // ElevatedButton.icon
+            ),
           ], // children
-        ), // Column
-      ), // Padding
-    ); // Center
+        ),
+      ),
+    );
   } // _buildNoInternetState
 
   // API / Server Error Widget with Lottie
@@ -881,8 +899,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Lottie.network(
-              'https://lottie.host/626d2e61-a5bf-41c3-8884-bb9a184e900c/2i6oU5x8iY.json',
+            Lottie.asset(
+              "assets/animations/lottie_2.json",
               width: 220,
               height: 220,
               fit: BoxFit.contain,
@@ -901,8 +919,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                     Icons.error_outline,
                     size: 80,
                     color: Colors.amber,
-                  ), // Icon
-                ); // Container
+                  ),
+                );
               },
             ), // Lottie.network
             const SizedBox(height: 24),
@@ -947,429 +965,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ), // ElevatedButton.icon
-          ], // children
-        ), // Column
-      ), // Padding
-    ); // Center
-  } // _buildApiErrorState
-} // _RickmortyHomeTabState
-
-// ==================== PROFILE TAB ====================
-class RickmortyProfileTab extends StatelessWidget {
-  const RickmortyProfileTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    const cardBgColor = Color(0xFF1C2333);
-    const mutedTextColor = Color(0xFF8B92CC);
-    const neonGreen = Color(0xFF62FF8F);
-
-    return Scaffold(
-      backgroundColor: const Color(0xFF10131A),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF10131A),
-        elevation: 0,
-        title: const Text(
-          'Profile',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.w900,
-          ), // TextStyle
-        ), // Text
-        centerTitle: true,
-      ), // AppBar
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            // Glowing Profile Avatar
-            Center(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: neonGreen.withOpacity(0.2),
-                          blurRadius: 20,
-                          spreadRadius: 2,
-                        ), // BoxShadow
-                      ], // boxShadow
-                      border: Border.all(color: neonGreen, width: 2),
-                    ), // BoxDecoration
-                  ), // Container
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(65),
-                    child: Image.asset(
-                      'assets/images/profile.webp',
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 120,
-                          height: 120,
-                          color: cardBgColor,
-                          child: const Icon(
-                            Icons.person,
-                            color: neonGreen,
-                            size: 60,
-                          ), // Icon
-                        ); // Container
-                      },
-                    ), // Image.asset
-                  ), // ClipRRect
-                ], // children
-              ), // Stack
-            ), // Center
-            const SizedBox(height: 24),
-
-            // Profile Info
-            const Text(
-              'Alyssa Wulan Sari',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-              ), // TextStyle
-            ), // Text
-            const SizedBox(height: 6),
-            const Text(
-              'Mobile App Developer',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: neonGreen,
-                letterSpacing: 0.8,
-              ), // TextStyle
-            ), // Text
-            const SizedBox(height: 24),
-
-            // Teleport portal gun button
-            _buildTeleportButton(context, neonGreen, cardBgColor),
-            const SizedBox(height: 24),
-
-            // Profile Detail Cards
-            _buildProfileInfoCard(
-              icon: Icons.school,
-              title: 'Class / Program',
-              subtitle: 'Pelatihan App Developer (Flutter)',
-              cardBg: cardBgColor,
-              accentColor: neonGreen,
-              mutedColor: mutedTextColor,
-            ), // _buildProfileInfoCard
-            const SizedBox(height: 12),
-            _buildProfileInfoCard(
-              icon: Icons.code,
-              title: 'Academy',
-              subtitle: 'RUAS Academy - Latihan Flutter D7',
-              cardBg: cardBgColor,
-              accentColor: neonGreen,
-              mutedColor: mutedTextColor,
-            ), // _buildProfileInfoCard
-            const SizedBox(height: 12),
-            _buildProfileInfoCard(
-              icon: Icons.assignment_outlined,
-              title: 'Assignment',
-              subtitle: 'Tugas 14: Integrasi Public API',
-              cardBg: cardBgColor,
-              accentColor: neonGreen,
-              mutedColor: mutedTextColor,
-            ), // _buildProfileInfoCard
-            const SizedBox(height: 24),
-
-            // Skills Section
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Key Skills Used',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.9),
-                ), // TextStyle
-              ), // Text
-            ), // Align
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _buildSkillTag('Flutter', neonGreen),
-                _buildSkillTag('Dart', neonGreen),
-                _buildSkillTag('REST API', neonGreen),
-                _buildSkillTag('Retrofit', neonGreen),
-                _buildSkillTag('Dio Client', neonGreen),
-                _buildSkillTag('JSON Mapping', neonGreen),
-                _buildSkillTag('Local Storage', neonGreen),
-              ], // children
-            ), // Wrap
-            const SizedBox(height: 40),
-          ], // children
-        ), // Column
-      ), // SingleChildScrollView
-    ); // Scaffold
-  } // build
-
-  Widget _buildTeleportButton(
-    BuildContext context,
-    Color neonGreen,
-    Color cardBgColor,
-  ) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          colors: [neonGreen.withOpacity(0.15), neonGreen.withOpacity(0.02)],
-        ),
-        border: Border.all(color: neonGreen.withOpacity(0.3), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: neonGreen.withOpacity(0.05),
-            blurRadius: 12,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => _triggerTeleport(context, neonGreen),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.vpn_key_outlined, color: neonGreen, size: 22),
-              const SizedBox(width: 12),
-              const Text(
-                'Dimensional Teleport (Random)',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _triggerTeleport(BuildContext context, Color neonGreen) {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: const Color(0xFF10131A).withOpacity(0.95),
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, anim1, anim2) {
-        return _PortalWarpDialog(neonGreen: neonGreen);
-      },
-    );
-  }
-
-  Widget _buildProfileInfoCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color cardBg,
-    required Color accentColor,
-    required Color mutedColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.02), width: 1),
-      ), // BoxDecoration
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-              color: Color(0xFF10131A),
-              shape: BoxShape.circle,
-            ), // BoxDecoration
-            child: Icon(icon, color: accentColor, size: 20),
-          ), // Container
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: mutedColor,
-                  ), // TextStyle
-                ), // Text
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ), // TextStyle
-                ), // Text
-              ], // children
-            ), // Column
-          ), // Expanded
-        ], // children
-      ), // Row
-    ); // Container
-  } // _buildProfileInfoCard
-
-  Widget _buildSkillTag(String skill, Color tagColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: tagColor.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: tagColor.withOpacity(0.3), width: 1),
-      ), // BoxDecoration
-      child: Text(
-        skill,
-        style: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: tagColor,
-        ), // TextStyle
-      ), // Text
-    ); // Container
-  } // _buildSkillTag
-} // RickmortyProfileTab
-
-class _PortalWarpDialog extends StatefulWidget {
-  final Color neonGreen;
-  const _PortalWarpDialog({required this.neonGreen});
-
-  @override
-  State<_PortalWarpDialog> createState() => _PortalWarpDialogState();
-}
-
-class _PortalWarpDialogState extends State<_PortalWarpDialog> {
-  String _warpText = 'WARPING DIMENSIONS...';
-
-  @override
-  void initState() {
-    super.initState();
-    _startWarp();
-  }
-
-  Future<void> _startWarp() async {
-    HapticFeedback.lightImpact();
-    await Future.delayed(const Duration(milliseconds: 600));
-    HapticFeedback.mediumImpact();
-    await Future.delayed(const Duration(milliseconds: 600));
-    HapticFeedback.heavyImpact();
-
-    final randomId = (DateTime.now().microsecondsSinceEpoch % 826) + 1;
-
-    try {
-      final dio = Dio();
-      final response = await dio.get(
-        'https://rickandmortyapi.com/api/character/$randomId',
-      );
-      if (response.statusCode == 200 && response.data != null) {
-        final character = Result.fromJson(response.data);
-        if (mounted) {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RickmortyDetailScreen(character: character),
             ),
-          );
-        }
-      } else {
-        throw Exception('Failed to load character');
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _warpText = 'PORTAL STABILIZER FAILED!\nRETRYING...';
-        });
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Portal warp failed. Please check your internet connection.',
-            ),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 250,
-                height: 250,
-                child: Lottie.network(
-                  'https://lottie.host/9e414c12-32b0-466d-96e0-264fb9b5a837/97b3R8Wcph.json',
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        color: widget.neonGreen,
-                        strokeWidth: 4,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 40),
-              Text(
-                _warpText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: widget.neonGreen,
-                  letterSpacing: 1.5,
-                  shadows: [
-                    Shadow(
-                      color: widget.neonGreen.withOpacity(0.5),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );

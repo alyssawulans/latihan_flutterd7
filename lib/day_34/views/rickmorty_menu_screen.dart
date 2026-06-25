@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:lottie/lottie.dart';
-import 'package:dio/dio.dart';
-import 'package:latihan_flutterd7/day_34/models/rickmorty_models.dart';
 import 'package:latihan_flutterd7/day_34/views/rickmorty_screen.dart';
-import 'package:latihan_flutterd7/day_34/views/rickmorty_detail_screen.dart';
+import 'package:lottie/lottie.dart';
 
 class RickmortyMenuScreen extends StatelessWidget {
   const RickmortyMenuScreen({super.key});
@@ -13,13 +9,14 @@ class RickmortyMenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     const bgColor = Color(0xFF10131A);
     const cardBgColor = Color(0xFF1C2333);
-    const neonGreen = Color(0xFF62FF8F);
+    const neonGreen = Color(0xFFc4d849);
     const mutedTextColor = Color(0xFF8B92CC);
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,10 +26,10 @@ class RickmortyMenuScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     SizedBox(
-                      width: 140,
-                      height: 140,
-                      child: Lottie.network(
-                        'https://lottie.host/9e414c12-32b0-466d-96e0-264fb9b5a837/97b3R8Wcph.json',
+                      width: 250,
+                      height: 250,
+                      child: Lottie.asset(
+                        'assets/animations/lottie_4.json',
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) {
                           return const Icon(
@@ -43,7 +40,7 @@ class RickmortyMenuScreen extends StatelessWidget {
                         },
                       ),
                     ),
-                    const SizedBox(height: 10),
+
                     const Text(
                       'Rick & Morty',
                       style: TextStyle(
@@ -52,7 +49,7 @@ class RickmortyMenuScreen extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                         color: neonGreen,
                         letterSpacing: 1.0,
-                        shadows: [Shadow(color: neonGreen, blurRadius: 15)],
+                        shadows: [Shadow(color: neonGreen, blurRadius: 10)],
                       ),
                     ),
                     Text(
@@ -191,17 +188,16 @@ class RickmortyMenuScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // Button: Random Teleport (Interactive Portal Gun)
-              _buildCategoryCard(
-                context: context,
-                title: 'Dimensional Teleport',
-                subtitle: 'Warp to a random character detail',
-                icon: Icons.vpn_key_outlined,
-                color: Colors.amber,
-                onTap: () => _triggerTeleport(context, neonGreen),
-              ),
-
-              const SizedBox(height: 40),
+              // // Button: Random Teleport (Interactive Portal Gun)
+              // _buildCategoryCard(
+              //   context: context,
+              //   title: 'Dimensional Teleport',
+              //   subtitle: 'Warp to a random character detail',
+              //   icon: Icons.vpn_key_outlined,
+              //   color: Colors.amber,
+              //   onTap: () => _triggerTeleport(context, neonGreen),
+              // ),
+              const SizedBox(height: 20),
 
               // Section: Developer Profile
               const Text(
@@ -233,14 +229,13 @@ class RickmortyMenuScreen extends StatelessWidget {
                     Row(
                       children: [
                         CircleAvatar(
+                          backgroundImage: AssetImage(
+                            "assets/images/profile.webp",
+                          ),
                           radius: 26,
                           backgroundColor: neonGreen.withOpacity(0.1),
-                          child: const Icon(
-                            Icons.person,
-                            color: neonGreen,
-                            size: 28,
-                          ),
                         ),
+
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
@@ -287,20 +282,9 @@ class RickmortyMenuScreen extends StatelessWidget {
                     _buildProfileItem(
                       Icons.assignment_outlined,
                       'Assignment',
-                      'Tugas 14: Integrasi Public API',
+                      'Tugas 14 Integrasi API',
                     ),
                     const SizedBox(height: 20),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _buildSkillTag('Flutter', neonGreen),
-                        _buildSkillTag('Dart', neonGreen),
-                        _buildSkillTag('REST API', neonGreen),
-                        _buildSkillTag('Retrofit', neonGreen),
-                        _buildSkillTag('Dio', neonGreen),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -460,134 +444,6 @@ class RickmortyMenuScreen extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.bold,
           color: color,
-        ),
-      ),
-    );
-  }
-
-  void _triggerTeleport(BuildContext context, Color neonGreen) {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: const Color(0xFF10131A).withOpacity(0.95),
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, anim1, anim2) {
-        return _PortalWarpDialog(neonGreen: neonGreen);
-      },
-    );
-  }
-}
-
-class _PortalWarpDialog extends StatefulWidget {
-  final Color neonGreen;
-  const _PortalWarpDialog({required this.neonGreen});
-
-  @override
-  State<_PortalWarpDialog> createState() => _PortalWarpDialogState();
-}
-
-class _PortalWarpDialogState extends State<_PortalWarpDialog> {
-  String _warpText = 'WARPING DIMENSIONS...';
-
-  @override
-  void initState() {
-    super.initState();
-    _startWarp();
-  }
-
-  Future<void> _startWarp() async {
-    HapticFeedback.lightImpact();
-    await Future.delayed(const Duration(milliseconds: 600));
-    HapticFeedback.mediumImpact();
-    await Future.delayed(const Duration(milliseconds: 600));
-    HapticFeedback.heavyImpact();
-
-    final randomId = (DateTime.now().microsecondsSinceEpoch % 826) + 1;
-
-    try {
-      final dio = Dio();
-      final response = await dio.get(
-        'https://rickandmortyapi.com/api/character/$randomId',
-      );
-      if (response.statusCode == 200 && response.data != null) {
-        final character = Result.fromJson(response.data);
-        if (mounted) {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RickmortyDetailScreen(character: character),
-            ),
-          );
-        }
-      } else {
-        throw Exception('Failed to load character');
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _warpText = 'PORTAL STABILIZER FAILED!\nRETRYING...';
-        });
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Portal warp failed. Please check your internet connection.',
-            ),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 250,
-                height: 250,
-                child: Lottie.network(
-                  'https://lottie.host/9e414c12-32b0-466d-96e0-264fb9b5a837/97b3R8Wcph.json',
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        color: widget.neonGreen,
-                        strokeWidth: 4,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 40),
-              Text(
-                _warpText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: widget.neonGreen,
-                  letterSpacing: 1.5,
-                  shadows: [
-                    Shadow(
-                      color: widget.neonGreen.withOpacity(0.5),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

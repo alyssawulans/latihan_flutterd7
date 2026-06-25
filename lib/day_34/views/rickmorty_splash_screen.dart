@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -104,10 +105,7 @@ class _RickmortySplashScreenState extends State<RickmortySplashScreen>
                       color: neonGreen,
                       letterSpacing: 1.2,
                       shadows: [
-                        Shadow(
-                          color: neonGreen,
-                          blurRadius: 20,
-                        ), // Shadow
+                        Shadow(color: neonGreen, blurRadius: 20), // Shadow
                       ], // shadows
                     ), // TextStyle
                   ), // Text
@@ -171,9 +169,9 @@ class _RickmortySplashScreenState extends State<RickmortySplashScreen>
               ), // Column
             ), // Center
           ], // children
-        ), // Stack
-      ), // SafeArea
-    ); // Scaffold
+        ),
+      ),
+    );
   } // build
 
   // Beautiful local procedural portal in case Lottie network fails
@@ -220,7 +218,6 @@ class _RickmortySplashScreenState extends State<RickmortySplashScreen>
             ), // Stack
           ), // Container
         ), // RotationTransition
-
         // Rotating swirling green portal
         RotationTransition(
           turns: _portalController,
@@ -253,10 +250,7 @@ class _RickmortySplashScreenState extends State<RickmortySplashScreen>
                 shape: BoxShape.circle,
                 color: bgColor,
                 gradient: RadialGradient(
-                  colors: [
-                    bgColor,
-                    Color(0xFF142422),
-                  ], // colors
+                  colors: [bgColor, Color(0xFF142422)], // colors
                 ), // RadialGradient
               ), // BoxDecoration
               child: Center(
@@ -281,7 +275,6 @@ class _RickmortySplashScreenState extends State<RickmortySplashScreen>
             ), // Container
           ), // Container
         ), // RotationTransition
-
         // Inner portal silhouette or icon
         Container(
           width: 120,

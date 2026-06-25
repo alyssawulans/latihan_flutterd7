@@ -39,10 +39,10 @@ dependencies:
   intl: ^0.20.2
   json_annotation: ^4.12.0
   latlong2: ^0.9.1
+  lottie: ^3.3.3
   path: ^1.9.1
   retrofit: ^4.9.2
   shared_preferences: ^2.5.5
-  lottie: ^3.1.2
   slang: ^4.16.0
   slang_flutter: ^4.16.0
   sqflite: ^2.4.2+1
@@ -90,6 +90,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/project_akhir/
+    - assets/animations/
   #   - images/a_dot_ham.jpeg
   # Pendaftaran Font (Opsional, sesuaikan dengan file .ttf milikmu)
   # fonts:

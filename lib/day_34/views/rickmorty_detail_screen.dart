@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:latihan_flutterd7/day_34/models/rickmorty_models.dart';
 
 class RickmortyDetailScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
   void initState() {
     super.initState();
     _fetchEpisodesData();
-  } // initState
+  }
 
   Future<void> _fetchEpisodesData() async {
     final episodeUrls = widget.character.episode;
@@ -30,7 +30,7 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
         _episodes = [];
       });
       return;
-    } // if
+    }
 
     final ids = <int>[];
     for (final url in episodeUrls) {
@@ -39,18 +39,19 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
       final id = int.tryParse(idStr);
       if (id != null) {
         ids.add(id);
-      } // if
-    } // for
+      }
+    }
 
     if (ids.isEmpty) {
       setState(() {
         _isLoadingEpisodes = false;
       });
       return;
-    } // if
+    }
 
     try {
-      final endpoint = 'https://rickandmortyapi.com/api/episode/${ids.join(",")}';
+      final endpoint =
+          'https://rickandmortyapi.com/api/episode/${ids.join(",")}';
       final response = await _dio.get(endpoint);
 
       List<Map<String, String>> fetchedEpisodes = [];
@@ -82,16 +83,19 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
       if (mounted) {
         setState(() {
           _isLoadingEpisodes = false;
-          // Fallback to URL numbering if API call fails
-          _episodes = ids.map((id) => {
-            'name': 'Episode $id',
-            'code': 'EP $id',
-            'id': id.toString(),
-          }).toList();
+          _episodes = ids
+              .map(
+                (id) => {
+                  'name': 'Episode $id',
+                  'code': 'EP $id',
+                  'id': id.toString(),
+                },
+              )
+              .toList();
         });
-      } // if
-    } // try-catch
-  } // _fetchEpisodesData
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,9 +106,9 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
     final isAlive = widget.character.status.toLowerCase() == 'alive';
     final isDead = widget.character.status.toLowerCase() == 'dead';
 
-    const neonGreen = Color(0xFF62FF8F);
+    const neonGreen = Color(0xFFc4d849);
     final statusColor = isAlive
-        ? const Color(0xFF62FF8F)
+        ? const Color(0xFFc4d849)
         : (isDead ? const Color(0xFFFF5A5A) : Colors.amber);
 
     return Scaffold(
@@ -121,320 +125,352 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
               child: CircleAvatar(
                 backgroundColor: Colors.black.withOpacity(0.5),
                 child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                   onPressed: () => Navigator.pop(context),
-                ), // IconButton
-              ), // CircleAvatar
-            ), // Padding
-            actions: const [
-              SizedBox(width: 8),
-            ], // actions
-                flexibleSpace: FlexibleSpaceBar(
-                  background: ShaderMask(
-                    shaderCallback: (rect) {
-                      return const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black,
-                          Colors.black,
-                          Colors.transparent,
-                        ], // colors
-                        stops: [0.0, 0.65, 1.0],
-                      ).createShader(rect);
-                    },
-                    blendMode: BlendMode.dstIn,
-                    child: Image.network(
-                      widget.character.image,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, progress) {
-                        if (progress == null) return child;
-                        return Container(
-                          color: cardBgColor,
-                          child: const Center(
-                            child: CircularProgressIndicator(color: Colors.white24),
-                          ), // Center
-                        ); // Container
-                      },
-                    ), // Image.network
-                  ), // ShaderMask
-                ), // FlexibleSpaceBar
-              ), // SliverAppBar
-
-              // Detail Content Body
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Name and Status
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              widget.character.name,
-                              style: const TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 26,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ), // TextStyle
-                            ), // Text
-                          ), // Expanded
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: statusColor.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: statusColor.withOpacity(0.4), width: 1),
-                            ), // BoxDecoration
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    color: statusColor,
-                                    shape: BoxShape.circle,
-                                  ), // BoxDecoration
-                                ), // Container
-                                const SizedBox(width: 6),
-                                Text(
-                                  widget.character.status,
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: statusColor,
-                                  ), // TextStyle
-                                ), // Text
-                              ], // children
-                            ), // Row
-                          ), // Container
-                        ], // children
-                      ), // Row
-                      const SizedBox(height: 20),
-
-                      // Metrics Grid (4 Main boxes)
-                      // Metrics Row (4 Main boxes side-by-side)
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildMetricBox(
-                              icon: Icons.face_retouching_natural,
-                              label: 'Species',
-                              value: widget.character.species,
-                              color: neonGreen,
-                              cardBg: cardBgColor,
-                              labelColor: mutedTextColor,
-                            ), // _buildMetricBox
-                          ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: _buildMetricBox(
-                              icon: widget.character.gender.toLowerCase() == 'female'
-                                  ? Icons.female
-                                  : (widget.character.gender.toLowerCase() == 'male'
-                                      ? Icons.male
-                                      : Icons.help_outline),
-                              label: 'Gender',
-                              value: widget.character.gender,
-                              color: neonGreen,
-                              cardBg: cardBgColor,
-                              labelColor: mutedTextColor,
-                            ), // _buildMetricBox
-                          ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: _buildMetricBox(
-                              icon: Icons.tv,
-                              label: 'Episodes',
-                              value: '${widget.character.episode.length}',
-                              color: neonGreen,
-                              cardBg: cardBgColor,
-                              labelColor: mutedTextColor,
-                            ), // _buildMetricBox
-                          ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: _buildMetricBox(
-                              icon: Icons.check_circle_outline,
-                              label: 'Status',
-                              value: widget.character.status,
-                              color: neonGreen,
-                              cardBg: cardBgColor,
-                              labelColor: mutedTextColor,
-                            ), // _buildMetricBox
-                          ),
-                        ],
+                ),
+              ),
+            ),
+            actions: const [SizedBox(width: 8)], // actions
+            flexibleSpace: FlexibleSpaceBar(
+              background: ShaderMask(
+                shaderCallback: (rect) {
+                  return const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black,
+                      Colors.black,
+                      Colors.transparent,
+                    ], // colors
+                    stops: [0.0, 0.65, 1.0],
+                  ).createShader(rect);
+                },
+                blendMode: BlendMode.dstIn,
+                child: Image.network(
+                  widget.character.image,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return Container(
+                      color: cardBgColor,
+                      child: const Center(
+                        child: CircularProgressIndicator(color: Colors.white24),
                       ),
-                      const SizedBox(height: 24),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
 
-                      // Origin card
-                      _buildLocationCard(
-                        title: 'Origin',
-                        locationName: widget.character.origin.name,
-                        icon: Icons.public,
-                        cardBg: cardBgColor,
-                        accentColor: neonGreen,
-                        mutedColor: mutedTextColor,
-                      ), // _buildLocationCard
-                      const SizedBox(height: 12),
+          // Isi Dalam KONTEN
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 10.0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Name and Status
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.character.name,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 26,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: statusColor.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: statusColor.withOpacity(0.4),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: statusColor,
+                                shape: BoxShape.circle,
+                              ), // BoxDecoration
+                            ), // Container
+                            const SizedBox(width: 6),
+                            Text(
+                              widget.character.status,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: statusColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
 
-                      // Location card
-                      _buildLocationCard(
-                        title: 'Current Location',
-                        locationName: widget.character.location.name,
-                        icon: Icons.location_on,
-                        cardBg: cardBgColor,
-                        accentColor: neonGreen,
-                        mutedColor: mutedTextColor,
-                      ), // _buildLocationCard
-                      const SizedBox(height: 28),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildMetricBox(
+                          icon: Icons.face_retouching_natural,
+                          label: 'Species',
+                          value: widget.character.species,
+                          color: neonGreen,
+                          cardBg: cardBgColor,
+                          labelColor: mutedTextColor,
+                        ), // _buildMetricBox
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: _buildMetricBox(
+                          icon:
+                              widget.character.gender.toLowerCase() == 'female'
+                              ? Icons.female
+                              : (widget.character.gender.toLowerCase() == 'male'
+                                    ? Icons.male
+                                    : Icons.help_outline),
+                          label: 'Gender',
+                          value: widget.character.gender,
+                          color: neonGreen,
+                          cardBg: cardBgColor,
+                          labelColor: mutedTextColor,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: _buildMetricBox(
+                          icon: Icons.tv,
+                          label: 'Episodes',
+                          value: '${widget.character.episode.length}',
+                          color: neonGreen,
+                          cardBg: cardBgColor,
+                          labelColor: mutedTextColor,
+                        ), // _buildMetricBox
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: _buildMetricBox(
+                          icon: Icons.check_circle_outline,
+                          label: 'Status',
+                          value: widget.character.status,
+                          color: neonGreen,
+                          cardBg: cardBgColor,
+                          labelColor: mutedTextColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
 
-                      // Appears in header
-                      const Text(
-                        'Galactic Journey (Episodes)',
+                  // Origin card
+                  _buildLocationCard(
+                    title: 'Origin',
+                    locationName: widget.character.origin.name,
+                    icon: Icons.public,
+                    cardBg: cardBgColor,
+                    accentColor: neonGreen,
+                    mutedColor: mutedTextColor,
+                  ), // _buildLocationCard
+                  const SizedBox(height: 12),
+
+                  // Location card
+                  _buildLocationCard(
+                    title: 'Current Location',
+                    locationName: widget.character.location.name,
+                    icon: Icons.location_on,
+                    cardBg: cardBgColor,
+                    accentColor: neonGreen,
+                    mutedColor: mutedTextColor,
+                  ),
+                  const SizedBox(height: 28),
+
+                  const Text(
+                    'Galactic Journey (Episodes)',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ), // TextStyle
+                  ), // Text
+                  const SizedBox(height: 16),
+
+                  if (_isLoadingEpisodes)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: CircularProgressIndicator(color: Colors.white24),
+                      ), // Padding
+                    ) // Center
+                  else if (_episodes.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12.0),
+                      child: Text(
+                        'No episode data available.',
                         style: TextStyle(
+                          color: mutedTextColor,
                           fontFamily: 'Poppins',
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ), // TextStyle
-                      ), // Text
-                      const SizedBox(height: 16),
-
-                      // Appears in list
-                      if (_isLoadingEpisodes)
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(24.0),
-                            child: CircularProgressIndicator(color: Colors.white24),
-                          ), // Padding
-                        ) // Center
-                      else if (_episodes.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 12.0),
-                          child: Text(
-                            'No episode data available.',
-                            style: TextStyle(color: mutedTextColor, fontFamily: 'Poppins'),
-                          ), // Text
-                        ) // Padding
-                      else
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _episodes.length,
-                          itemBuilder: (context, index) {
-                            final ep = _episodes[index];
-                            final isLast = index == _episodes.length - 1;
-                            return IntrinsicHeight(
-                              child: Row(
+                        ),
+                      ),
+                    )
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _episodes.length,
+                      itemBuilder: (context, index) {
+                        final ep = _episodes[index];
+                        final isLast = index == _episodes.length - 1;
+                        return IntrinsicHeight(
+                          child: Row(
+                            children: [
+                              Column(
                                 children: [
-                                  // Timeline axis line
-                                  Column(
-                                    children: [
-                                      Container(
-                                        width: 14,
-                                        height: 14,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF10131A),
-                                          shape: BoxShape.circle,
-                                          border: Border.all(color: neonGreen, width: 3),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: neonGreen.withOpacity(0.4),
-                                              blurRadius: 6,
-                                            ),
-                                          ],
-                                        ),
+                                  Container(
+                                    width: 14,
+                                    height: 14,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF10131A),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: neonGreen,
+                                        width: 3,
                                       ),
-                                      if (!isLast)
-                                        Expanded(
-                                          child: Container(
-                                            width: 2,
-                                            color: neonGreen.withOpacity(0.25),
-                                          ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: neonGreen.withOpacity(0.4),
+                                          blurRadius: 6,
                                         ),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 16),
-                                  // Card content
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 12.0),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                        decoration: BoxDecoration(
-                                          color: cardBgColor,
-                                          borderRadius: BorderRadius.circular(16),
-                                          border: Border.all(color: Colors.white.withOpacity(0.04), width: 1),
-                                        ), // BoxDecoration
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                                    decoration: BoxDecoration(
-                                                      color: neonGreen.withOpacity(0.08),
-                                                      borderRadius: BorderRadius.circular(6),
-                                                      border: Border.all(color: neonGreen.withOpacity(0.3), width: 0.5),
-                                                    ),
-                                                    child: Text(
-                                                      ep['code'] ?? 'Episode ${index + 1}',
-                                                      style: TextStyle(
-                                                        fontFamily: 'Poppins',
-                                                        fontSize: 10,
-                                                        fontWeight: FontWeight.bold,
-                                                        color: neonGreen,
-                                                      ), // TextStyle
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 6),
-                                                  Text(
-                                                    ep['name'] ?? '',
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(
-                                                      fontFamily: 'Poppins',
-                                                      fontSize: 14,
-                                                      fontWeight: FontWeight.w600,
-                                                      color: Colors.white,
-                                                    ), // TextStyle
-                                                  ), // Text
-                                                ], // children
-                                              ), // Column
-                                            ), // Expanded
-                                            Icon(
-                                              Icons.play_arrow,
-                                              color: neonGreen,
-                                              size: 18,
-                                            ), // Icon
-                                          ], // children
-                                        ), // Row
-                                      ), // Container
+                                      ],
                                     ),
                                   ),
+                                  if (!isLast)
+                                    Expanded(
+                                      child: Container(
+                                        width: 2,
+                                        color: neonGreen.withOpacity(0.25),
+                                      ),
+                                    ),
                                 ],
                               ),
-                            );
-                          },
-                        ),
-                      const SizedBox(height: 32),
-                    ], // children
-                  ), // Column
-                ), // Padding
-              ), // SliverToBoxAdapter
-        ], // slivers
-      ), // CustomScrollView
-    ); // Scaffold
-  } // build
+                              const SizedBox(width: 16),
+                              // Card content
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 12.0),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: cardBgColor,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.04),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 2,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: neonGreen.withOpacity(
+                                                    0.08,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                  border: Border.all(
+                                                    color: neonGreen
+                                                        .withOpacity(0.3),
+                                                    width: 0.5,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  ep['code'] ??
+                                                      'Episode ${index + 1}',
+                                                  style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: neonGreen,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 6),
+                                              Text(
+                                                ep['name'] ?? '',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ], // children
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.play_arrow,
+                                          color: neonGreen,
+                                          size: 18,
+                                        ),
+                                      ], // children
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildMetricBox({
     required IconData icon,
@@ -478,12 +514,12 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Colors.white,
-            ), // TextStyle
-          ), // Text
+            ),
+          ),
         ], // children
-      ), // Column
-    ); // Container
-  } // _buildMetricBox
+      ),
+    );
+  }
 
   Widget _buildLocationCard({
     required String title,
@@ -499,7 +535,7 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
         color: cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withOpacity(0.04), width: 1),
-      ), // BoxDecoration
+      ),
       child: Row(
         children: [
           Container(
@@ -507,8 +543,11 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFF10131A),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: accentColor.withOpacity(0.15), width: 1),
-            ), // BoxDecoration
+              border: Border.all(
+                color: accentColor.withOpacity(0.15),
+                width: 1,
+              ),
+            ),
             child: Icon(icon, color: accentColor, size: 20),
           ), // Container
           const SizedBox(width: 14),
@@ -523,8 +562,8 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     color: mutedColor.withOpacity(0.7),
-                  ), // TextStyle
-                ), // Text
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   locationName,
@@ -535,18 +574,14 @@ class _RickmortyDetailScreenState extends State<RickmortyDetailScreen> {
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: accentColor,
-                  ), // TextStyle
-                ), // Text
-              ], // children
-            ), // Column
-          ), // Expanded
-          Icon(
-            Icons.arrow_forward_ios,
-            color: mutedColor,
-            size: 14,
-          ), // Icon
-        ], // children
-      ), // Row
-    ); // Container
-  } // _buildLocationCard
-} // _RickmortyDetailScreenState
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.arrow_forward_ios, color: mutedColor, size: 14), // Icon
+        ],
+      ),
+    );
+  }
+}
