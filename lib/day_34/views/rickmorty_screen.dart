@@ -1,12 +1,13 @@
 import 'dart:async';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:dio/dio.dart';
-import 'package:lottie/lottie.dart';
-import 'package:latihan_flutterd7/day_34/services/dio_client.dart';
 import 'package:latihan_flutterd7/day_34/models/rickmorty_models.dart';
 import 'package:latihan_flutterd7/day_34/services/api_rickmorty_services.dart';
+import 'package:latihan_flutterd7/day_34/services/dio_client.dart';
 import 'package:latihan_flutterd7/day_34/views/rickmorty_detail_screen.dart';
+import 'package:lottie/lottie.dart';
 
 class RickmortyScreen extends StatefulWidget {
   final String? filterStatus;
