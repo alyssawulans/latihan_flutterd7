@@ -733,17 +733,17 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.04),
                         borderRadius: BorderRadius.circular(4),
-                      ), // BoxDecoration
-                    ), // Container
-                  ], // children
-                ), // Column
-              ), // Expanded
-            ], // children
-          ), // Row
-        ); // Container
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
       },
-    ); // ListView.builder
-  } // _buildLoadList
+    );
+  }
 
   // Ketika di Search Kosong
   Widget _buildEmptySearchState() {
@@ -758,8 +758,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
             Lottie.asset(
               "assets/animations/lottie_2.json",
 
-              width: 400,
-              height: 400,
+              width: 250,
+              height: 250,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
@@ -776,10 +776,11 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                     Icons.search_off,
                     size: 80,
                     color: neonGreen,
-                  ), // Icon
-                ); // Container
+                  ),
+                );
               },
-            ), // Lottie.network
+            ),
+            const SizedBox(height: 20),
 
             const Text(
               'Character not found',
@@ -798,7 +799,7 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                 fontFamily: 'Poppins',
                 fontSize: 14,
                 color: mutedTextColor,
-              ), // TextStyle
+              ),
             ),
           ],
         ),
@@ -818,8 +819,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
           children: [
             Lottie.asset(
               "assets/animations/lottie_1.json",
-              width: 300,
-              height: 300,
+              width: 200,
+              height: 200,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
@@ -887,7 +888,7 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
         ),
       ),
     );
-  } // _buildNoInternetState
+  }
 
   // API / Server Error Widget with Lottie
   Widget _buildApiErrorState() {
@@ -901,8 +902,8 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
           children: [
             Lottie.asset(
               "assets/animations/lottie_2.json",
-              width: 220,
-              height: 220,
+              width: 200,
+              height: 200,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
@@ -922,7 +923,7 @@ class _RickmortyScreenState extends State<RickmortyScreen> {
                   ),
                 );
               },
-            ), // Lottie.network
+            ),
             const SizedBox(height: 24),
             const Text(
               'Oops!',
